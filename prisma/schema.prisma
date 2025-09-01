@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  clerkUserId       String    @unique // Clerk's user ID
+  email     String   @unique
+  phone     String   @unique
+  name      String
+  role      UserRole @default(CUSTOMER) // CUSTOMER | WORKER | ADMIN
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  workerProfile   WorkerProfile?
+  customerProfile CustomerProfile?
+  jobsCreated     Job[]            @relation("CustomerJobs")
+  jobsAssigned    Job[]            @relation("WorkerJobs")
+  transactions    Transaction[]
+  reviewsGiven    Review[]         @relation("ReviewsByCustomer")
+  reviewsReceived Review[]         @relation("ReviewsForWorker")
+}
+
+enum UserRole {
+  CUSTOMER
+  WORKER
+  ADMIN
+}
+
+model WorkerProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  skilledIn       String[] // plumber, electrician, etc.
+  qualification   String?
+  certificates    String[] // file URLs
+  aadharNumber    String   @unique
+  yearsExperience Int?
+  profilePic      String?
+  bio             String?
+
+  address        String
+  city           String
+  state          String
+  country        String
+  postalCode     String
+  availableAreas String[] // list of areas where worker can work
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CustomerProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  address    String
+  city       String
+  state      String
+  country    String
+  postalCode String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id          String    @id @default(uuid())
+  description String
+  details     String?
+  date        DateTime
+  time        DateTime
+  location    String
+  charge      Float
+  status      JobStatus @default(PENDING)
+
+  // Relations
+  customerId String
+  customer   User   @relation("CustomerJobs", fields: [customerId], references: [id])
+
+  workerId String?
+  worker   User?   @relation("WorkerJobs", fields: [workerId], references: [id])
+
+  review Review?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Transaction Transaction[]
+
+  @@index([customerId, status])
+  @@index([workerId, status])
+}
+
+enum JobStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Transaction {
+  id        String          @id @default(uuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId     String?
+  job       Job?            @relation(fields: [jobId], references: [id])
+  amount    Float
+  type      TransactionType
+  createdAt DateTime        @default(now())
+}
+
+enum TransactionType {
+  PAYMENT // customer payment for job
+  PAYOUT // worker withdrawal
+  REFUND // refund to customer
+}
+
+model Review {
+  id    String @id @default(uuid())
+  jobId String @unique
+  job   Job    @relation(fields: [jobId], references: [id])
+
+  customerId String
+  customer   User   @relation("ReviewsByCustomer", fields: [customerId], references: [id])
+
+  workerId String
+  worker   User   @relation("ReviewsForWorker", fields: [workerId], references: [id])
+
+  rating  Int // 1–5 stars
+  comment String?
+
+  createdAt DateTime @default(now())
+}
