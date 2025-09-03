@@ -13,7 +13,7 @@ model User {
   email     String   @unique
   phone     String   @unique
   name      String
-  role      UserRole @default(CUSTOMER) // CUSTOMER | WORKER | ADMIN
+  role      UserRole @default(UNASSIGNED) // CUSTOMER | WORKER | ADMIN
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -30,7 +30,7 @@ model User {
 enum UserRole {
   CUSTOMER
   WORKER
-  ADMIN
+  UNASSIGNED
 }
 
 model WorkerProfile {

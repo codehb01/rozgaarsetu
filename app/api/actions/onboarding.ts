@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-type WorkerFormData = {
+export type WorkerFormData = {
   skilledIn: string[];
   qualification?: string;
   certificates?: string[];
@@ -20,7 +20,7 @@ type WorkerFormData = {
   availableAreas: string[];
 };
 
-type CustomerFormData = {
+export type CustomerFormData = {
   address: string;
   city: string;
   state: string;
@@ -28,77 +28,140 @@ type CustomerFormData = {
   postalCode: string;
 };
 
-/**
- * Sets Worker profile
- */
-export async function createWorkerProfile(formData: WorkerFormData) {
+export async function setUserRole(
+  formData: FormData
+): Promise<{ success: boolean; redirect?: string; error?: string }> {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  // Ensure user exists
-  const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
-  if (!user) throw new Error("User not found");
-
-  // Create WorkerProfile
-  const worker = await prisma.workerProfile.create({
-    data: {
-      userId: user.id,
-      skilledIn: formData.skilledIn,
-      qualification: formData.qualification,
-      certificates: formData.certificates,
-      aadharNumber: formData.aadharNumber,
-      yearsExperience: formData.yearsExperience,
-      profilePic: formData.profilePic,
-      bio: formData.bio,
-      address: formData.address,
-      city: formData.city,
-      state: formData.state,
-      country: formData.country,
-      postalCode: formData.postalCode,
-      availableAreas: formData.availableAreas,
-    },
+  // Get user record
+  const user = await prisma.user.findUnique({
+    where: { clerkUserId: userId },
   });
+  if (!user) throw new Error("User not found in database");
 
-  // Update user role
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { role: "WORKER" },
-  });
+  const roleRaw = formData.get("role");
+  const role = typeof roleRaw === "string" ? roleRaw.toUpperCase() : "";
+  if (!role || !["WORKER", "CUSTOMER"].includes(role)) {
+    throw new Error("Invalid role selection");
+  }
 
-  revalidatePath("/worker/dashboard");
+  try {
+    if (role === "CUSTOMER") {
+      const address = formData.get("address")?.toString();
+      const city = formData.get("city")?.toString();
+      const state = formData.get("state")?.toString();
+      const country = formData.get("country")?.toString();
+      const postalCode = formData.get("postalCode")?.toString();
 
-  return { success: true, redirect: "/worker/dashboard" };
-}
+      if (!address || !city || !state || !country || !postalCode) {
+        throw new Error("Missing required fields for customer");
+      }
 
-/**
- * Sets Customer profile
- */
-export async function createCustomerProfile(formData: CustomerFormData) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { clerkUserId: userId },
+          data: { role: "CUSTOMER" },
+        }),
+        prisma.customerProfile.upsert({
+          where: { userId: user.id },
+          update: { address, city, state, country, postalCode },
+          create: {
+            userId: user.id,
+            address,
+            city,
+            state,
+            country,
+            postalCode,
+          },
+        }),
+      ]);
 
-  const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
-  if (!user) throw new Error("User not found");
+      revalidatePath("/");
+      return { success: true, redirect: "/customer/dashboard" };
+    }
 
-  const customer = await prisma.customerProfile.create({
-    data: {
-      userId: user.id,
-      address: formData.address,
-      city: formData.city,
-      state: formData.state,
-      country: formData.country,
-      postalCode: formData.postalCode,
-    },
-  });
+    if (role === "WORKER") {
+      const skilledIn = formData.getAll("skilledIn") as string[];
+      const qualification = formData.get("qualification")?.toString() || null;
+      const certificates = formData.getAll("certificates") as string[];
+      const aadharNumber = formData.get("aadharNumber")?.toString();
+      const yearsExperience = formData.get("yearsExperience")
+        ? parseInt(formData.get("yearsExperience")!.toString(), 10)
+        : null;
+      const profilePic = formData.get("profilePic")?.toString() || null;
+      const bio = formData.get("bio")?.toString() || null;
+      const address = formData.get("address")?.toString();
+      const city = formData.get("city")?.toString();
+      const state = formData.get("state")?.toString();
+      const country = formData.get("country")?.toString();
+      const postalCode = formData.get("postalCode")?.toString();
+      const availableAreas = formData.getAll("availableAreas") as string[];
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { role: "CUSTOMER" },
-  });
+      if (
+        !skilledIn.length ||
+        !aadharNumber ||
+        !address ||
+        !city ||
+        !state ||
+        !country ||
+        !postalCode
+      ) {
+        throw new Error("Missing required fields for worker");
+      }
 
-  revalidatePath("/customer/dashboard");
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { clerkUserId: userId },
+          data: { role: "WORKER" },
+        }),
+        prisma.workerProfile.upsert({
+          where: { userId: user.id },
+          update: {
+            skilledIn,
+            qualification,
+            certificates,
+            aadharNumber,
+            yearsExperience,
+            profilePic,
+            bio,
+            address,
+            city,
+            state,
+            country,
+            postalCode,
+            availableAreas,
+          },
+          create: {
+            userId: user.id,
+            skilledIn,
+            qualification,
+            certificates,
+            aadharNumber,
+            yearsExperience,
+            profilePic,
+            bio,
+            address,
+            city,
+            state,
+            country,
+            postalCode,
+            availableAreas,
+          },
+        }),
+      ]);
 
-  return { success: true, redirect: "/customer/dashboard" };
+      revalidatePath("/");
+      return { success: true, redirect: "/worker/dashboard" };
+    }
+
+    return { success: false, error: "Unhandled role" };
+  } catch (error: unknown) {
+    console.error("Failed to set user role:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to update user profile";
+    return { success: false, error: message };
+  }
 }
 
 /**
@@ -108,13 +171,17 @@ export async function getCurrentUser() {
   const { userId } = await auth();
   if (!userId) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-    include: {
-      workerProfile: true,
-      customerProfile: true,
-    },
-  });
-
-  return user;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { clerkUserId: userId },
+      include: {
+        workerProfile: true,
+        customerProfile: true,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
 }

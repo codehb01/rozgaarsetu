@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 import { Button } from "./ui/button";
-import { Wrench, ShoppingCart } from "lucide-react"; // Worker + Customer icons
-
+import { Wrench, ShoppingCart, User } from "lucide-react";
 import { checkUser } from "@/lib/checkUser";
 
 const Header = async () => {
@@ -55,17 +60,45 @@ const Header = async () => {
                 </Button>
               </Link>
             )}
+
+            {/* Unassigned Role */}
+            {user?.role === "UNASSIGNED" && (
+              <Link href="/onboarding">
+                <Button
+                  variant="outline"
+                  className="hidden md:inline-flex items-center gap-2"
+                >
+                  <User className="h-4 w-4" />
+                  Complete Profile
+                </Button>
+                <Button variant="ghost" className="md:hidden w-10 h-10 p-0">
+                  <User className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
           </SignedIn>
 
+          {/* Show Sign In + Sign Up when signed out */}
           <SignedOut>
-            <SignInButton>
-              <Button
-                variant="secondary"
-                className="rounded-xl px-4 py-2 font-medium shadow-sm hover:shadow-md transition"
-              >
-                Sign In
-              </Button>
-            </SignInButton>
+            <div className="flex items-center gap-2">
+              <SignInButton>
+                <Button
+                  variant="secondary"
+                  className="rounded-xl px-4 py-2 font-medium shadow-sm hover:shadow-md transition"
+                >
+                  Sign In
+                </Button>
+              </SignInButton>
+
+              <SignUpButton>
+                <Button
+                  variant="default"
+                  className="rounded-xl px-4 py-2 font-medium shadow-sm hover:shadow-md transition"
+                >
+                  Sign Up
+                </Button>
+              </SignUpButton>
+            </div>
           </SignedOut>
 
           <SignedIn>
