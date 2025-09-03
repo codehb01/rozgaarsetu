@@ -299,8 +299,8 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-300 italic">
-                "RozgaarSetu changed my life. I found steady work and the
-                payments are always on time."
+                &quot;RozgaarSetu changed my life. I found steady work and the
+                payments are always on time.&quot;
               </p>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
@@ -329,8 +329,8 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-300 italic">
-                "The platform is so easy to use. I can find work near my home
-                and get paid instantly."
+                &quot;The platform is so easy to use. I can find work near my
+                home and get paid instantly.&quot;
               </p>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
@@ -359,8 +359,8 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-300 italic">
-                "Great platform for contractors like me. Professional, reliable,
-                and secure payments."
+                &quot;Great platform for contractors like me. Professional,
+                reliable, and secure payments.&quot;
               </p>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">

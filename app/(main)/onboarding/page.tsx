@@ -19,14 +19,15 @@ import useFetch from "@/hooks/use-fetch";
 import {
   workerFormSchema,
   customerFormSchema,
-  type WorkerFormData,
   type CustomerFormData,
 } from "@/lib/schema";
+import type { z } from "zod";
 
 // --- expected server response ---
 type OnboardingResponse = {
   success: boolean;
-  redirect: string;
+  redirect?: string;
+  error?: string;
 };
 
 export default function OnboardingPage() {
@@ -39,7 +40,7 @@ export default function OnboardingPage() {
     loading,
     data,
     fn: submitUserRole,
-  } = useFetch<OnboardingResponse>(setUserRole);
+  } = useFetch<[FormData], OnboardingResponse>(setUserRole);
 
   // ----------------- Customer form -----------------
   const {
@@ -62,7 +63,7 @@ export default function OnboardingPage() {
     register: registerWorker,
     handleSubmit: handleWorkerSubmit,
     formState: { errors: workerErrors },
-  } = useForm<WorkerFormData>({
+  } = useForm<z.input<typeof workerFormSchema>>({
     resolver: zodResolver(workerFormSchema),
     defaultValues: {
       skilledIn: [],
@@ -101,15 +102,30 @@ export default function OnboardingPage() {
     await submitUserRole(formData);
   };
 
-  const onWorkerSubmit = async (formDataValues: WorkerFormData) => {
+  const onWorkerSubmit = async (
+    formDataValues: z.input<typeof workerFormSchema>
+  ) => {
     if (loading) return;
     const formData = new FormData();
     formData.append("role", "WORKER");
 
     Object.entries(formDataValues).forEach(([key, val]) => {
       if (Array.isArray(val)) {
-        formData.append(key, JSON.stringify(val)); // serialize arrays
-      } else if (val !== undefined && val !== null) {
+        val.forEach((v) => formData.append(key, String(v)));
+        return;
+      }
+      if (
+        typeof val === "string" &&
+        ["skilledIn", "certificates", "availableAreas"].includes(key)
+      ) {
+        val
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean)
+          .forEach((v) => formData.append(key, v));
+        return;
+      }
+      if (val !== undefined && val !== null) {
         formData.append(key, String(val));
       }
     });
@@ -222,10 +238,20 @@ export default function OnboardingPage() {
               placeholder="Aadhar Number"
               {...registerWorker("aadharNumber")}
             />
+            {workerErrors.aadharNumber && (
+              <p className="text-red-500 text-sm">
+                {workerErrors.aadharNumber.message as string}
+              </p>
+            )}
             <Input
               placeholder="Qualification"
               {...registerWorker("qualification")}
             />
+            {workerErrors.qualification && (
+              <p className="text-red-500 text-sm">
+                {workerErrors.qualification.message as string}
+              </p>
+            )}
             <Input
               placeholder="Certificates (comma separated)"
               {...registerWorker("certificates")}
@@ -235,6 +261,11 @@ export default function OnboardingPage() {
               type="number"
               {...registerWorker("yearsExperience", { valueAsNumber: true })}
             />
+            {workerErrors.yearsExperience && (
+              <p className="text-red-500 text-sm">
+                {workerErrors.yearsExperience.message as string}
+              </p>
+            )}
             <Input
               placeholder="Profile Picture URL"
               {...registerWorker("profilePic")}
@@ -244,11 +275,21 @@ export default function OnboardingPage() {
               placeholder="Skilled In (comma separated)"
               {...registerWorker("skilledIn")}
             />
+            {workerErrors.skilledIn && (
+              <p className="text-red-500 text-sm">
+                {workerErrors.skilledIn.message as string}
+              </p>
+            )}
             <Input
               placeholder="Available Areas (comma separated)"
               {...registerWorker("availableAreas")}
             />
             <Input placeholder="Address" {...registerWorker("address")} />
+            {workerErrors.address && (
+              <p className="text-red-500 text-sm">
+                {workerErrors.address.message as string}
+              </p>
+            )}
             <Input placeholder="City" {...registerWorker("city")} />
             <Input placeholder="State" {...registerWorker("state")} />
             <Input placeholder="Country" {...registerWorker("country")} />
@@ -256,6 +297,11 @@ export default function OnboardingPage() {
               placeholder="Postal Code"
               {...registerWorker("postalCode")}
             />
+            {workerErrors.postalCode && (
+              <p className="text-red-500 text-sm">
+                {workerErrors.postalCode.message as string}
+              </p>
+            )}
 
             <Button type="submit" disabled={loading}>
               {loading ? (

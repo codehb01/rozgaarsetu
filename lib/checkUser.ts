@@ -12,6 +12,7 @@ export const checkUser = async () => {
       where: {
         clerkUserId: user.id,
       },
+      include: { workerProfile: true, customerProfile: true },
     });
 
     if (loggedInUser) {
@@ -32,13 +33,23 @@ export const checkUser = async () => {
     const existingByEmail = await prisma.user.findUnique({ where: { email } });
     if (existingByEmail) {
       if (existingByEmail.clerkUserId !== user.id) {
-        const updated = await prisma.user.update({
+        await prisma.user.update({
           where: { email },
           data: { clerkUserId: user.id, name },
         });
-        return updated;
+        // refetch with includes
+        const refetched = await prisma.user.findUnique({
+          where: { clerkUserId: user.id },
+          include: { workerProfile: true, customerProfile: true },
+        });
+        return refetched;
       }
-      return existingByEmail;
+      // ensure include shape
+      const refetched = await prisma.user.findUnique({
+        where: { clerkUserId: existingByEmail.clerkUserId },
+        include: { workerProfile: true, customerProfile: true },
+      });
+      return refetched;
     }
 
     // If a user exists with this phone, link to Clerk user and return
@@ -48,23 +59,35 @@ export const checkUser = async () => {
       });
       if (existingByPhone) {
         if (existingByPhone.clerkUserId !== user.id) {
-          const updated = await prisma.user.update({
+          await prisma.user.update({
             where: { phone: clerkPhone },
             data: { clerkUserId: user.id, name },
           });
-          return updated;
+          const refetched = await prisma.user.findUnique({
+            where: { clerkUserId: user.id },
+            include: { workerProfile: true, customerProfile: true },
+          });
+          return refetched;
         }
-        return existingByPhone;
+        const refetched = await prisma.user.findUnique({
+          where: { clerkUserId: existingByPhone.clerkUserId },
+          include: { workerProfile: true, customerProfile: true },
+        });
+        return refetched;
       }
     }
 
     // Create or update by clerkUserId (avoids race conditions)
-    const upserted = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { clerkUserId: user.id },
       create: { clerkUserId: user.id, name, email, phone },
       update: { name, email, phone },
     });
-    return upserted;
+    const finalUser = await prisma.user.findUnique({
+      where: { clerkUserId: user.id },
+      include: { workerProfile: true, customerProfile: true },
+    });
+    return finalUser;
   } catch (error) {
     console.error("Error checking user:", error);
     return null;

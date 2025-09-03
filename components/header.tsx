@@ -11,7 +11,7 @@ import { Wrench, ShoppingCart, User } from "lucide-react";
 import { checkUser } from "@/lib/checkUser";
 
 const Header = async () => {
-  const user = await checkUser(); // ✅ get user role
+  const user = await checkUser(); // includes workerProfile & customerProfile
 
   return (
     <header className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-10 supports-[backdrop-filter]:bg-background/60">
@@ -23,9 +23,9 @@ const Header = async () => {
 
         <div className="flex items-center gap-3">
           <SignedIn>
-            {/* Worker Links */}
-            {user?.role === "WORKER" && (
-              <Link href="/worker">
+            {/* Decide CTA based on profile presence */}
+            {user?.workerProfile ? (
+              <Link href="/worker/dashboard">
                 <Button
                   variant="outline"
                   className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
@@ -36,15 +36,13 @@ const Header = async () => {
                 <Button
                   variant="ghost"
                   className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-blue-50"
+                  aria-label="Worker Dashboard"
                 >
                   <Wrench className="h-5 w-5 text-blue-600" />
                 </Button>
               </Link>
-            )}
-
-            {/* Customer Links */}
-            {user?.role === "CUSTOMER" && (
-              <Link href="/customer">
+            ) : user?.customerProfile ? (
+              <Link href="/customer/dashboard">
                 <Button
                   variant="outline"
                   className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
@@ -55,24 +53,26 @@ const Header = async () => {
                 <Button
                   variant="ghost"
                   className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-green-50"
+                  aria-label="Customer Dashboard"
                 >
                   <ShoppingCart className="h-5 w-5 text-green-600" />
                 </Button>
               </Link>
-            )}
-
-            {/* Unassigned Role */}
-            {user?.role === "UNASSIGNED" && (
+            ) : (
               <Link href="/onboarding">
                 <Button
                   variant="outline"
-                  className="hidden md:inline-flex items-center gap-2"
+                  className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
                 >
-                  <User className="h-4 w-4" />
-                  Complete Profile
+                  <User className="h-5 w-5 text-amber-500" />
+                  <span className="font-medium">Complete Profile</span>
                 </Button>
-                <Button variant="ghost" className="md:hidden w-10 h-10 p-0">
-                  <User className="h-4 w-4" />
+                <Button
+                  variant="ghost"
+                  className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-amber-50"
+                  aria-label="Complete Profile"
+                >
+                  <User className="h-5 w-5 text-amber-500" />
                 </Button>
               </Link>
             )}

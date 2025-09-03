@@ -1,32 +1,19 @@
-import React from "react";
-import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/app/api/actions/onboarding";
-
-export const metadata = {
-  title: "Onboarding - RozgaarSetu",
-  description: "Complete your onboarding process to start using RozgaarSetu",
-};
-
-export default async function OnboardingLayout({
+import { redirect } from "next/navigation";
+import React from "react";
+const OnBoardingLayout = async ({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}) => {
   const user = await getCurrentUser();
-
-  // Redirect users who have already completed onboarding
-  if (user) {
-    if (user.role === "CUSTOMER") {
-      redirect("/customer/dashboard");
-    } else if (user.role === "WORKER") {
-      redirect("/worker/dashboard");
-    } else if (user.role === "UNASSIGNED") {
-      redirect("/onboarding");
-    } else {
-      redirect("/error");
-    }
+  // Only redirect away from onboarding for completed roles.
+  if (user?.role === "CUSTOMER") {
+    redirect("/customer/dashboard");
   }
-
+  if (user?.role === "WORKER") {
+    redirect("/worker/dashboard");
+  }
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
@@ -43,4 +30,6 @@ export default async function OnboardingLayout({
       </div>
     </div>
   );
-}
+};
+
+export default OnBoardingLayout;
