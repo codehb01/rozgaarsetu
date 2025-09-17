@@ -4,15 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, Wrench, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import Input from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { setUserRole } from "@/app/api/actions/onboarding";
 import useFetch from "@/hooks/use-fetch";
@@ -138,45 +133,27 @@ export default function OnboardingPage() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Customer card */}
-        <Card
-          className="border-emerald-900/20 hover:border-emerald-700/40 cursor-pointer transition-all"
-          onClick={() => setStep("customer-form")}
-        >
-          <CardContent className="pt-6 pb-6 flex flex-col items-center text-center">
+        <Card className="border-emerald-900/20 hover:border-emerald-700/40 cursor-pointer transition-all" onClick={() => setStep("customer-form")}> 
+          <div className="pt-6 pb-6 flex flex-col items-center text-center">
             <div className="p-4 bg-emerald-900/20 rounded-full mb-4">
               <User className="h-8 w-8 text-emerald-400" />
             </div>
-            <CardTitle className="text-xl font-semibold text-white mb-2">
-              Join as a Customer
-            </CardTitle>
-            <CardDescription className="mb-4">
-              Book workers, manage your service requests and track jobs.
-            </CardDescription>
-            <Button className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700">
-              Continue as Customer
-            </Button>
-          </CardContent>
+            <h2 className="text-xl font-semibold text-white mb-2">Join as a Customer</h2>
+            <p className="mb-4">Book workers, manage your service requests and track jobs.</p>
+            <Button className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700">Continue as Customer</Button>
+          </div>
         </Card>
 
         {/* Worker card */}
-        <Card
-          className="border-emerald-900/20 hover:border-emerald-700/40 cursor-pointer transition-all"
-          onClick={() => setStep("worker-form")}
-        >
-          <CardContent className="pt-6 pb-6 flex flex-col items-center text-center">
+        <Card className="border-emerald-900/20 hover:border-emerald-700/40 cursor-pointer transition-all" onClick={() => setStep("worker-form")}> 
+          <div className="pt-6 pb-6 flex flex-col items-center text-center">
             <div className="p-4 bg-emerald-900/20 rounded-full mb-4">
               <Wrench className="h-8 w-8 text-emerald-400" />
             </div>
-            <CardTitle className="text-xl font-semibold text-white mb-2">
-              Join as a Worker
-            </CardTitle>
-            <CardDescription className="mb-4">
-              Create your profile, list your skills, and get hired for jobs.
-            </CardDescription>
-            <Button className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700">
-              Continue as Worker
-            </Button>
-          </CardContent>
+            <h2 className="text-xl font-semibold text-white mb-2">Join as a Worker</h2>
+            <p className="mb-4">Create your profile, list your skills, and get hired for jobs.</p>
+            <Button className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700">Continue as Worker</Button>
+          </div>
         </Card>
       </div>
     );
@@ -186,14 +163,9 @@ export default function OnboardingPage() {
   if (step === "customer-form") {
     return (
       <Card className="border-emerald-900/20">
-        <CardContent className="pt-6">
-          <CardTitle className="text-2xl font-bold text-white mb-2">
-            Complete Your Customer Profile
-          </CardTitle>
-          <form
-            onSubmit={handleCustomerSubmit(onCustomerSubmit)}
-            className="space-y-4"
-          >
+        <div className="pt-6">
+          <h2 className="text-2xl font-bold text-white mb-2">Complete Your Customer Profile</h2>
+          <form onSubmit={handleCustomerSubmit(onCustomerSubmit)} className="space-y-4">
             <Input placeholder="Address" {...registerCustomer("address")} />
             {customerErrors.address && (
               <p className="text-red-500 text-sm">
@@ -217,7 +189,7 @@ export default function OnboardingPage() {
               )}
             </Button>
           </form>
-        </CardContent>
+        </div>
       </Card>
     );
   }
@@ -226,14 +198,9 @@ export default function OnboardingPage() {
   if (step === "worker-form") {
     return (
       <Card className="border-emerald-900/20">
-        <CardContent className="pt-6">
-          <CardTitle className="text-2xl font-bold text-white mb-2">
-            Complete Your Worker Profile
-          </CardTitle>
-          <form
-            onSubmit={handleWorkerSubmit(onWorkerSubmit)}
-            className="space-y-4"
-          >
+        <div className="pt-6">
+          <h2 className="text-2xl font-bold text-white mb-2">Complete Your Worker Profile</h2>
+          <form onSubmit={handleWorkerSubmit(onWorkerSubmit)} className="space-y-4">
             <Input
               placeholder="Aadhar Number"
               {...registerWorker("aadharNumber")}
@@ -311,7 +278,7 @@ export default function OnboardingPage() {
               )}
             </Button>
           </form>
-        </CardContent>
+        </div>
       </Card>
     );
   }
