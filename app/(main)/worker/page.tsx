@@ -1,9 +1,5 @@
-import React from 'react'
+import { redirect } from "next/navigation";
 
-function page() {
-  return (
-    <div>Wroker page</div>
-  )
+export default function WorkerPage() {
+  redirect("/worker/dashboard");
 }
-
-export default page

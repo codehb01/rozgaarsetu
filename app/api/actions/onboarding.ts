@@ -82,7 +82,10 @@ export async function setUserRole(
     }
 
     if (role === "WORKER") {
-      const skilledIn = formData.getAll("skilledIn") as string[];
+      const skilledInRaw = formData.getAll("skilledIn") as string[];
+      const skilledIn = skilledInRaw
+        .map((s) => s?.toString().toLowerCase().trim())
+        .filter(Boolean);
       const qualification = formData.get("qualification")?.toString() || null;
       const certificates = formData.getAll("certificates") as string[];
       const aadharNumber = formData.get("aadharNumber")?.toString();
@@ -96,7 +99,10 @@ export async function setUserRole(
       const state = formData.get("state")?.toString();
       const country = formData.get("country")?.toString();
       const postalCode = formData.get("postalCode")?.toString();
-      const availableAreas = formData.getAll("availableAreas") as string[];
+      const availableAreasRaw = formData.getAll("availableAreas") as string[];
+      const availableAreas = availableAreasRaw
+        .map((s) => s?.toString().trim())
+        .filter(Boolean);
 
       if (
         !skilledIn.length ||
@@ -108,6 +114,21 @@ export async function setUserRole(
         !postalCode
       ) {
         throw new Error("Missing required fields for worker");
+      }
+
+      // Check if aadharNumber is already used by another user
+      const existingAadhar = await prisma.workerProfile.findFirst({
+        where: {
+          aadharNumber,
+          NOT: { userId: user.id },
+        },
+        select: { id: true },
+      });
+      if (existingAadhar) {
+        return {
+          success: false,
+          error: "Aadhar number already exists for another worker.",
+        };
       }
 
       await prisma.$transaction([
