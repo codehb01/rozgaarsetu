@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
+import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
 
@@ -40,9 +41,16 @@ function flattenStrings(values: string[] | null | undefined): string[] {
 export default async function WorkersBySpecialityPage({
   params,
 }: {
-  params: Params;
+  params: Promise<Params>;
 }) {
-  const slug = params.speciality;
+  const { speciality: slug } = await params;
+  const { userId } = await auth();
+  const current = userId
+    ? await prisma.user.findUnique({
+        where: { clerkUserId: userId },
+        select: { id: true, role: true },
+      })
+    : null;
 
   // If URL segment looks like a worker ID, show full profile
   if (isUuidLike(slug)) {
@@ -70,7 +78,12 @@ export default async function WorkersBySpecialityPage({
     return (
       <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
         <section className="mx-auto max-w-4xl px-6 py-10">
-          <h1 className="text-3xl font-light text-white mb-6">{worker.name}</h1>
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <h1 className="text-3xl font-light text-white">{worker.name}</h1>
+            {current?.role === "CUSTOMER" && (
+              <BookWorkerButton workerId={worker.id} />
+            )}
+          </div>
           <Card className="border-gray-800 bg-gray-800/50 p-6 mb-6">
             <div className="grid md:grid-cols-2 gap-6 text-gray-200">
               <div>
