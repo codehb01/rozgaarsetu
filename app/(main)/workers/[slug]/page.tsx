@@ -6,10 +6,9 @@ import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
 
-type Params = { speciality: string };
+type Params = { slug: string };
 
 function isUuidLike(val: string): boolean {
-  // Basic check for UUID-like strings
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     val
   );
@@ -25,10 +24,9 @@ function flattenStrings(values: string[] | null | undefined): string[] {
       try {
         const parsed = JSON.parse(trimmed);
         if (Array.isArray(parsed)) {
-          for (const p of parsed) {
+          for (const p of parsed)
             if (typeof p === "string" && p.trim())
               out.push(p.toLowerCase().trim());
-          }
           continue;
         }
       } catch {}
@@ -38,12 +36,12 @@ function flattenStrings(values: string[] | null | undefined): string[] {
   return Array.from(new Set(out));
 }
 
-export default async function WorkersBySpecialityPage({
+export default async function WorkerOrSpecialityPage({
   params,
 }: {
   params: Promise<Params>;
 }) {
-  const { speciality: slug } = await params;
+  const { slug } = await params;
   const { userId } = await auth();
   const current = userId
     ? await prisma.user.findUnique({
@@ -52,7 +50,6 @@ export default async function WorkersBySpecialityPage({
       })
     : null;
 
-  // If URL segment looks like a worker ID, show full profile
   if (isUuidLike(slug)) {
     const worker = await prisma.user.findUnique({
       where: { id: slug },
@@ -64,8 +61,7 @@ export default async function WorkersBySpecialityPage({
         workerProfile: true,
       },
     });
-
-    if (!worker || !worker.workerProfile)
+    if (!worker || !worker.workerProfile) {
       return (
         <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
           <section className="mx-auto max-w-4xl px-6 py-10">
@@ -73,7 +69,7 @@ export default async function WorkersBySpecialityPage({
           </section>
         </main>
       );
-
+    }
     const wp = worker.workerProfile;
     return (
       <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
@@ -155,7 +151,6 @@ export default async function WorkersBySpecialityPage({
     );
   }
 
-  // Otherwise, treat the param as a speciality and list matching workers
   const normalized = slug.replace(/-/g, " ").toLowerCase().trim();
   const workersRaw = await prisma.user.findMany({
     where: { role: "WORKER" },
@@ -176,7 +171,6 @@ export default async function WorkersBySpecialityPage({
     },
     take: 200,
   });
-
   const workers = workersRaw.filter((w) =>
     flattenStrings(w.workerProfile?.skilledIn).includes(normalized)
   );
@@ -185,10 +179,9 @@ export default async function WorkersBySpecialityPage({
     <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-light text-white">{`Speciality: ${slug.replace(
-            /-/g,
-            " "
-          )}`}</h1>
+          <h1 className="text-2xl md:text-3xl font-light text-white">
+            Speciality: {slug.replace(/-/g, " ")}
+          </h1>
           <p className="text-gray-400 mt-2">
             Browse professionals in this speciality.
           </p>
@@ -222,14 +215,17 @@ export default async function WorkersBySpecialityPage({
                         .slice(0, 4)
                         .join(" • ")}
                     </div>
-                    <div className="mt-4 flex gap-2">
-                      <Link href={`/workers/${w.id}`}>
-                        <span className="inline-flex items-center px-3 py-2 rounded-md text-sm bg-gray-700 text-white hover:bg-gray-600">
+                    {current?.role === "CUSTOMER" && (
+                      <div className="mt-4 flex gap-2">
+                        <Link
+                          href={`/workers/${w.id}`}
+                          className="inline-flex px-3 py-2 rounded-md text-sm bg-gray-700 text-white hover:bg-gray-600"
+                        >
                           View
-                        </span>
-                      </Link>
-                      <BookWorkerButton workerId={w.id} />
-                    </div>
+                        </Link>
+                        <BookWorkerButton workerId={w.id} />
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
