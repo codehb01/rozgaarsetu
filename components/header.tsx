@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import {
   SignInButton,
@@ -7,11 +9,12 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { Button } from "./ui/button";
-import { Wrench, ShoppingCart, User } from "lucide-react";
-import { checkUser } from "@/lib/checkUser";
+import { Wrench, ShoppingCart } from "lucide-react";
+import { LanguageSwitcher } from "./language-switcher";
+import { useLanguage } from "@/lib/language-context";
 
-const Header = async () => {
-  const user = await checkUser(); // includes workerProfile & customerProfile
+const Header = () => {
+  const { t } = useLanguage();
 
   return (
     <header className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-10 supports-[backdrop-filter]:bg-background/60">
@@ -22,60 +25,30 @@ const Header = async () => {
         </Link>
 
         <div className="flex items-center gap-3">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+          
           <SignedIn>
-            {/* Decide CTA based on profile presence */}
-            {user?.workerProfile ? (
-              <Link href="/worker/dashboard">
-                <Button
-                  variant="outline"
-                  className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
-                >
-                  <Wrench className="h-5 w-5 text-blue-600" />
-                  <span className="font-medium">Worker Dashboard</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-blue-50"
-                  aria-label="Worker Dashboard"
-                >
-                  <Wrench className="h-5 w-5 text-blue-600" />
-                </Button>
-              </Link>
-            ) : user?.customerProfile ? (
-              <Link href="/customer/dashboard">
-                <Button
-                  variant="outline"
-                  className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
-                >
-                  <ShoppingCart className="h-5 w-5 text-green-600" />
-                  <span className="font-medium">Customer Dashboard</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-green-50"
-                  aria-label="Customer Dashboard"
-                >
-                  <ShoppingCart className="h-5 w-5 text-green-600" />
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/onboarding">
-                <Button
-                  variant="outline"
-                  className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
-                >
-                  <User className="h-5 w-5 text-amber-500" />
-                  <span className="font-medium">Complete Profile</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-amber-50"
-                  aria-label="Complete Profile"
-                >
-                  <User className="h-5 w-5 text-amber-500" />
-                </Button>
-              </Link>
-            )}
+            {/* Simplified buttons - we can enhance these later with user data */}
+            <Link href="/worker/dashboard">
+              <Button
+                variant="outline"
+                className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
+              >
+                <Wrench className="h-5 w-5 text-blue-600" />
+                <span className="font-medium">{t('worker.dashboard')}</span>
+              </Button>
+            </Link>
+            
+            <Link href="/customer/dashboard">
+              <Button
+                variant="outline"
+                className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
+              >
+                <ShoppingCart className="h-5 w-5 text-green-600" />
+                <span className="font-medium">{t('customer.dashboard')}</span>
+              </Button>
+            </Link>
           </SignedIn>
 
           {/* Show Sign In + Sign Up when signed out */}
@@ -86,7 +59,7 @@ const Header = async () => {
                   variant="secondary"
                   className="rounded-xl px-4 py-2 font-medium shadow-sm hover:shadow-md transition"
                 >
-                  Sign In
+                  {t('nav.signIn')}
                 </Button>
               </SignInButton>
 
@@ -95,7 +68,7 @@ const Header = async () => {
                   variant="default"
                   className="rounded-xl px-4 py-2 font-medium shadow-sm hover:shadow-md transition"
                 >
-                  Sign Up
+                  {t('nav.signUp')}
                 </Button>
               </SignUpButton>
             </div>

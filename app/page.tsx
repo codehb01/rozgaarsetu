@@ -1,8 +1,13 @@
+'use client';
+
 import Header from "../components/header";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
+import { useLanguage } from "@/lib/language-context";
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
     <main className="min-h-screen bg-gray-900 overflow-hidden">
       <Header />
@@ -19,18 +24,17 @@ export default function Home() {
         <div className="space-y-8 relative z-10">
           <div className="animate-fade-in-up">
             <h1 className="text-6xl md:text-7xl font-light text-white tracking-tight leading-tight">
-              Connect. Work.{" "}
-              <span className="text-blue-400 animate-pulse">Grow.</span>
+              {t('home.heroTitle')}{" "}
+              <span className="text-blue-400 animate-pulse">{t('home.heroTitleBlue')}</span>
             </h1>
           </div>
 
           <div className="animate-fade-in-up delay-300">
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              The modern platform connecting blue-collar workers with
-              opportunities.
+              {t('home.heroDesc')}
               <br className="hidden md:block" />
               <span className="text-blue-400 font-medium">
-                Simple, secure, and location-smart.
+                {t('home.heroDescBlue')}
               </span>
             </p>
           </div>
@@ -41,14 +45,14 @@ export default function Home() {
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-10 py-4 rounded-full text-lg font-medium transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
               >
-                Get Started
+                {t('home.getStarted')}
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 className="px-10 py-4 rounded-full border-2 border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-gray-500 text-lg font-medium transform hover:scale-105 transition-all duration-300"
               >
-                Learn More
+                {t('home.learnMore')}
               </Button>
             </div>
           </div>
@@ -61,7 +65,7 @@ export default function Home() {
                   10K+
                 </div>
                 <div className="text-gray-400 text-sm md:text-base">
-                  Active Workers
+                  {t('home.activeWorkers')}
                 </div>
               </div>
               <div className="text-center">
@@ -69,7 +73,7 @@ export default function Home() {
                   5K+
                 </div>
                 <div className="text-gray-400 text-sm md:text-base">
-                  Jobs Completed
+                  {t('home.jobsCompleted')}
                 </div>
               </div>
               <div className="text-center">
@@ -77,7 +81,7 @@ export default function Home() {
                   95%
                 </div>
                 <div className="text-gray-400 text-sm md:text-base">
-                  Success Rate
+                  {t('home.successRate')}
                 </div>
               </div>
             </div>
@@ -89,10 +93,10 @@ export default function Home() {
       <section className="relative mx-auto max-w-6xl px-6 py-20">
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-light text-white mb-4">
-            Why Choose RozgaarSetu?
+            {t('home.whyChoose')}
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Empowering connections between skilled workers and opportunities
+            {t('home.whyChooseDesc')}
           </p>
         </div>
 
@@ -225,7 +229,7 @@ export default function Home() {
       <section className="relative mx-auto max-w-6xl px-6 py-20">
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-light text-white mb-4">
-            How It Works
+            {t('home.howItWorks')}
           </h2>
           <p className="text-xl text-gray-400">
             Three simple steps to get started
@@ -381,25 +385,24 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-3xl blur-3xl"></div>
         <div className="relative z-10 space-y-8 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-light text-white">
-            Ready to transform your career?
+            {t('home.ctaTitle')}
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Join thousands of workers already using RozgaarSetu to find better
-            opportunities and secure their future.
+            {t('home.ctaDesc')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-12 py-4 rounded-full text-lg font-medium transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
             >
-              Start Today
+              {t('home.startToday')}
             </Button>
             <Button
               variant="outline"
               size="lg"
               className="px-12 py-4 rounded-full border-2 border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-gray-500 text-lg font-medium transform hover:scale-105 transition-all duration-300"
             >
-              Contact Sales
+              {t('home.contactSales')}
             </Button>
           </div>
         </div>

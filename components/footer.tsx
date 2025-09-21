@@ -1,4 +1,10 @@
+'use client';
+
+import { useLanguage } from "@/lib/language-context";
+
 const Footer = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t border-gray-800 mt-20">
       <div className="mx-auto max-w-6xl px-6 py-12">
@@ -6,65 +12,65 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">RozgaarSetu</h3>
             <p className="text-gray-400 text-sm">
-              Connecting blue-collar workers with opportunities across India.
+              {t('footer.description')}
             </p>
           </div>
           <div className="space-y-4">
-            <h4 className="text-white font-medium">Platform</h4>
+            <h4 className="text-white font-medium">{t('footer.platform')}</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Find Jobs
+                  {t('footer.findJobs')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Post Jobs
+                  {t('footer.postJobs')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  How it Works
+                  {t('footer.howItWorks')}
                 </a>
               </li>
             </ul>
           </div>
           <div className="space-y-4">
-            <h4 className="text-white font-medium">Support</h4>
+            <h4 className="text-white font-medium">{t('footer.support')}</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Help Center
+                  {t('footer.helpCenter')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Contact Us
+                  {t('footer.contactUs')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Terms of Service
+                  {t('footer.termsOfService')}
                 </a>
               </li>
             </ul>
           </div>
           <div className="space-y-4">
-            <h4 className="text-white font-medium">Company</h4>
+            <h4 className="text-white font-medium">{t('footer.company')}</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  About
+                  {t('footer.about')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Careers
+                  {t('footer.careers')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Privacy Policy
+                  {t('footer.privacyPolicy')}
                 </a>
               </li>
             </ul>
@@ -72,7 +78,7 @@ const Footer = () => {
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            © 2025 RozgaarSetu. All rights reserved.
+            {t('footer.copyright')}
           </p>
         </div>
       </div>

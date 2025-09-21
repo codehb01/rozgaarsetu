@@ -15,6 +15,7 @@ import {
 } from "@clerk/nextjs";
 import Footer from "@/components/footer";
 import { Toaster } from "sonner";
+import { LanguageProvider } from "@/lib/language-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,19 +43,21 @@ export default function RootLayout({
     <ClerkProvider appearance={{ theme: dark }}>
       <html lang="en" suppressHydrationWarning>
         <body className={`${inter.className}`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {/* header */}
-            <Header />
-            <main className="min-h-screen">{children}</main>
-            <Toaster richColors />
-            {/* footer */}
-            <Footer />
-          </ThemeProvider>
+          <LanguageProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {/* header */}
+              <Header />
+              <main className="min-h-screen">{children}</main>
+              <Toaster richColors />
+              {/* footer */}
+              <Footer />
+            </ThemeProvider>
+          </LanguageProvider>
         </body>
       </html>
     </ClerkProvider>
