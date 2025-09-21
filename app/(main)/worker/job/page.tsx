@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { JobCardSkeleton } from "@/components/ui/dashboard-skeleton";
 
 type Job = {
   id: string;
@@ -53,7 +54,11 @@ export default function WorkerJobsPage() {
       <section className="mx-auto max-w-5xl px-6 py-10">
         <h1 className="text-3xl font-light text-white mb-6">Job Requests</h1>
         {loading ? (
-          <div className="text-gray-400">Loading…</div>
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <JobCardSkeleton key={i} />
+            ))}
+          </div>
         ) : jobs.length === 0 ? (
           <div className="text-gray-400">No jobs right now.</div>
         ) : (

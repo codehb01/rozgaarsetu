@@ -1,5 +1,15 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { motion } from "framer-motion";
+import { DashboardSkeleton } from "@/components/ui/dashboard-skeleton";
+import { WorkerGridSkeleton } from "@/components/ui/worker-card-skeleton";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { FlipWords } from "@/components/ui/flip-words";
+import ShimmerText from "@/components/kokonutui/shimmer-text";
+import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
+// import prisma from "@/lib/prisma";
 
 const categories = [
   { key: "plumber", label: "Plumber", emoji: "🔧" },
@@ -13,288 +23,261 @@ const categories = [
   { key: "ac-technician", label: "AC Technician", emoji: "❄️" },
 ];
 
-export default async function CustomerDashboardPage() {
-  const workers = await prisma.user.findMany({
-    where: { role: "WORKER" },
-    select: {
-      id: true,
-      name: true,
-      workerProfile: {
-        select: {
-          skilledIn: true,
-          city: true,
-          availableAreas: true,
-          yearsExperience: true,
-          qualification: true,
-          profilePic: true,
-          bio: true,
-        },
-      },
-    },
-    take: 6,
-    orderBy: { createdAt: "desc" },
-  });
+export default function CustomerDashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [workers, setWorkers] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Simulate loading workers from API
+    const loadWorkers = async () => {
+      try {
+        setIsLoading(true);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Mock worker data
+        const mockWorkers = [
+          {
+            id: "1",
+            name: "Rajesh Kumar",
+            workerProfile: {
+              skilledIn: ["plumber", "electrician"],
+              city: "Mumbai",
+              availableAreas: ["Andheri", "Bandra"],
+              yearsExperience: 5,
+              qualification: "ITI Certificate",
+              profilePic: null,
+              bio: "Experienced plumber and electrician"
+            }
+          },
+          // Add more mock workers as needed
+        ];
+        
+        setWorkers(mockWorkers);
+      } catch (error) {
+        console.error("Error loading workers:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWorkers();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+        {/* Premium Apple-style background gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-purple-50/20 dark:from-blue-950/20 dark:via-transparent dark:to-purple-950/10"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div className="relative z-10 py-12">
+          <DashboardSkeleton />
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '2rem 0' }}>
-      {/* Hero Section */}
-      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '0 1.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ 
-            fontSize: '2.5rem', 
-            fontWeight: '300', 
-            color: '#111827', 
-            marginBottom: '1rem'
-          }}>
-            Find Your Perfect Worker
-          </h1>
-          <p style={{ 
-            fontSize: '1.125rem', 
-            color: '#6b7280', 
-            maxWidth: '32rem', 
-            margin: '0 auto'
-          }}>
-            Connect with skilled professionals in your area. Browse by category or search for specific expertise.
-          </p>
-        </div>
-      </section>
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+      {/* Premium Apple-style background gradients */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-purple-50/20 dark:from-blue-950/20 dark:via-transparent dark:to-purple-950/10"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
 
-      {/* Categories Section */}
-      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '0 1.5rem', marginBottom: '4rem' }}>
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.875rem', fontWeight: '300', color: '#111827', marginBottom: '0.5rem' }}>
-            Browse Categories
-          </h2>
-          <p style={{ color: '#6b7280' }}>
-            Select a category to find skilled professionals
-          </p>
-        </div>
-
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
-          gap: '1.5rem'
-        }}>
-          {categories.map(({ key, label, emoji }) => (
-            <Link
-              key={key}
-              href={`/customer/search?category=${encodeURIComponent(key)}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <div style={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '0.5rem',
-                padding: '1.5rem',
-                textAlign: 'center',
-                cursor: 'pointer'
-              }}
-              >
-                <div style={{ 
-                  fontSize: '2rem', 
-                  marginBottom: '1rem'
-                }}>
-                  {emoji}
-                </div>
-                <h3 style={{ 
-                  fontSize: '1.125rem', 
-                  fontWeight: '500', 
-                  color: '#111827', 
-                  marginBottom: '0.5rem'
-                }}>
-                  {label}
-                </h3>
-                <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                  Professional {label.toLowerCase()}s ready to help
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Featured Workers Section */}
-      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '0 1.5rem' }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '2rem',
-          flexWrap: 'wrap',
-          gap: '1rem'
-        }}>
-          <div>
-            <h2 style={{ fontSize: '1.875rem', fontWeight: '300', color: '#111827', marginBottom: '0.5rem' }}>
-              Featured Professionals
-            </h2>
-            <p style={{ color: '#6b7280' }}>
-              Recently joined skilled workers
-            </p>
-          </div>
-          <Link 
-            href="/customer/search"
-            style={{
-              backgroundColor: '#2563eb',
-              color: 'white',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '0.375rem',
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: '500'
-            }}
+      <div className="relative z-10 py-12">
+        {/* Hero Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-16"
           >
-            Browse All Workers
-          </Link>
-        </div>
-
-        {workers.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ color: '#6b7280', fontSize: '1.125rem', marginBottom: '0.5rem' }}>
-              No workers available at the moment
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight mb-6">
+              <ShimmerText 
+                text="Find Your Perfect Worker"
+                className="text-4xl sm:text-5xl font-bold tracking-tight"
+              />
+            </h1>
+            <div className="max-w-2xl mx-auto">
+              <TextGenerateEffect 
+                words="Connect with skilled professionals in your area. Browse by category or search for specific expertise."
+                className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed"
+                duration={0.6}
+              />
             </div>
-            <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
-              Check back later for new professionals
+          </motion.div>
+        </section>
+
+        {/* Categories Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="mb-12"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Browse Categories
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Select a category to find skilled professionals
             </p>
-          </div>
-        ) : (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
-            gap: '1.5rem'
-          }}>
-            {workers.map((w) => (
-              <div
-                key={w.id}
-                style={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  padding: '1.5rem',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  cursor: 'pointer'
-                }}
-                className="hover-lift"
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {categories.map(({ key, label, emoji }, index) => (
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 * index, ease: "easeOut" }}
               >
-                <div style={{ display: 'flex', alignItems: 'start', gap: '1rem' }}>
-                  <div style={{
-                    width: '3.5rem',
-                    height: '3.5rem',
-                    borderRadius: '0.5rem',
-                    backgroundColor: '#2563eb',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '1.25rem',
-                    fontWeight: '600'
-                  }}>
+                <Link
+                  href={`/customer/search?category=${encodeURIComponent(key)}`}
+                  className="block group"
+                >
+                  <MainMenusGradientCard
+                    title={label}
+                    description={`Professional ${label.toLowerCase()}s ready to help`}
+                    withArrow={true}
+                    circleSize={300}
+                    className="h-32 flex flex-col items-center justify-center"
+                  >
+                    <div className="text-4xl transform group-hover:scale-110 transition-transform duration-200">
+                      {emoji}
+                    </div>
+                  </MainMenusGradientCard>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+
+        {/* Featured Workers Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6"
+          >
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Featured Professionals
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300">
+                Recently joined skilled workers
+              </p>
+            </div>
+            <Link 
+              href="/customer/search"
+              className="group inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 no-underline border-none cursor-pointer"
+            >
+              <span className="relative z-10">Browse All Workers</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            </Link>
+          </motion.div>
+
+          {workers.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="text-center py-16"
+            >
+              <div className="text-gray-600 dark:text-gray-400 text-xl mb-2">
+                No workers available at the moment
+              </div>
+              <p className="text-gray-500 dark:text-gray-500 text-base">
+                Check back later for new professionals
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              {workers.map((w, index) => (
+                <motion.div
+                  key={w.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 * index, ease: "easeOut" }}
+                  className="group flex items-center gap-6 p-6 rounded-2xl transition-all duration-200 hover:bg-white/50 dark:hover:bg-gray-900/50 hover:backdrop-blur-xl border border-transparent hover:border-gray-200/50 dark:hover:border-gray-700/50"
+                >
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-xl font-bold shadow-lg">
                     {(w.name ?? "U").charAt(0).toUpperCase()}
                   </div>
 
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ 
-                      color: '#111827', 
-                      fontWeight: '600', 
-                      fontSize: '1.125rem', 
-                      marginBottom: '0.25rem'
-                    }}>
+                  <div className="flex-1">
+                    <h3 className="text-gray-900 dark:text-white font-bold text-xl mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                       {w.name ?? "Professional Worker"}
                     </h3>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                    <div className="flex items-center gap-4 mb-3 text-gray-600 dark:text-gray-400">
+                      <span className="font-medium">
                         {w.workerProfile?.qualification || "Skilled Professional"}
                       </span>
-                      <span style={{ color: '#d1d5db' }}>•</span>
-                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                        {w.workerProfile?.yearsExperience ?? 0}+ years
+                      <span className="text-gray-400 dark:text-gray-600">•</span>
+                      <span>
+                        {w.workerProfile?.yearsExperience ?? 0}+ years experience
                       </span>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                      <span style={{ fontSize: '0.875rem' }}>📍</span>
-                      <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                      <span className="text-gray-400 dark:text-gray-600">•</span>
+                      <span className="flex items-center gap-1">
+                        <span>📍</span>
                         {w.workerProfile?.city || "Location"}
                       </span>
-                      {w.workerProfile?.availableAreas && w.workerProfile.availableAreas.length > 0 && (
-                        <>
-                          <span style={{ color: '#d1d5db' }}>•</span>
-                          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                            +{w.workerProfile.availableAreas.length} areas
-                          </span>
-                        </>
-                      )}
                     </div>
 
                     {w.workerProfile?.skilledIn && w.workerProfile.skilledIn.length > 0 && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-                        {w.workerProfile.skilledIn.slice(0, 3).map((skill, index) => (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {w.workerProfile.skilledIn.slice(0, 4).map((skill: string, index: number) => (
                           <span
                             key={index}
-                            style={{
-                              backgroundColor: '#eff6ff',
-                              color: '#2563eb',
-                              padding: '0.25rem 0.5rem',
-                              borderRadius: '0.25rem',
-                              fontSize: '0.75rem',
-                              fontWeight: '500'
-                            }}
+                            className="bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800"
                           >
                             {skill}
                           </span>
                         ))}
-                        {w.workerProfile.skilledIn.length > 3 && (
-                          <span style={{
-                            backgroundColor: '#f3f4f6',
-                            color: '#6b7280',
-                            padding: '0.25rem 0.5rem',
-                            borderRadius: '0.25rem',
-                            fontSize: '0.75rem',
-                            fontWeight: '500'
-                          }}>
-                            +{w.workerProfile.skilledIn.length - 3}
+                        {w.workerProfile.skilledIn.length > 4 && (
+                          <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-sm font-medium">
+                            +{w.workerProfile.skilledIn.length - 4} more
                           </span>
                         )}
                       </div>
                     )}
-
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <Link 
-                        href={`/workers/${w.id}`}
-                        style={{
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
-                          padding: '0.5rem 1rem',
-                          borderRadius: '0.375rem',
-                          textDecoration: 'none',
-                          fontSize: '0.875rem',
-                          fontWeight: '500'
-                        }}
-                      >
-                        View Profile
-                      </Link>
-                      <Link 
-                        href={`/customer/booking?worker=${w.id}`}
-                        style={{
-                          backgroundColor: '#2563eb',
-                          color: 'white',
-                          padding: '0.5rem 1rem',
-                          borderRadius: '0.375rem',
-                          textDecoration: 'none',
-                          fontSize: '0.875rem',
-                          fontWeight: '500'
-                        }}
-                      >
-                        Book Now
-                      </Link>
-                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+
+                  <div className="flex gap-3">
+                    <Link 
+                      href={`/workers/${w.id}`}
+                      className="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] no-underline"
+                    >
+                      View Profile
+                    </Link>
+                    <Link 
+                      href={`/customer/booking?worker=${w.id}`}
+                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25 no-underline"
+                    >
+                      Book Now
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

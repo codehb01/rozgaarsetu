@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { setUserRole } from "@/app/api/actions/onboarding";
+import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
+import { OnboardingSkeleton } from "@/components/ui/dashboard-skeleton";
 
 type OnboardingResponse = {
   success: boolean;
@@ -14,7 +16,21 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<"choose-role" | "worker-form" | "customer-form">("choose-role");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    // Simulate initial page load
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isInitialLoading) {
+    return <OnboardingSkeleton />;
+  }
 
   const handleRoleSelection = (role: "customer" | "worker") => {
     if (role === "customer") {
@@ -89,68 +105,88 @@ export default function OnboardingPage() {
   // Role Selection
   if (step === "choose-role") {
     return (
-      <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-        <h1>Choose Your Role</h1>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" }}>
+      <div style={{ padding: "40px", maxWidth: "1000px", margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h1 style={{ fontSize: "3rem", fontWeight: "600", color: "#111827", marginBottom: "1rem" }}>
+            Choose Your Role
+          </h1>
+          <p style={{ fontSize: "1.25rem", color: "#6b7280" }}>
+            Select how you want to use RozgaarSetu
+          </p>
+        </div>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", marginTop: "20px" }}>
           
           {/* Customer Option */}
-          <div 
-            style={{ 
-              border: "1px solid #ccc", 
-              padding: "20px", 
-              borderRadius: "8px", 
-              textAlign: "center", 
-              cursor: "pointer",
-              backgroundColor: "#f9f9f9"
-            }}
-            onClick={() => handleRoleSelection("customer")}
-          >
-            <div style={{ fontSize: "48px", marginBottom: "10px" }}>👤</div>
-            <h3>Join as Customer</h3>
-            <p>Book workers, manage service requests and track jobs.</p>
-            <button 
-              style={{ 
-                padding: "10px 20px", 
-                backgroundColor: "#007bff", 
-                color: "white", 
-                border: "none", 
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginTop: "10px"
-              }}
+          <div onClick={() => handleRoleSelection("customer")} style={{ cursor: "pointer" }}>
+            <MainMenusGradientCard
+              title="Join as Customer"
+              description="Book workers, manage service requests and track jobs. Find skilled professionals for your needs."
+              withArrow={true}
+              circleSize={300}
             >
-              Continue as Customer
-            </button>
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                height: "100%",
+                gap: "1rem"
+              }}>
+                <div style={{ fontSize: "4rem" }}>👤</div>
+                <button 
+                  style={{ 
+                    padding: "12px 24px", 
+                    backgroundColor: "#3b82f6", 
+                    color: "white", 
+                    border: "none", 
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s"
+                  }}
+                >
+                  Continue as Customer
+                </button>
+              </div>
+            </MainMenusGradientCard>
           </div>
 
           {/* Worker Option */}
-          <div 
-            style={{ 
-              border: "1px solid #ccc", 
-              padding: "20px", 
-              borderRadius: "8px", 
-              textAlign: "center", 
-              cursor: "pointer",
-              backgroundColor: "#f9f9f9"
-            }}
-            onClick={() => handleRoleSelection("worker")}
-          >
-            <div style={{ fontSize: "48px", marginBottom: "10px" }}>🔧</div>
-            <h3>Join as Worker</h3>
-            <p>Create your profile, list your skills, and get hired for jobs.</p>
-            <button 
-              style={{ 
-                padding: "10px 20px", 
-                backgroundColor: "#28a745", 
-                color: "white", 
-                border: "none", 
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginTop: "10px"
-              }}
+          <div onClick={() => handleRoleSelection("worker")} style={{ cursor: "pointer" }}>
+            <MainMenusGradientCard
+              title="Join as Worker"
+              description="Create your profile, list your skills, and get hired for jobs. Start earning with your expertise."
+              withArrow={true}
+              circleSize={300}
             >
-              Continue as Worker
-            </button>
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                height: "100%",
+                gap: "1rem"
+              }}>
+                <div style={{ fontSize: "4rem" }}>🔧</div>
+                <button 
+                  style={{ 
+                    padding: "12px 24px", 
+                    backgroundColor: "#10b981", 
+                    color: "white", 
+                    border: "none", 
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s"
+                  }}
+                >
+                  Continue as Worker
+                </button>
+              </div>
+            </MainMenusGradientCard>
           </div>
         </div>
       </div>

@@ -1,447 +1,650 @@
-﻿export default function Home() {
+﻿'use client'
+import { useEffect, useState } from "react";
+import Lenis from 'lenis';
+import { motion } from 'framer-motion';
+import StickyFooter from "@/components/sticky-footer";
+import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
+import { cn } from "@/lib/utils";
+import { NumberTicker } from "@/components/ui/number-ticker";
+import { AuroraText } from "@/components/ui/aurora-text";
+import { StatsSkeleton } from "@/components/ui/dashboard-skeleton";
+import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
+import ScrollText from "@/components/kokonutui/scroll-text";
+import TypewriterTitle from "@/components/kokonutui/type-writer";
+import ShimmerText from "@/components/kokonutui/shimmer-text";
+import { TypewriterEffect } from "@/components/ui/typewriter-effect";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { FlipWords } from "@/components/ui/flip-words";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function Home() {
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
+  const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect( () => {
+    // Simple Lenis setup that works better with sticky elements
+    const lenis = new Lenis()
+
+    function raf(time: number) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+
+    requestAnimationFrame(raf)
+
+    // Simulate loading states
+    const statsTimer = setTimeout(() => setIsStatsLoading(false), 1500);
+    const featuresTimer = setTimeout(() => setIsFeaturesLoading(false), 2000);
+
+    // Scroll to top button visibility
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowScrollTop(scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      lenis.destroy()
+      clearTimeout(statsTimer);
+      clearTimeout(featuresTimer);
+      window.removeEventListener('scroll', handleScroll);
+    }
+  }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+    <div className="bg-background text-foreground">
       {/* Hero Section */}
-      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '5rem 1.5rem', textAlign: 'center' }}>
-        <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ 
-            fontSize: '3.75rem', 
-            fontWeight: '300', 
-            color: '#111827', 
-            lineHeight: '1.1',
-            marginBottom: '1rem'
-          }}>
-            Connect. Work. <span style={{ color: '#2563eb' }}>Grow.</span>
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 sm:pt-12 sm:pb-32 text-center">
+        {/* Subtle background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-950 -z-10"></div>
+        
+        {/* Main heading with Apple-style spacing */}
+        <div className="space-y-8">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-gray-900 dark:text-white">
+            Connect. Work.{' '}
+            <AuroraText 
+              className="font-bold"
+              colors={["#3B82F6", "#8B5CF6", "#06B6D4", "#10B981"]}
+              speed={1.5}
+            >
+              Grow.
+            </AuroraText>
           </h1>
+          
+          {/* Subtitle with perfect Apple spacing */}
+          <div className="max-w-3xl mx-auto space-y-4">
+            <div className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 font-normal leading-relaxed">
+              <TextGenerateEffect 
+                words="The modern platform connecting blue-collar workers with opportunities."
+                className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 font-normal leading-relaxed"
+              />
+            </div>
+            <div className="text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium">
+              <FlipWords 
+                words={["Simple, secure, and location-smart.", "Fast, reliable, and worker-focused.", "Trusted, efficient, and growth-driven.", "Modern, transparent, and opportunity-rich."]}
+                duration={3000}
+                className="text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium"
+              />
+            </div>
+          </div>
         </div>
 
-        <div style={{ marginBottom: '2rem' }}>
-          <p style={{ 
-            fontSize: '1.25rem', 
-            color: '#374151', 
-            maxWidth: '48rem', 
-            margin: '0 auto',
-            lineHeight: '1.6'
-          }}>
-            The modern platform connecting blue-collar workers with opportunities.
-            <br />
-            <span style={{ color: '#2563eb', fontWeight: '500' }}>
-              Simple, secure, and location-smart.
-            </span>
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', justifyContent: 'center', paddingTop: '2rem' }}>
+        {/* CTA Buttons with Apple-style design */}
+        <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
           <a 
             href="/onboarding"
-            style={{
-              backgroundColor: '#2563eb',
-              color: 'white',
-              padding: '1rem 2.5rem',
-              borderRadius: '9999px',
-              fontSize: '1.125rem',
-              fontWeight: '500',
-              textDecoration: 'none',
-              display: 'inline-block',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3.5 rounded-full text-base font-semibold transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
           >
             Get Started
           </a>
-          <button
-            style={{
-              backgroundColor: 'transparent',
-              color: '#374151',
-              padding: '1rem 2.5rem',
-              borderRadius: '9999px',
-              fontSize: '1.125rem',
-              fontWeight: '500',
-              border: '2px solid #d1d5db',
-              cursor: 'pointer'
-            }}
-          >
+          <button className="w-full sm:w-auto bg-transparent text-blue-600 dark:text-blue-400 px-8 py-3.5 rounded-full text-base font-semibold border-2 border-blue-600/20 dark:border-blue-400/20 hover:border-blue-600/40 dark:hover:border-blue-400/40 hover:bg-blue-600/5 dark:hover:bg-blue-400/5 transition-all duration-200">
             Learn More
           </button>
         </div>
 
-        {/* Stats Section */}
-        <div style={{ paddingTop: '4rem' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#2563eb' }}>
-                10K+
+        {/* Stats with minimal Apple-style cards */}
+        <div className="mt-20 sm:mt-24">
+          {isStatsLoading ? (
+            <StatsSkeleton />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+              <div className="space-y-2">
+                <div className="text-3xl sm:text-4xl font-semibold text-blue-600 dark:text-blue-400 tracking-tight">
+                  <NumberTicker 
+                    value={10000} 
+                    delay={0}
+                    className="font-semibold"
+                  />+
+                </div>
+                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Active Workers
+                </div>
               </div>
-              <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                Active Workers
+              <div className="space-y-2">
+                <div className="text-3xl sm:text-4xl font-semibold text-green-600 dark:text-green-400 tracking-tight">
+                  <NumberTicker 
+                    value={5000} 
+                    delay={0.2}
+                    className="font-semibold"
+                  />+
+                </div>
+                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Jobs Completed
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-3xl sm:text-4xl font-semibold text-purple-600 dark:text-purple-400 tracking-tight">
+                  <NumberTicker 
+                    value={95} 
+                    delay={0.4}
+                    className="font-semibold"
+                  />%
+                </div>
+                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Success Rate
+                </div>
               </div>
             </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#059669' }}>
-                5K+
-              </div>
-              <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                Jobs Completed
-              </div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#7c3aed' }}>
-                95%
-              </div>
-              <div style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                Success Rate
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
       {/* Features Section */}
-      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '5rem 1.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: '300', color: '#111827', marginBottom: '1rem' }}>
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
             Why Choose RozgaarSetu?
           </h2>
-          <p style={{ fontSize: '1.25rem', color: '#6b7280', maxWidth: '32rem', margin: '0 auto' }}>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Empowering connections between skilled workers and opportunities
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
-          <div style={{ 
-            padding: '2rem', 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '0.5rem',
-            textAlign: 'center'
-          }}>
-            <div style={{ 
-              width: '4rem', 
-              height: '4rem', 
-              backgroundColor: '#2563eb', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              margin: '0 auto 1rem'
-            }}>
-              <span style={{ fontSize: '1.5rem' }}>💼</span>
+        {isFeaturesLoading ? (
+          <div className="grid sm:grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-32 mx-auto" />
+              </div>
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
-              Find Work
-            </h3>
-            <p style={{ color: '#6b7280' }}>
-              Discover opportunities that match your skills and location preferences
-            </p>
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-32 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-4 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-36" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-36 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-2 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-24 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-28" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-4/5" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-32 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-28 mx-auto" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 md:grid-cols-6 gap-4">
+          {/* Card 1 - Find Work */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-3')}>
+            <MainMenusGradientCard
+              title="Find Work"
+              description="Discover opportunities that match your skills and location preferences with our smart matching system."
+              withArrow={true}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">💼</div>
+                <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  Opportunity Awaits
+                </div>
+              </div>
+            </MainMenusGradientCard>
           </div>
 
-          <div style={{ 
-            padding: '2rem', 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '0.5rem',
-            textAlign: 'center'
-          }}>
-            <div style={{ 
-              width: '4rem', 
-              height: '4rem', 
-              backgroundColor: '#059669', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              margin: '0 auto 1rem'
-            }}>
-              <span style={{ fontSize: '1.5rem' }}>💰</span>
-            </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
-              Get Paid
-            </h3>
-            <p style={{ color: '#6b7280' }}>
-              Secure payments delivered instantly with multiple payment options
-            </p>
+          {/* Card 2 - Get Paid */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-3')}>
+            <MainMenusGradientCard
+              title="Get Paid"
+              description="Secure payments delivered instantly with multiple payment options and transparent pricing."
+              withArrow={true}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">💰</div>
+                <div className="text-lg font-semibold text-green-600 dark:text-green-400">
+                  Instant Payments
+                </div>
+              </div>
+            </MainMenusGradientCard>
           </div>
 
-          <div style={{ 
-            padding: '2rem', 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '0.5rem',
-            textAlign: 'center'
-          }}>
-            <div style={{ 
-              width: '4rem', 
-              height: '4rem', 
-              backgroundColor: '#7c3aed', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              margin: '0 auto 1rem'
-            }}>
-              <span style={{ fontSize: '1.5rem' }}>📍</span>
-            </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
-              Nearby
-            </h3>
-            <p style={{ color: '#6b7280' }}>
-              Connect with workers in your area for quick and efficient hiring
-            </p>
+          {/* Card 3 - Nearby Connections */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-4')}>
+            <MainMenusGradientCard
+              title="Nearby Connections"
+              description="Connect with workers in your area for quick and efficient hiring with location-based matching."
+              withArrow={true}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">📍</div>
+                <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                  Local Network
+                </div>
+              </div>
+            </MainMenusGradientCard>
           </div>
 
-          <div style={{ 
-            padding: '2rem', 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '0.5rem',
-            textAlign: 'center'
-          }}>
-            <div style={{ 
-              width: '4rem', 
-              height: '4rem', 
-              backgroundColor: '#ea580c', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              margin: '0 auto 1rem'
-            }}>
-              <span style={{ fontSize: '1.5rem' }}>🔍</span>
-            </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
-              Smart Search
-            </h3>
-            <p style={{ color: '#6b7280' }}>
-              Advanced location-based matching with AI-powered recommendations
-            </p>
+          {/* Card 4 - Smart Search */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-2')}>
+            <MainMenusGradientCard
+              title="Smart Search"
+              description="Advanced location-based matching with AI-powered recommendations for perfect job matches."
+              withArrow={true}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-4xl">🔍</div>
+                <div className="text-base font-semibold text-orange-600 dark:text-orange-400">
+                  AI-Powered
+                </div>
+              </div>
+            </MainMenusGradientCard>
+          </div>
+
+          {/* Card 5 - Verified Profiles */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-2')}>
+            <MainMenusGradientCard
+              title="Verified Profiles"
+              description="Work with trusted professionals. Profiles are verified for identity and skills."
+              withArrow={true}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-4xl">✅</div>
+                <div className="text-base font-semibold text-sky-600 dark:text-sky-400">
+                  Trusted & Verified
+                </div>
+              </div>
+            </MainMenusGradientCard>
+          </div>
+
+          {/* Card 6 - Trust & Safety */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-4')}>
+            <MainMenusGradientCard
+              title="Trust & Safety"
+              description="Ratings, reviews, and dispute support ensure a safe experience for everyone."
+              withArrow={true}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">🛡️</div>
+                <div className="text-lg font-semibold text-teal-600 dark:text-teal-400">
+                  Safe & Reliable
+                </div>
+              </div>
+            </MainMenusGradientCard>
           </div>
         </div>
+        )}
       </section>
 
       {/* How It Works Section */}
-      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '5rem 1.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: '300', color: '#111827', marginBottom: '1rem' }}>
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
             How It Works
           </h2>
-          <p style={{ fontSize: '1.25rem', color: '#6b7280' }}>
-            Three simple steps to get started
+          <p className="text-xl text-gray-600 dark:text-gray-400">
+            Three simple steps to transform your career
           </p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: '20rem' }}>
-            <div style={{ 
-              width: '5rem', 
-              height: '5rem', 
-              backgroundColor: '#2563eb', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>1</span>
-            </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
-              Create Profile
-            </h3>
-            <p style={{ color: '#6b7280' }}>
-              Sign up and create your professional profile with skills and experience
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left side - Scroll Text Animation */}
+          <div className="order-2 lg:order-1">
+            <ScrollText
+              texts={[
+                "Create Profile",
+                "Showcase Skills", 
+                "Find Local Jobs",
+                "Apply Instantly",
+                "Work & Deliver",
+                "Get Paid Fast",
+                "Build Reputation",
+                "Grow Your Career"
+              ]}
+              className="h-[400px]"
+            />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: '20rem' }}>
-            <div style={{ 
-              width: '5rem', 
-              height: '5rem', 
-              backgroundColor: '#7c3aed', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>2</span>
+          {/* Right side - Step Cards */}
+          <div className="order-1 lg:order-2 space-y-8">
+            <div className="flex items-start gap-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border border-blue-100 dark:border-blue-800/30">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xl font-bold text-white">1</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Create Your Professional Profile
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Sign up in minutes and showcase your skills, experience, and availability. 
+                  Add photos, certifications, and set your service rates.
+                </p>
+              </div>
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>Find Jobs</h3>
-            <p style={{ color: '#6b7280' }}>
-              Browse and apply to jobs that match your skills and location
-            </p>
-          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: '20rem' }}>
-            <div style={{ 
-              width: '5rem', 
-              height: '5rem', 
-              backgroundColor: '#059669', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>3</span>
+            <div className="flex items-start gap-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-xl border border-purple-100 dark:border-purple-800/30">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xl font-bold text-white">2</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Connect with Local Opportunities
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Our smart matching system finds jobs near you that match your skills. 
+                  Browse, apply, and negotiate terms directly with customers.
+                </p>
+              </div>
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>Get Paid</h3>
-            <p style={{ color: '#6b7280' }}>
-              Complete work and receive secure payments instantly
-            </p>
+
+            <div className="flex items-start gap-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-xl border border-green-100 dark:border-green-800/30">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xl font-bold text-white">3</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Work Smart, Get Paid Instantly
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Complete your work with confidence. Our secure payment system 
+                  ensures you get paid immediately after job completion.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '5rem 1.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: '300', color: '#111827', marginBottom: '1rem' }}>
-            What Workers Say
-          </h2>
-          <p style={{ fontSize: '1.25rem', color: '#6b7280' }}>
-            Real stories from our community
-          </p>
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <ShimmerText 
+            text="What Workers Say"
+            className="text-5xl font-light mb-4"
+          />
+          <TypewriterEffect
+            words={[
+              { text: "Real" },
+              { text: "stories" },
+              { text: "from" },
+              { text: "our" },
+              { text: "community", className: "text-blue-500 dark:text-blue-400" }
+            ]}
+            className="text-xl text-gray-600 dark:text-gray-400"
+            cursorClassName="bg-blue-500"
+          />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-          <div style={{ 
-            padding: '2rem', 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '0.5rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ color: '#f59e0b', fontSize: '1.25rem' }}>⭐⭐⭐⭐⭐</span>
-            </div>
-            <p style={{ color: '#374151', fontStyle: 'italic', marginBottom: '1rem' }}>
-              "RozgaarSetu changed my life. I found steady work and the payments are always on time."
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ 
-                width: '2.5rem', 
-                height: '2.5rem', 
-                backgroundColor: '#2563eb', 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center'
-              }}>
-                <span style={{ color: 'white', fontWeight: '600' }}>R</span>
-              </div>
-              <div>
-                <p style={{ color: '#111827', fontWeight: '500' }}>Rajesh Kumar</p>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Electrician</p>
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Testimonial 1 */}
+          <CardContainer className="inter-var">
+            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
+              <CardItem
+                translateZ="50"
+                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
+              >
+                <div className="flex items-center">
+                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+              </CardItem>
+              
+              <CardItem
+                as="p"
+                translateZ="60"
+                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
+              >
+                "RozgaarSetu changed my life. I found steady work and the payments are always on time."
+              </CardItem>
+              
+              <CardItem translateZ="100" className="w-full mt-6">
+                <div className="flex items-center gap-3">
+                  <CardItem translateZ="80">
+                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">R</span>
+                    </div>
+                  </CardItem>
+                  <div>
+                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
+                      Rajesh Kumar
+                    </CardItem>
+                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
+                      Electrician
+                    </CardItem>
+                  </div>
+                </div>
+              </CardItem>
+            </CardBody>
+          </CardContainer>
 
-          <div style={{ 
-            padding: '2rem', 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '0.5rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ color: '#f59e0b', fontSize: '1.25rem' }}>⭐⭐⭐⭐⭐</span>
-            </div>
-            <p style={{ color: '#374151', fontStyle: 'italic', marginBottom: '1rem' }}>
-              "The platform is so easy to use. I can find work near my home and get paid instantly."
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ 
-                width: '2.5rem', 
-                height: '2.5rem', 
-                backgroundColor: '#059669', 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center'
-              }}>
-                <span style={{ color: 'white', fontWeight: '600' }}>P</span>
-              </div>
-              <div>
-                <p style={{ color: '#111827', fontWeight: '500' }}>Priya Sharma</p>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Cleaner</p>
-              </div>
-            </div>
-          </div>
+          {/* Testimonial 2 */}
+          <CardContainer className="inter-var">
+            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
+              <CardItem
+                translateZ="50"
+                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
+              >
+                <div className="flex items-center">
+                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+              </CardItem>
+              
+              <CardItem
+                as="p"
+                translateZ="60"
+                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
+              >
+                "The platform is so easy to use. I can find work near my home and get paid instantly."
+              </CardItem>
+              
+              <CardItem translateZ="100" className="w-full mt-6">
+                <div className="flex items-center gap-3">
+                  <CardItem translateZ="80">
+                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">P</span>
+                    </div>
+                  </CardItem>
+                  <div>
+                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
+                      Priya Sharma
+                    </CardItem>
+                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
+                      Cleaner
+                    </CardItem>
+                  </div>
+                </div>
+              </CardItem>
+            </CardBody>
+          </CardContainer>
 
-          <div style={{ 
-            padding: '2rem', 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb', 
-            borderRadius: '0.5rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ color: '#f59e0b', fontSize: '1.25rem' }}>⭐⭐⭐⭐⭐</span>
+          {/* Testimonial 3 */}
+          <CardContainer className="inter-var">
+            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
+              <CardItem
+                translateZ="50"
+                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
+              >
+                <div className="flex items-center">
+                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
+                </div>
+              </CardItem>
+              
+              <CardItem
+                as="p"
+                translateZ="60"
+                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
+              >
+                "Great platform for contractors like me. Professional, reliable, and secure payments."
+              </CardItem>
+              
+              <CardItem translateZ="100" className="w-full mt-6">
+                <div className="flex items-center gap-3">
+                  <CardItem translateZ="80">
+                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">A</span>
+                    </div>
+                  </CardItem>
+                  <div>
+                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
+                      Amit Singh
+                    </CardItem>
+                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
+                      Plumber
+                    </CardItem>
+                  </div>
+                </div>
+              </CardItem>
+            </CardBody>
+          </CardContainer>
+        </div>
+      </section>
+
+      {/* CTA Section - Apple Design System */}
+      <section className="relative overflow-hidden">
+        {/* Background with Apple-style gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-black dark:to-gray-900"></div>
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f1f1_1px,transparent_1px),linear-gradient(to_bottom,#f1f1f1_1px,transparent_1px)] bg-[size:6rem_4rem] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] opacity-20"></div>
+        
+        <div className="relative max-w-6xl mx-auto px-6 py-32">
+          <div className="text-center">
+            {/* Apple-style overline */}
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800/30 mb-8">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Transform Your Future</span>
             </div>
-            <p style={{ color: '#374151', fontStyle: 'italic', marginBottom: '1rem' }}>
-              "Great platform for contractors like me. Professional, reliable, and secure payments."
+
+            {/* TypeWriter Enhanced Headline */}
+            <div className="mb-8">
+              <h2 className="text-6xl md:text-7xl font-thin text-gray-900 dark:text-white mb-2 tracking-tight">
+                Ready to
+              </h2>
+              <TypewriterTitle
+                sequences={[
+                  { text: "transform your career", deleteAfter: true, pauseAfter: 2000 },
+                  { text: "unlock new opportunities", deleteAfter: true, pauseAfter: 2000 },
+                  { text: "build your future", deleteAfter: true, pauseAfter: 2000 },
+                  { text: "start earning more", deleteAfter: false, pauseAfter: 3000 }
+                ]}
+                typingSpeed={80}
+                startDelay={1000}
+                autoLoop={true}
+                loopDelay={3000}
+              />
+            </div>
+
+            {/* Apple-style subtitle */}
+            <p className="text-xl md:text-2xl font-light text-gray-600 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed mb-12">
+              Join over <span className="font-medium text-gray-900 dark:text-white">10,000+ skilled workers</span> who have already discovered better opportunities and secured their financial future with RozgaarSetu.
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ 
-                width: '2.5rem', 
-                height: '2.5rem', 
-                backgroundColor: '#7c3aed', 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center'
-              }}>
-                <span style={{ color: 'white', fontWeight: '600' }}>A</span>
-              </div>
-              <div>
-                <p style={{ color: '#111827', fontWeight: '500' }}>Amit Singh</p>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Plumber</p>
-              </div>
+
+            {/* Apple-style CTA buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+              <a 
+                href="/onboarding"
+                className="group relative inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 no-underline border-none cursor-pointer min-w-[200px]"
+              >
+                <span className="relative z-10">Start Your Journey</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </a>
+              
+              <button className="group relative inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-gray-500/10 cursor-pointer min-w-[200px]">
+                <span className="relative z-10">Learn More</span>
+                <div className="absolute inset-0 bg-gray-50 dark:bg-gray-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </button>
             </div>
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section style={{ maxWidth: '64rem', margin: '0 auto', padding: '5rem 1.5rem', textAlign: 'center' }}>
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: '300', color: '#111827', marginBottom: '1rem' }}>
-            Ready to transform your career?
-          </h2>
-          <p style={{ fontSize: '1.25rem', color: '#374151', maxWidth: '32rem', margin: '0 auto' }}>
-            Join thousands of workers already using RozgaarSetu to find better opportunities and secure their future.
-          </p>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', justifyContent: 'center', paddingTop: '1rem' }}>
-          <a 
-            href="/onboarding"
-            style={{
-              backgroundColor: '#2563eb',
-              color: 'white',
-              padding: '1rem 3rem',
-              borderRadius: '9999px',
-              fontSize: '1.125rem',
-              fontWeight: '500',
-              textDecoration: 'none',
-              display: 'inline-block',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+      
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0 }}
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 group inline-flex items-center justify-center w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 ease-out hover:scale-110"
+          aria-label="Scroll to top"
+        >
+          <svg 
+            className="w-5 h-5 transform group-hover:-translate-y-0.5 transition-transform duration-200" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
           >
-            Start Today
-          </a>
-          <button
-            style={{
-              backgroundColor: 'transparent',
-              color: '#374151',
-              padding: '1rem 3rem',
-              borderRadius: '9999px',
-              fontSize: '1.125rem',
-              fontWeight: '500',
-              border: '2px solid #d1d5db',
-              cursor: 'pointer'
-            }}
-          >
-            Contact Sales
-          </button>
-        </div>
-      </section>
-    </main>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+        </motion.button>
+      )}
+      
+      <StickyFooter />
+    </div>
   );
 }

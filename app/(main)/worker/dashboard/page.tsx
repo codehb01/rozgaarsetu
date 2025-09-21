@@ -1,10 +1,90 @@
-import Link from "next/link";
-import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+"use client";
 
-export default async function WorkerDashboardPage() {
-  const { userId } = await auth();
-  if (!userId) {
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { DashboardSkeleton } from "@/components/ui/dashboard-skeleton";
+// import prisma from "@/lib/prisma";
+// import { auth } from "@clerk/nextjs/server";
+
+export default function WorkerDashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [worker, setWorker] = useState<any>(null);
+  const [stats, setStats] = useState<any>({});
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1800));
+        
+        // Mock worker data
+        const mockWorker = {
+          id: "1",
+          name: "John Worker",
+          role: "WORKER",
+          workerProfile: {
+            skilledIn: ["plumber", "electrician"],
+            city: "Mumbai",
+            yearsExperience: 5,
+            profilePic: null
+          }
+        };
+        
+        const mockStats = {
+          totalJobs: 15,
+          completedJobs: 12,
+          pendingJobs: 3,
+          totalEarnings: 25000,
+          recentJobs: [
+            {
+              id: "1",
+              title: "Bathroom Repair",
+              customer: { name: "Priya Sharma" },
+              charge: 2500,
+              status: "COMPLETED",
+              createdAt: new Date().toISOString()
+            },
+            {
+              id: "2", 
+              title: "Kitchen Plumbing",
+              customer: { name: "Raj Patel" },
+              charge: 1800,
+              status: "PENDING",
+              createdAt: new Date().toISOString()
+            },
+            {
+              id: "3",
+              title: "Water Tank Installation",
+              customer: { name: "Amit Kumar" },
+              charge: 3500,
+              status: "COMPLETED",
+              createdAt: new Date().toISOString()
+            }
+          ]
+        };
+        
+        setWorker(mockWorker);
+        setStats(mockStats);
+      } catch (error) {
+        console.error("Error loading dashboard:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '2rem 0' }}>
+        <DashboardSkeleton />
+      </main>
+    );
+  }
+
+  if (!worker) {
     return (
       <main style={{ minHeight: '100vh', backgroundColor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: '#6b7280' }}>
@@ -14,47 +94,11 @@ export default async function WorkerDashboardPage() {
     );
   }
 
-  const worker = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-    include: { workerProfile: true },
-  });
-
-  if (!worker || worker.role !== "WORKER") {
-    return (
-      <main style={{ minHeight: '100vh', backgroundColor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#6b7280' }}>Worker access required.</div>
-      </main>
-    );
-  }
-
-  // Fetch job statistics
-  const [totalJobs, pendingJobs, completedJobs, recentJobs] = await Promise.all([
-    prisma.job.count({ where: { workerId: worker.id } }),
-    prisma.job.count({ where: { workerId: worker.id, status: "PENDING" } }),
-    prisma.job.count({ where: { workerId: worker.id, status: "COMPLETED" } }),
-    prisma.job.findMany({
-      where: { workerId: worker.id },
-      include: { customer: { select: { name: true } } },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    }),
-  ]);
-
-  // Calculate total earnings from completed jobs
-  const completedJobsWithEarnings = await prisma.job.findMany({
-    where: { workerId: worker.id, status: "COMPLETED" },
-    select: { charge: true },
-  });
-  const totalEarnings = completedJobsWithEarnings.reduce((sum, job) => sum + job.charge, 0);
-  const acceptedJobs = await prisma.job.count({
-    where: { workerId: worker.id, status: "ACCEPTED" },
-  });
-
-  const stats = [
-    { title: "Total Jobs", value: totalJobs.toString(), emoji: "💼", color: "#2563eb" },
-    { title: "Pending Requests", value: pendingJobs.toString(), emoji: "⏳", color: "#f59e0b" },
-    { title: "Active Jobs", value: acceptedJobs.toString(), emoji: "📈", color: "#059669" },
-    { title: "Completed Jobs", value: completedJobs.toString(), emoji: "✅", color: "#22c55e" },
+  const dashboardStats = [
+    { title: "Total Jobs", value: stats.totalJobs?.toString() || "0", emoji: "💼", color: "#2563eb" },
+    { title: "Pending Requests", value: stats.pendingJobs?.toString() || "0", emoji: "⏳", color: "#f59e0b" },
+    { title: "Completed Jobs", value: stats.completedJobs?.toString() || "0", emoji: "✅", color: "#22c55e" },
+    { title: "Total Earnings", value: `₹${stats.totalEarnings?.toLocaleString() || "0"}`, emoji: "💰", color: "#059669" },
   ];
 
   const quickActions = [
@@ -89,7 +133,7 @@ export default async function WorkerDashboardPage() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-          {stats.map(({ title, value, emoji, color }) => (
+          {dashboardStats.map(({ title, value, emoji, color }: { title: string; value: string; emoji: string; color: string }) => (
             <div key={title} style={{
               backgroundColor: 'white',
               border: '1px solid #e5e7eb',
@@ -121,10 +165,10 @@ export default async function WorkerDashboardPage() {
                 Total Earnings
               </h3>
               <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#059669' }}>
-                ₹{totalEarnings.toFixed(2)}
+                ₹{stats.totalEarnings?.toFixed(2) || "0.00"}
               </p>
               <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                From {completedJobs} completed jobs
+                From {stats.completedJobs || 0} completed jobs
               </p>
             </div>
             <div style={{ fontSize: '3rem' }}>💰</div>
@@ -197,7 +241,7 @@ export default async function WorkerDashboardPage() {
           </Link>
         </div>
 
-        {recentJobs.length === 0 ? (
+        {(stats.recentJobs || []).length === 0 ? (
           <div style={{
             backgroundColor: 'white',
             border: '1px solid #e5e7eb',
@@ -212,7 +256,7 @@ export default async function WorkerDashboardPage() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {recentJobs.map((job) => (
+            {(stats.recentJobs || []).map((job: any) => (
               <div
                 key={job.id}
                 style={{
@@ -225,19 +269,16 @@ export default async function WorkerDashboardPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '1rem', flexWrap: 'wrap' }}>
                   <div style={{ flex: 1 }}>
                     <h3 style={{ color: '#111827', fontWeight: '600', fontSize: '1.125rem', marginBottom: '0.25rem' }}>
-                      {job.description}
+                      {job.title || job.description || "Job Title"}
                     </h3>
                     <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
                       Customer: {job.customer?.name ?? "Unknown"}
                     </p>
                     <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                      📅 {new Date(job.time).toLocaleDateString()} at {new Date(job.time).toLocaleTimeString()}
-                    </p>
-                    <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
-                      📍 {job.location}
+                      📅 {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "Date not available"}
                     </p>
                     <p style={{ color: '#059669', fontWeight: '600' }}>
-                      ₹{job.charge.toFixed(2)}
+                      ₹{(job.charge || 0).toLocaleString()}
                     </p>
                     {job.details && (
                       <p style={{ color: '#374151', fontSize: '0.875rem', marginTop: '0.5rem', fontStyle: 'italic' }}>

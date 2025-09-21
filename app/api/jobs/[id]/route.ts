@@ -4,9 +4,10 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function PATCH(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { userId } = await auth();
     if (!userId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,7 +21,7 @@ export async function PATCH(
         { status: 403 }
       );
 
-    const job = await prisma.job.findUnique({ where: { id: params.id } });
+    const job = await prisma.job.findUnique({ where: { id } });
     if (!job || job.workerId !== worker.id)
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
 
