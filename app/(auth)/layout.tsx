@@ -1,7 +1,17 @@
 import { ReactNode } from "react";
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
-  return <div className="flex justify-center pt-40">{children}</div>;
+  return (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      paddingTop: '10rem',
+      minHeight: '100vh',
+      backgroundColor: '#f9fafb'
+    }}>
+      {children}
+    </div>
+  );
 };
 
 export default AuthLayout;

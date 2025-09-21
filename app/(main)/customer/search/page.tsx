@@ -2,11 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import BookWorkerButton from "@/components/book-worker-button";
 
 type Worker = {
   id: string;
@@ -92,45 +88,65 @@ export default function CustomerSearchPage() {
   };
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
-      <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-light text-white">
+    <main style={{ minHeight: 'calc(100vh - 4rem)', backgroundColor: '#f9fafb', padding: '2.5rem 0' }}>
+      <section style={{ maxWidth: '72rem', margin: '0 auto', padding: '0 1.5rem' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h1 style={{ fontSize: '2.25rem', fontWeight: '300', color: '#111827', marginBottom: '0.5rem' }}>
             Search Workers
           </h1>
-          <p className="text-gray-400 mt-2">
+          <p style={{ color: '#6b7280' }}>
             Find skilled professionals by keyword or category.
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="flex gap-3 mb-4">
-          <Input
+        <form onSubmit={onSubmit} style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
+          <input
+            type="text"
             placeholder="Search e.g. plumber, electrician, carpenter"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
+            style={{
+              flex: 1,
+              padding: '0.75rem',
+              border: '1px solid #d1d5db',
+              borderRadius: '0.375rem',
+              fontSize: '1rem'
+            }}
           />
-          <Button
+          <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-500 text-white"
+            style={{
+              backgroundColor: '#2563eb',
+              color: 'white',
+              padding: '0.75rem 1.5rem',
+              border: 'none',
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              fontWeight: '500'
+            }}
           >
             Search
-          </Button>
+          </button>
         </form>
 
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div style={{ marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
           {CATEGORIES.map((c) => {
             const active = c === category;
             return (
               <button
                 key={c}
                 onClick={() => onBadgeClick(c)}
-                className={
-                  "px-3 py-1 rounded-full text-sm border transition-colors " +
-                  (active
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700")
-                }
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '9999px',
+                  fontSize: '0.875rem',
+                  border: '1px solid',
+                  cursor: 'pointer',
+                  backgroundColor: active ? '#2563eb' : 'white',
+                  color: active ? 'white' : '#374151',
+                  borderColor: active ? '#2563eb' : '#d1d5db'
+                }}
               >
                 {c}
               </button>
@@ -139,48 +155,90 @@ export default function CustomerSearchPage() {
         </div>
 
         {loading ? (
-          <div className="text-gray-400">Loading…</div>
+          <div style={{ color: '#6b7280', padding: '2rem', textAlign: 'center' }}>Loading…</div>
         ) : workers.length === 0 ? (
-          <div className="text-gray-400">No matching workers found.</div>
+          <div style={{ color: '#6b7280', padding: '2rem', textAlign: 'center' }}>No matching workers found.</div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div style={{ 
+            display: 'grid', 
+            gap: '1.5rem',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))'
+          }}>
             {workers.map((w) => (
-              <Card key={w.id} className="border-gray-800 bg-gray-800/50 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-full bg-gray-700 overflow-hidden" />
-                  <div>
-                    <div className="text-white font-medium">
+              <div 
+                key={w.id} 
+                style={{
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '0.5rem',
+                  padding: '1.5rem'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'start', gap: '1rem' }}>
+                  <div style={{
+                    width: '3rem',
+                    height: '3rem',
+                    borderRadius: '50%',
+                    backgroundColor: '#2563eb',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: '1.125rem',
+                    fontWeight: '600'
+                  }}>
+                    {(w.name ?? "U").charAt(0).toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#111827', fontWeight: '500', fontSize: '1.125rem', marginBottom: '0.25rem' }}>
                       {w.name ?? "Unnamed Worker"}
                     </div>
-                    <div className="text-sm text-gray-400">
+                    <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
                       {w.workerProfile?.qualification || "—"} •{" "}
-                      {w.workerProfile?.yearsExperience ?? 0} yrs exp
+                      {w.workerProfile?.yearsExperience ?? 0} years experience
                     </div>
-                    <div className="mt-1 text-sm text-gray-400">
-                      {w.workerProfile?.city || "City"} •{" "}
-                      {(w.workerProfile?.availableAreas || [])
-                        .slice(0, 2)
-                        .join(", ")}
+                    <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>
+                      📍 {w.workerProfile?.city || "City"} 
+                      {(w.workerProfile?.availableAreas || []).length > 0 && (
+                        <span> • {(w.workerProfile?.availableAreas || []).slice(0, 2).join(", ")}</span>
+                      )}
                     </div>
-                    <div className="mt-2 text-xs text-gray-300">
-                      {(w.workerProfile?.skilledIn || [])
-                        .slice(0, 4)
-                        .join(" • ")}
+                    <div style={{ fontSize: '0.75rem', color: '#374151', marginBottom: '1rem' }}>
+                      Skills: {(w.workerProfile?.skilledIn || []).slice(0, 4).join(" • ") || "No skills listed"}
                     </div>
-                    <div className="mt-4 flex gap-2">
-                      <Link href={`/workers/${w.id}`}>
-                        <Button
-                          variant="secondary"
-                          className="bg-gray-700 text-white hover:bg-gray-600"
-                        >
-                          View
-                        </Button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <Link 
+                        href={`/workers/${w.id}`}
+                        style={{
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '0.375rem',
+                          textDecoration: 'none',
+                          fontSize: '0.875rem',
+                          fontWeight: '500'
+                        }}
+                      >
+                        View Profile
                       </Link>
-                      <BookWorkerButton workerId={w.id} />
+                      <Link 
+                        href={`/customer/booking?worker=${w.id}`}
+                        style={{
+                          backgroundColor: '#2563eb',
+                          color: 'white',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '0.375rem',
+                          textDecoration: 'none',
+                          fontSize: '0.875rem',
+                          fontWeight: '500'
+                        }}
+                      >
+                        Book Worker
+                      </Link>
                     </div>
                   </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
