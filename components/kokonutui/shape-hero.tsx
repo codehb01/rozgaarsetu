@@ -10,7 +10,7 @@
  * @github: https://github.com/kokonut-labs/kokonutui
  */
 
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { Pacifico } from "next/font/google";
 import { cn } from "@/lib/utils";
 
