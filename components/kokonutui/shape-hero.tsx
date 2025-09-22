@@ -94,9 +94,11 @@ function ElegantShape({
 export default function ShapeHero({
     title1 = "Elevate Your",
     title2 = "Digital Vision",
+    subtitle = "The modern platform connecting blue-collar workers with opportunities.",
 }: {
     title1?: string;
     title2?: string;
+    subtitle?: string;
 }) {
     const fadeUpVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -112,7 +114,7 @@ export default function ShapeHero({
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-[#030303]">
+        <div className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-[#030303] -mt-24">
             <div className="absolute inset-0 bg-linear-to-br from-indigo-500/[0.02] via-transparent to-rose-500/[0.02] dark:from-indigo-500/[0.05] dark:via-transparent dark:to-rose-500/[0.05] blur-3xl" />
 
             <div className="absolute inset-0 overflow-hidden">
@@ -235,9 +237,27 @@ export default function ShapeHero({
                         initial="hidden"
                         animate="visible"
                     >
-                        <p className="text-base sm:text-lg md:text-xl text-black/40 dark:text-white/40 mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
-                            UI Components built with Tailwind CSS.
+                        <p className="text-base sm:text-lg md:text-xl text-black/60 dark:text-white/60 mb-8 leading-relaxed font-normal tracking-wide max-w-2xl mx-auto px-4">
+                            {subtitle}
                         </p>
+                    </motion.div>
+                    
+                    <motion.div
+                        custom={3}
+                        variants={fadeUpVariants as any}
+                        initial="hidden"
+                        animate="visible"
+                        className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto"
+                    >
+                        <a 
+                            href="/onboarding"
+                            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3.5 rounded-full text-base font-semibold transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+                        >
+                            Get Started
+                        </a>
+                        <button className="w-full sm:w-auto bg-transparent text-blue-600 dark:text-blue-400 px-8 py-3.5 rounded-full text-base font-semibold border-2 border-blue-600/20 dark:border-blue-400/20 hover:border-blue-600/40 dark:hover:border-blue-400/40 hover:bg-blue-600/5 dark:hover:bg-blue-400/5 transition-all duration-200">
+                            Learn More
+                        </button>
                     </motion.div>
                 </div>
             </div>

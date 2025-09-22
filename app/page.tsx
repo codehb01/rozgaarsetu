@@ -16,6 +16,7 @@ import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Skeleton } from "@/components/ui/skeleton";
+import ShapeHero from "@/components/kokonutui/shape-hero";
 
 export default function Home() {
   const [isStatsLoading, setIsStatsLoading] = useState(true);
@@ -59,101 +60,12 @@ export default function Home() {
 
   return (
     <div className="bg-background text-foreground">
-      {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 sm:pt-12 sm:pb-32 text-center">
-        {/* Subtle background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-gray-950 -z-10"></div>
-        
-        {/* Main heading with Apple-style spacing */}
-        <div className="space-y-8">
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-gray-900 dark:text-white">
-            Connect. Work.{' '}
-            <AuroraText 
-              className="font-bold"
-              colors={["#3B82F6", "#8B5CF6", "#06B6D4", "#10B981"]}
-              speed={1.5}
-            >
-              Grow.
-            </AuroraText>
-          </h1>
-          
-          {/* Subtitle with perfect Apple spacing */}
-          <div className="max-w-3xl mx-auto space-y-4">
-            <div className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 font-normal leading-relaxed">
-              <TextGenerateEffect 
-                words="The modern platform connecting blue-collar workers with opportunities."
-                className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 font-normal leading-relaxed"
-              />
-            </div>
-            <div className="text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium">
-              <FlipWords 
-                words={["Simple, secure, and location-smart.", "Fast, reliable, and worker-focused.", "Trusted, efficient, and growth-driven.", "Modern, transparent, and opportunity-rich."]}
-                duration={3000}
-                className="text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Buttons with Apple-style design */}
-        <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
-          <a 
-            href="/onboarding"
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3.5 rounded-full text-base font-semibold transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
-          >
-            Get Started
-          </a>
-          <button className="w-full sm:w-auto bg-transparent text-blue-600 dark:text-blue-400 px-8 py-3.5 rounded-full text-base font-semibold border-2 border-blue-600/20 dark:border-blue-400/20 hover:border-blue-600/40 dark:hover:border-blue-400/40 hover:bg-blue-600/5 dark:hover:bg-blue-400/5 transition-all duration-200">
-            Learn More
-          </button>
-        </div>
-
-        {/* Stats with minimal Apple-style cards */}
-        <div className="mt-20 sm:mt-24">
-          {isStatsLoading ? (
-            <StatsSkeleton />
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
-              <div className="space-y-2">
-                <div className="text-3xl sm:text-4xl font-semibold text-blue-600 dark:text-blue-400 tracking-tight">
-                  <NumberTicker 
-                    value={10000} 
-                    delay={0}
-                    className="font-semibold"
-                  />+
-                </div>
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Active Workers
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-3xl sm:text-4xl font-semibold text-green-600 dark:text-green-400 tracking-tight">
-                  <NumberTicker 
-                    value={5000} 
-                    delay={0.2}
-                    className="font-semibold"
-                  />+
-                </div>
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Jobs Completed
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="text-3xl sm:text-4xl font-semibold text-purple-600 dark:text-purple-400 tracking-tight">
-                  <NumberTicker 
-                    value={95} 
-                    delay={0.4}
-                    className="font-semibold"
-                  />%
-                </div>
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Success Rate
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+      {/* Hero Section with ShapeHero */}
+      <ShapeHero 
+        title1="Connect. Work."
+        title2="Grow."
+        subtitle="The modern platform connecting blue-collar workers with opportunities."
+      />
 
       {/* Features Section */}
       <section className="max-w-6xl mx-auto px-6 py-20">

@@ -13,7 +13,9 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
+import { LanguageSelectionDrawer } from "@/components/language-selection-drawer";
 
 const navItems = [
   { name: "Home", link: "/" },
@@ -24,12 +26,30 @@ const navItems = [
 
 export function ResizableNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLanguageDrawerOpen, setIsLanguageDrawerOpen] = useState(false);
   const { theme, setTheme, systemTheme } = useTheme();
+  const { language } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   const currentTheme = theme === "system" ? systemTheme : theme;
+
+  const getLanguageFlag = (lang: string) => {
+    switch (lang) {
+      case 'hi': return '🇮🇳';
+      case 'mr': return '🇮🇳';
+      default: return '🇺🇸';
+    }
+  };
+
+  const getLanguageLabel = (lang: string) => {
+    switch (lang) {
+      case 'hi': return 'हिंदी';
+      case 'mr': return 'मराठी';
+      default: return 'English';
+    }
+  };
 
   return (
     <Navbar className="fixed top-0 inset-x-0 z-50">
@@ -68,6 +88,23 @@ export function ResizableNavbar() {
                 className="absolute h-5 w-5 text-blue-400 rotate-90 scale-0 transition-all duration-300 ease-out group-hover:scale-110 group-active:scale-95 dark:rotate-0 dark:scale-100"
               />
               <span className="sr-only">Toggle dark mode</span>
+            </button>
+          )}
+
+          {/* Language toggle */}
+          {mounted && (
+            <button
+              aria-label="Change language"
+              className="relative px-3 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 backdrop-blur hover:shadow-md transition-all flex items-center justify-center group hover:scale-105 active:scale-95"
+              onClick={() => setIsLanguageDrawerOpen(true)}
+            >
+              <div className="flex items-center space-x-1.5">
+                <span className="text-sm">{getLanguageFlag(language)}</span>
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-black dark:group-hover:text-white transition-colors">
+                  {getLanguageLabel(language)}
+                </span>
+              </div>
+              <span className="sr-only">Change language</span>
             </button>
           )}
 
@@ -131,6 +168,20 @@ export function ResizableNavbar() {
                   <span>Switch to {currentTheme === "dark" ? "Light" : "Dark"} Mode</span>
                 </button>
               )}
+
+              {/* Mobile Language Toggle */}
+              {mounted && (
+                <button
+                  className="flex items-center space-x-3 text-left text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors py-2"
+                  onClick={() => {
+                    setIsLanguageDrawerOpen(true);
+                    setIsOpen(false);
+                  }}
+                >
+                  <Globe className="h-5 w-5 text-blue-500" />
+                  <span>Change Language ({getLanguageFlag(language)} {getLanguageLabel(language)})</span>
+                </button>
+              )}
               
               <SignedOut>
                 <SignInButton>
@@ -154,6 +205,12 @@ export function ResizableNavbar() {
           </div>
         </MobileNavMenu>
       </MobileNav>
+      
+      {/* Language Selection Drawer */}
+      <LanguageSelectionDrawer 
+        isOpen={isLanguageDrawerOpen} 
+        onClose={() => setIsLanguageDrawerOpen(false)} 
+      />
     </Navbar>
   );
 }

@@ -10,7 +10,6 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/ui/drawer';
-import DynamicText from '@/components/kokonutui/dynamic-text';
 import LanguageShowcaseText from '@/components/language-showcase-text';
 
 interface LanguageOption {
@@ -29,35 +28,51 @@ const languages: LanguageOption[] = [
 // Default language if user skips selection
 const DEFAULT_LANGUAGE: Language = 'en';
 
-export function LanguageSelectionDrawer() {
+interface LanguageSelectionDrawerProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function LanguageSelectionDrawer({ 
+  isOpen: externalIsOpen, 
+  onClose: externalOnClose 
+}: LanguageSelectionDrawerProps = {}) {
   const { language, setLanguage, isFirstVisit, markVisited } = useLanguage();
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+
+  // Use external state if provided, otherwise use internal state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsOpen = externalOnClose !== undefined 
+    ? (open: boolean) => !open && externalOnClose() 
+    : setInternalIsOpen;
 
   useEffect(() => {
-    // Show drawer only on first visit
-    if (isFirstVisit) {
+    // Show drawer only on first visit and when not externally controlled
+    if (isFirstVisit && externalIsOpen === undefined) {
       // Small delay for smooth entrance
       const timer = setTimeout(() => {
-        setIsOpen(true);
+        setInternalIsOpen(true);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [isFirstVisit]);
+  }, [isFirstVisit, externalIsOpen]);
 
   // Development keyboard shortcut - Ctrl+L to open language drawer
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.key === 'l') {
         event.preventDefault();
-        setIsOpen(true);
+        if (externalIsOpen === undefined) {
+          setInternalIsOpen(true);
+        }
         console.log('🌍 Language drawer opened via keyboard shortcut (Ctrl+L)');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [externalIsOpen]);
 
   const handleLanguageSelect = (selectedLang: Language) => {
     setLanguage(selectedLang);

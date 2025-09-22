@@ -6,12 +6,6 @@ import { setUserRole } from "@/app/api/actions/onboarding";
 import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { OnboardingSkeleton } from "@/components/ui/dashboard-skeleton";
 
-type OnboardingResponse = {
-  success: boolean;
-  redirect?: string;
-  error?: string;
-};
-
 export default function OnboardingPage() {
   const [step, setStep] = useState<"choose-role" | "worker-form" | "customer-form">("choose-role");
   const [loading, setLoading] = useState(false);

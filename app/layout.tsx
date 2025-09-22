@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { LanguageProvider } from "@/contexts/language-context";
 import { LanguageSelectionDrawer } from "@/components/language-selection-drawer";
 import { ThemeProvider } from "@/components/theme-provider";
