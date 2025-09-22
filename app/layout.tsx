@@ -1,32 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { Inter } from "next/font/google";
+import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import { LanguageProvider } from "@/contexts/language-context";
+import { LanguageSelectionDrawer } from "@/components/language-selection-drawer";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/header";
-import { dark } from "@clerk/themes";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
-import Footer from "@/components/footer";
-import { Toaster } from "sonner";
+
+import { ResizableNavbar } from "@/components/navbar";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "RozgaarSetu",
@@ -39,21 +21,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider appearance={{ theme: dark }}>
+    <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className}`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {/* header */}
-            <Header />
-            <main className="min-h-screen">{children}</main>
-            <Toaster richColors />
-            {/* footer */}
-            <Footer />
+        <body style={{ fontFamily: inter.style.fontFamily }}>
+          <ThemeProvider>
+            <LanguageProvider>
+              <ResizableNavbar />
+              <main style={{ minHeight: '100vh', paddingTop: '6rem' }}>
+                {children}
+              </main>
+
+              <LanguageSelectionDrawer />
+            </LanguageProvider>
           </ThemeProvider>
         </body>
       </html>

@@ -17,5 +17,9 @@
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks"
+  },
+  "registries": {
+    "@magicui": "https://magicui.design/r/{name}.json",
+    "@kokonutui": "https://kokonutui.com/r/{name}.json"
   }
 }

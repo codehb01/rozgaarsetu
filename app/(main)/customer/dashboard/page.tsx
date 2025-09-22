@@ -1,112 +1,281 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import Input from "../../../../components/ui/input";
-import { Button } from "../../../../components/ui/button";
-import WorkerCard from "../../../../components/ui/worker-card";
-import { Card, CardHeader } from "../../../../components/ui/card"; // Ensure Card supports 'variant' prop or remove it below
+import { motion } from "framer-motion";
+import { DashboardSkeleton } from "@/components/ui/dashboard-skeleton";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import ShimmerText from "@/components/kokonutui/shimmer-text";
+import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
+// import prisma from "@/lib/prisma";
 
-export default function CustomerHome() {
-  const bookings = [
-    { id:1, worker:'Ravi Singh', job:'Fan installation', when:'Today 5 PM', status:'Pending' },
-    { id:2, worker:'Neha Joshi', job:'Deep cleaning', when:'Tomorrow 11 AM', status:'Confirmed' },
-  ];
-  const payments = [
-    { id:'pm1', label:'This month', value:'₹5,600' },
-    { id:'pm2', label:'Total spent', value:'₹28,400' },
-    { id:'pm3', label:'Active bookings', value:'3' },
-  ];
-  const reviews = [
-    { id:11, worker:'Sunil Rao', job:'Pipe repair', rating:5 },
-    { id:12, worker:'Imran Khan', job:'Wall painting', rating:4 },
-  ];
+const categories = [
+  { key: "plumber", label: "Plumber", emoji: "🔧" },
+  { key: "electrician", label: "Electrician", emoji: "⚡" },
+  { key: "mechanic", label: "Mechanic", emoji: "🔧" },
+  { key: "carpenter", label: "Carpenter", emoji: "🔨" },
+  { key: "painter", label: "Painter", emoji: "🎨" },
+  { key: "cleaner", label: "Cleaner", emoji: "✨" },
+  { key: "gardener", label: "Gardener", emoji: "🌱" },
+  { key: "driver", label: "Driver", emoji: "🚗" },
+  { key: "ac-technician", label: "AC Technician", emoji: "❄️" },
+];
+
+export default function CustomerDashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [workers, setWorkers] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Simulate loading workers from API
+    const loadWorkers = async () => {
+      try {
+        setIsLoading(true);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Mock worker data
+        const mockWorkers = [
+          {
+            id: "1",
+            name: "Rajesh Kumar",
+            workerProfile: {
+              skilledIn: ["plumber", "electrician"],
+              city: "Mumbai",
+              availableAreas: ["Andheri", "Bandra"],
+              yearsExperience: 5,
+              qualification: "ITI Certificate",
+              profilePic: null,
+              bio: "Experienced plumber and electrician"
+            }
+          },
+          // Add more mock workers as needed
+        ];
+        
+        setWorkers(mockWorkers);
+      } catch (error) {
+        console.error("Error loading workers:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWorkers();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+        {/* Premium Apple-style background gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-purple-50/20 dark:from-blue-950/20 dark:via-transparent dark:to-purple-950/10"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div className="relative z-10 py-12">
+          <DashboardSkeleton />
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <section className="space-y-12">
-      <header className="pt-16 space-y-1">
-  <h2 className="text-[28px] font-semibold tracking-tight">
-    Employer Dashboard
-  </h2>
-  <p className="text-[13px] text-[var(--apple-text-secondary)]">
-    Manage search, bookings & payments
-  </p>
-</header>
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+      {/* Premium Apple-style background gradients */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-purple-50/20 dark:from-blue-950/20 dark:via-transparent dark:to-purple-950/10"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
 
-      <Card className="p-6 space-y-5">
-        <div className="mb-2">
-          <h3 className="text-[16px] font-semibold">Find a worker</h3>
-          <p className="text-[12px] text-[var(--apple-text-secondary)]">Search by skill or job name</p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Input placeholder="e.g., plumber, electrician" className="flex-1" />
-          <Button className="sm:w-auto w-full">Search</Button>
-        </div>
-        <div className="flex gap-2 flex-wrap text-[11px]">
-          {['Plumber','Electrician','Cook','Painter','Cleaner','Carpenter'].map(tag => (
-            <button key={tag} className="px-3 h-8 rounded-full bg-[var(--apple-bg-alt)] text-[var(--apple-text-secondary)] hover:text-[var(--apple-text)] hover:bg-white border border-[var(--apple-border)] text-[11px] font-medium transition-base">{tag}</button>
-          ))}
-        </div>
-      </Card>
+      <div className="relative z-10 py-12">
+        {/* Hero Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-16"
+          >
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight mb-6">
+              <ShimmerText 
+                text="Find Your Perfect Worker"
+                className="text-4xl sm:text-5xl font-bold tracking-tight"
+              />
+            </h1>
+            <div className="max-w-2xl mx-auto">
+              <TextGenerateEffect 
+                words="Connect with skilled professionals in your area. Browse by category or search for specific expertise."
+                className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed"
+                duration={0.6}
+              />
+            </div>
+          </motion.div>
+        </section>
 
-      <div className="grid gap-6 sm:grid-cols-3">
-        {payments.map(p => (
-          <Card key={p.id} className="p-5">
-            <p className="text-[11px] uppercase tracking-wide text-[var(--apple-text-secondary)]">{p.label}</p>
-            <p className="mt-2 text-[26px] font-semibold leading-none text-[var(--apple-text)]">{p.value}</p>
-          </Card>
-        ))}
-      </div>
+        {/* Categories Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="mb-12"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Browse Categories
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Select a category to find skilled professionals
+            </p>
+          </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-10">
-        <Card className="p-6 space-y-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-[16px] font-semibold tracking-tight">Upcoming bookings</h3>
-            <Button variant="ghost" className="!h-8 px-3">New</Button>
-          </div>
-          <div className="space-y-4">
-            {bookings.map(b => (
-              <div key={b.id} className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[13px] font-medium">{b.job}</p>
-                  <p className="text-[11px] text-[var(--apple-text-secondary)] mt-0.5">{b.worker} • {b.when}</p>
-                </div>
-                <span className={`text-[11px] px-2 py-1 rounded-full font-medium ${b.status==='Pending' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{b.status}</span>
-              </div>
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {categories.map(({ key, label, emoji }, index) => (
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 * index, ease: "easeOut" }}
+              >
+                <Link
+                  href={`/customer/search?category=${encodeURIComponent(key)}`}
+                  className="block group"
+                >
+                  <MainMenusGradientCard
+                    title={label}
+                    description={`Professional ${label.toLowerCase()}s ready to help`}
+                    withArrow={true}
+                    circleSize={300}
+                    className="h-32 flex flex-col items-center justify-center"
+                  >
+                    <div className="text-4xl transform group-hover:scale-110 transition-transform duration-200">
+                      {emoji}
+                    </div>
+                  </MainMenusGradientCard>
+                </Link>
+              </motion.div>
             ))}
-          </div>
-        </Card>
+          </motion.div>
+        </section>
 
-        <Card className="p-6 space-y-5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-[16px] font-semibold tracking-tight">Recent reviews</h3>
-            <Button variant="ghost" className="!h-8 px-3">Add</Button>
-          </div>
-          <div className="space-y-4">
-            {reviews.map(r => (
-              <div key={r.id} className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[13px] font-medium">{r.worker}</p>
-                  <p className="text-[11px] text-[var(--apple-text-secondary)] mt-0.5">{r.job}</p>
-                </div>
-                <div className="flex gap-0.5">
-                  {Array.from({length:5}).map((_,i)=>(
-                    <span key={i} className={`text-[var(--apple-accent)] ${i>=r.rating?'opacity-30':''}`}>★</span>
-                  ))}
-                </div>
+        {/* Featured Workers Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6"
+          >
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Featured Professionals
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300">
+                Recently joined skilled workers
+              </p>
+            </div>
+            <Link 
+              href="/customer/search"
+              className="group inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 no-underline border-none cursor-pointer"
+            >
+              <span className="relative z-10">Browse All Workers</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            </Link>
+          </motion.div>
+
+          {workers.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="text-center py-16"
+            >
+              <div className="text-gray-600 dark:text-gray-400 text-xl mb-2">
+                No workers available at the moment
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+              <p className="text-gray-500 dark:text-gray-500 text-base">
+                Check back later for new professionals
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              {workers.map((w, index) => (
+                <motion.div
+                  key={w.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 * index, ease: "easeOut" }}
+                  className="group flex items-center gap-6 p-6 rounded-2xl transition-all duration-200 hover:bg-white/50 dark:hover:bg-gray-900/50 hover:backdrop-blur-xl border border-transparent hover:border-gray-200/50 dark:hover:border-gray-700/50"
+                >
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    {(w.name ?? "U").charAt(0).toUpperCase()}
+                  </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[18px] font-semibold tracking-tight">Popular near you</h3>
-          <Link href="/customer/search" className="text-[12px] font-medium text-[var(--apple-accent)] hover:underline">See all</Link>
-        </div>
-        <div className="grid gap-4">
-          <WorkerCard name="Amit Kumar" skill="Electrician" />
-          <WorkerCard name="Priya Patil" skill="Plumber" />
-          <WorkerCard name="Suresh Yadav" skill="Cleaner" />
-        </div>
+                  <div className="flex-1">
+                    <h3 className="text-gray-900 dark:text-white font-bold text-xl mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                      {w.name ?? "Professional Worker"}
+                    </h3>
+
+                    <div className="flex items-center gap-4 mb-3 text-gray-600 dark:text-gray-400">
+                      <span className="font-medium">
+                        {w.workerProfile?.qualification || "Skilled Professional"}
+                      </span>
+                      <span className="text-gray-400 dark:text-gray-600">•</span>
+                      <span>
+                        {w.workerProfile?.yearsExperience ?? 0}+ years experience
+                      </span>
+                      <span className="text-gray-400 dark:text-gray-600">•</span>
+                      <span className="flex items-center gap-1">
+                        <span>📍</span>
+                        {w.workerProfile?.city || "Location"}
+                      </span>
+                    </div>
+
+                    {w.workerProfile?.skilledIn && w.workerProfile.skilledIn.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {w.workerProfile.skilledIn.slice(0, 4).map((skill: string, index: number) => (
+                          <span
+                            key={index}
+                            className="bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {w.workerProfile.skilledIn.length > 4 && (
+                          <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-sm font-medium">
+                            +{w.workerProfile.skilledIn.length - 4} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Link 
+                      href={`/workers/${w.id}`}
+                      className="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] no-underline"
+                    >
+                      View Profile
+                    </Link>
+                    <Link 
+                      href={`/customer/booking?worker=${w.id}`}
+                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25 no-underline"
+                    >
+                      Book Now
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </section>
       </div>
-    </section>
+    </main>
   );
 }
