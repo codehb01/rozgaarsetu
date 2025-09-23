@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Card } from "../../../../../components/ui/card";
-import { Button } from "../../../../../components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type Booking = { id:number; title:string; worker:string; when:string; status:'Pending'|'Confirmed'|'Completed'|'Cancelled'; price?:number; notes?:string };
 

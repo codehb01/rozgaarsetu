@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import Input from "../../../../../components/ui/input";
-import { Card } from "../../../../../components/ui/card";
-import { Button } from "../../../../../components/ui/button";
-import WorkerCard from "../../../../../components/ui/worker-card";
+import Input from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import WorkerCard from "@/components/ui/worker-card";
 
 export default function CustomerSearch() {
   const [view, setView] = useState<'list'|'map'>('list');

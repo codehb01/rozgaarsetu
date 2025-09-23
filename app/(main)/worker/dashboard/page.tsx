@@ -102,7 +102,7 @@ export default function WorkerDashboardPage() {
   ];
 
   const quickActions = [
-    { title: "Job Requests", description: "View and manage job requests", emoji: "📅", href: "/worker/job" },
+    { title: "Job Requests", description: "View and manage job requests", emoji: "📅", href: "/worker/jobs" },
     { title: "View Profile", description: "See your public profile", emoji: "👁️", href: `/workers/${worker.id}` },
     { title: "Settings", description: "Update your preferences", emoji: "⚙️", href: "/worker/settings" },
   ];
@@ -226,7 +226,7 @@ export default function WorkerDashboardPage() {
             </p>
           </div>
           <Link 
-            href="/worker/job"
+            href="/worker/jobs"
             style={{
               backgroundColor: '#059669',
               color: 'white',

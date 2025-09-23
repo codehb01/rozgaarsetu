@@ -1,6 +1,6 @@
-import Input from "../../../../../components/ui/input";
-import { Card } from "../../../../../components/ui/card";
-import { Button } from "../../../../../components/ui/button";
+import Input from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function CustomerProfile() {
   return (

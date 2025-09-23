@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FloatingDock}  from "../../../../components/ui/floating-dock";
+import { FloatingDock } from "@/components/ui/floating-dock";
 import { IconDashboard, IconCalendarEvent, IconUser } from "@tabler/icons-react";
 
 const tabs = [
