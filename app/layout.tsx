@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { LanguageProvider } from "@/contexts/language-context";
 import { LanguageSelectionDrawer } from "@/components/language-selection-drawer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ClientHeroUIProvider } from "@/components/heroui-provider";
 
 import { ResizableNavbar } from "@/components/navbar";
 
@@ -25,14 +26,16 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body style={{ fontFamily: inter.style.fontFamily }}>
           <ThemeProvider>
-            <LanguageProvider>
-              <ResizableNavbar />
-              <main style={{ minHeight: '100vh', paddingTop: '6rem' }}>
-                {children}
-              </main>
+            <ClientHeroUIProvider>
+              <LanguageProvider>
+                <ResizableNavbar />
+                <main style={{ minHeight: '100vh', paddingTop: '6rem' }}>
+                  {children}
+                </main>
 
-              <LanguageSelectionDrawer />
-            </LanguageProvider>
+                <LanguageSelectionDrawer />
+              </LanguageProvider>
+            </ClientHeroUIProvider>
           </ThemeProvider>
         </body>
       </html>

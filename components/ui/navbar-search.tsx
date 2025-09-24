@@ -1,77 +1,107 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Search, MapPin, TrendingUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Autocomplete, AutocompleteItem } from "@heroui/react";
+import { Search, MapPin, ChevronDown } from "lucide-react";
 
-const TRENDING_SEARCHES = [
-  "Salon",
-  "Professional bathroom cleaning", 
-  "Professional kitchen cleaning",
-  "Full home cleaning",
-  "Washing machine repair",
-  "Massage for men",
-  "Spa luxe",
-  "Carpenters",
-  "Electricians", 
-  "Tv repair"
+const SERVICES = [
+  { key: "plumber", label: "Plumber", description: "Pipe repairs, installations", emoji: "" },
+  { key: "electrician", label: "Electrician", description: "Electrical work, wiring", emoji: "" },
+  { key: "ac-technician", label: "AC Technician", description: "AC repair, maintenance", emoji: "" },
+  { key: "cleaner", label: "House Cleaner", description: "Home cleaning services", emoji: "" },
+  { key: "carpenter", label: "Carpenter", description: "Wood work, furniture", emoji: "" },
+  { key: "painter", label: "Painter", description: "Wall painting, decoration", emoji: "" },
+  { key: "gardener", label: "Gardener", description: "Garden maintenance", emoji: "" },
+  { key: "driver", label: "Driver", description: "Personal driver service", emoji: "" },
 ];
 
-const QUICK_CATEGORIES = [
-  { name: "Women's Salon & Spa", emoji: "💅", category: "salon" },
-  { name: "Men's Salon & Massage", emoji: "💆‍♂️", category: "salon" },
-  { name: "AC & Appliance Repair", emoji: "❄️", category: "ac-technician" },
-  { name: "Cleaning & Pest Control", emoji: "🧹", category: "cleaner" },
-  { name: "Electrician, Plumber & Carpenter", emoji: "🔧", category: "electrician" },
-  { name: "Painting & Water proofing", emoji: "🎨", category: "painter" }
+const LOCATION_OPTIONS = [
+  "Mumbai, Maharashtra",
+  "Delhi, NCR", 
+  "Bangalore, Karnataka",
+  "Hyderabad, Telangana",
+  "Chennai, Tamil Nadu",
+  "Pune, Maharashtra",
+  "Ahmedabad, Gujarat",
+  "Jaipur, Rajasthan"
 ];
 
-interface NavbarSearchProps {
-  placeholder?: string;
-  showLocation?: boolean;
-}
+const PLACEHOLDER_SERVICES = [
+  "plumber...",
+  "electrician...",
+  "cleaner...",
+  "carpenter...",
+  "painter...",
+  "services..."
+];
 
-export default function NavbarSearch({ placeholder = "Search for services", showLocation = true }: NavbarSearchProps) {
-  const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("Dadar, Mumbai");
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+export default function NavbarSearch() {
+  const [selectedService, setSelectedService] = useState("");
+  const [location, setLocation] = useState("Current Location");
   const [isLocationFocused, setIsLocationFocused] = useState(false);
-  const router = useRouter();
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [placeholderText, setPlaceholderText] = useState("");
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+  const locationRef = useRef<HTMLDivElement>(null);
 
-  const handleSearch = (searchQuery: string, category?: string) => {
-    if (!searchQuery.trim()) return;
-    
-    const params = new URLSearchParams();
-    params.set("q", searchQuery.trim());
-    if (category) params.set("category", category);
-    
-    router.push(`/customer/search?${params.toString()}`);
-    setIsSearchFocused(false);
-    setQuery("");
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch(query);
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => setLocation("Current Location"),
+        () => setLocation("Mumbai, Maharashtra")
+      );
     }
-  };
+  }, []);
 
-  const handleTrendingClick = (trend: string) => {
-    setQuery(trend);
-    handleSearch(trend);
-  };
+  // Typewriter effect for placeholder
+  useEffect(() => {
+    let currentText = "";
+    let charIndex = 0;
+    let isDeleting = false;
+    let timeoutId: NodeJS.Timeout;
 
-  const handleCategoryClick = (categoryName: string, category: string) => {
-    handleSearch(categoryName, category);
-  };
+    const typeWriter = () => {
+      const currentService = PLACEHOLDER_SERVICES[currentServiceIndex];
+      
+      if (!isDeleting) {
+        if (charIndex < currentService.length) {
+          currentText = currentService.substring(0, charIndex + 1);
+          charIndex++;
+          setPlaceholderText(currentText);
+          timeoutId = setTimeout(typeWriter, 100);
+        } else {
+          // Pause before deleting
+          timeoutId = setTimeout(() => {
+            isDeleting = true;
+            typeWriter();
+          }, 2000);
+        }
+      } else {
+        if (charIndex > 0) {
+          currentText = currentService.substring(0, charIndex - 1);
+          charIndex--;
+          setPlaceholderText(currentText);
+          timeoutId = setTimeout(typeWriter, 50);
+        } else {
+          // Move to next service
+          isDeleting = false;
+          setCurrentServiceIndex((prev) => (prev + 1) % PLACEHOLDER_SERVICES.length);
+          timeoutId = setTimeout(typeWriter, 500);
+        }
+      }
+    };
 
-  // Close dropdown when clicking outside
+    typeWriter();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [currentServiceIndex]);
+
+  // Close location dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsSearchFocused(false);
+      if (locationRef.current && !locationRef.current.contains(event.target as Node)) {
         setIsLocationFocused(false);
       }
     };
@@ -80,111 +110,123 @@ export default function NavbarSearch({ placeholder = "Search for services", show
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleServiceSelection = (key: string | number | null) => {
+    if (key) {
+      setSelectedService(key.toString());
+      console.log(`Searching for service: ${key} in ${location}`);
+    }
+  };
+
   return (
-    <div ref={searchRef} className="relative w-full">
-      <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-        {/* Location Section */}
-        {showLocation && (
-          <>
-            <div className="relative">
-              <button
-                onClick={() => setIsLocationFocused(!isLocationFocused)}
-                className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-l-lg transition-colors duration-200 border-r border-gray-200 dark:border-gray-700"
-              >
-                <MapPin className="w-4 h-4 text-gray-500" />
-                <span className="text-sm font-medium truncate max-w-32">{location}</span>
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+    <div className="flex items-center gap-4">
+      <div ref={locationRef} className="relative">
+        <button
+          onClick={() => setIsLocationFocused(!isLocationFocused)}
+          className="flex items-center gap-2 px-3 py-2.5 bg-gray-100 dark:bg-neutral-800 border-0 rounded-full hover:bg-gray-200 dark:hover:bg-neutral-700 transition-all duration-200 text-sm"
+        >
+          <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <span className="font-medium text-gray-900 dark:text-white truncate max-w-32">
+            {location}
+          </span>
+          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isLocationFocused ? "rotate-180" : ""}`} />
+        </button>
 
-              <AnimatePresence>
-                {isLocationFocused && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50"
+        <AnimatePresence>
+          {isLocationFocused && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto"
+            >
+              <div className="p-3">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Select Location
+                </h3>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => {
+                      setLocation("Current Location");
+                      setIsLocationFocused(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-150 font-medium"
                   >
-                    <div className="p-4">
-                      <input
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="Enter your location"
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </>
-        )}
-
-        {/* Search Section */}
-        <div className="flex-1 relative">
-          <div className="flex items-center">
-            <Search className="w-5 h-5 text-gray-400 ml-4" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              onKeyPress={handleKeyPress}
-              placeholder={placeholder}
-              className="w-full px-3 py-3 text-gray-700 dark:text-gray-300 placeholder-gray-400 bg-transparent focus:outline-none"
-            />
-          </div>
-
-          {/* Search Dropdown */}
-          <AnimatePresence>
-            {isSearchFocused && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto"
-              >
-                {/* Trending Searches */}
-                <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Trending searches</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {TRENDING_SEARCHES.map((trend, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleTrendingClick(trend)}
-                        className="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors duration-200"
-                      >
-                        {trend}
-                      </button>
-                    ))}
-                  </div>
+                     Use Current Location
+                  </button>
+                  {LOCATION_OPTIONS.map((loc) => (
+                    <button
+                      key={loc}
+                      onClick={() => {
+                        setLocation(loc);
+                        setIsLocationFocused(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-150"
+                    >
+                      {loc}
+                    </button>
+                  ))}
                 </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-                {/* Quick Categories */}
-                <div className="p-4">
-                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">What are you looking for?</h4>
-                  <div className="space-y-2">
-                    {QUICK_CATEGORIES.map((cat, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleCategoryClick(cat.name, cat.category)}
-                        className="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-                      >
-                        <span className="text-2xl">{cat.emoji}</span>
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{cat.name}</span>
-                      </button>
-                    ))}
-                  </div>
+      <div className="flex-1 max-w-md">
+        <Autocomplete
+          variant="flat"
+          radius="full"
+          size="md"
+          placeholder={`Search for ${placeholderText || "services..."}`}
+          selectedKey={selectedService}
+          onSelectionChange={handleServiceSelection}
+          startContent={<Search className="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />}
+          inputProps={{
+            classNames: {
+              input: "text-sm text-gray-900 dark:text-white ml-1",
+              inputWrapper: "bg-gray-100 dark:bg-neutral-800 border-0 hover:bg-gray-200 dark:hover:bg-neutral-700 data-[hover=true]:bg-gray-200 dark:data-[hover=true]:bg-neutral-700 shadow-none outline-none focus:outline-none data-[focus=true]:outline-none data-[focus=true]:ring-0 data-[focus=true]:border-0 data-[focus-visible=true]:outline-none data-[focus-visible=true]:ring-0"
+            }
+          }}
+          popoverProps={{
+            classNames: {
+              base: "rounded-xl shadow-xl",
+              content: "bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl p-0"
+            }
+          }}
+          listboxProps={{
+            classNames: {
+              base: "bg-white dark:bg-neutral-800 rounded-xl",
+              list: "bg-white dark:bg-neutral-800 rounded-xl"
+            },
+            emptyContent: "No services found matching your search."
+          }}
+          classNames={{
+            base: "w-full border-0 outline-none shadow-none data-[focus=true]:outline-none data-[focus=true]:ring-0 data-[focus-visible=true]:outline-none",
+            listboxWrapper: "max-h-72 bg-white dark:bg-neutral-800 rounded-xl shadow-xl",
+            popoverContent: "bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl shadow-xl"
+          }}
+        >
+          {SERVICES.map((service) => (
+            <AutocompleteItem 
+              key={service.key} 
+              textValue={service.label}
+              classNames={{
+                base: "bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 data-[hover=true]:bg-gray-50 dark:data-[hover=true]:bg-neutral-700 data-[selected=true]:bg-blue-50 dark:data-[selected=true]:bg-blue-900/20",
+                title: "text-gray-900 dark:text-white font-medium",
+                description: "text-gray-500 dark:text-gray-400"
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{service.emoji}</span>
+                <div>
+                  <div className="font-medium text-gray-900 dark:text-white">{service.label}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{service.description}</div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div>
+            </AutocompleteItem>
+          ))}
+        </Autocomplete>
       </div>
     </div>
   );

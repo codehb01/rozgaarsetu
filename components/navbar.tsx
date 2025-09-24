@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
 import { Sun, Moon, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { LanguageSelectionDrawer } from "@/components/language-selection-drawer";
@@ -31,6 +32,7 @@ export function ResizableNavbar() {
   const { theme, setTheme, systemTheme } = useTheme();
   const { language } = useLanguage();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => setMounted(true), []);
 
@@ -52,6 +54,9 @@ export function ResizableNavbar() {
     }
   };
 
+  // Check if we should show search bar (only on customer pages when signed in)
+  const shouldShowSearch = pathname?.startsWith('/customer') && mounted;
+
   return (
     <Navbar className="fixed top-0 inset-x-0 z-50">
       <NavBody>
@@ -68,13 +73,32 @@ export function ResizableNavbar() {
           </a>
         </div>
 
-        {/* Search Bar - Urban Company Style */}
-        <div className="hidden md:block flex-1 max-w-2xl">
-          <NavbarSearch placeholder="Search for services" showLocation={true} />
-        </div>
+        {/* Search Bar - Only on customer pages when signed in */}
+        <SignedIn>
+          {shouldShowSearch && (
+            <div className="hidden md:block flex-1 max-w-2xl ml-6">
+              <NavbarSearch />
+            </div>
+          )}
+        </SignedIn>
+
+        {/* Navigation Items - Show on non-customer pages */}
+        {!shouldShowSearch && (
+          <div className="hidden md:flex items-center space-x-6">
+            {navItems.map((item, idx) => (
+              <a
+                key={idx}
+                href={item.link}
+                className="relative text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors"
+              >
+                {item.name}
+              </a>
+            ))}
+          </div>
+        )}
 
         {/* Theme Toggle + Authentication Buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 ml-6">
           {/* Theme toggle */}
           {mounted && (
             <button
@@ -156,12 +180,17 @@ export function ResizableNavbar() {
 
         <MobileNavMenu isOpen={isOpen} onClose={() => setIsOpen(false)}>
           <div className="flex flex-col space-y-4">
-            {/* Mobile Search */}
-            <div className="md:hidden">
-              <NavbarSearch placeholder="Search for services" showLocation={true} />
-            </div>
+            {/* Mobile Search - Only on customer pages when signed in */}
+            <SignedIn>
+              {shouldShowSearch && (
+                <div className="md:hidden">
+                  <NavbarSearch />
+                </div>
+              )}
+            </SignedIn>
             
-            {navItems.map((item, idx) => (
+            {/* Show navigation items on non-customer pages */}
+            {!shouldShowSearch && navItems.map((item, idx) => (
               <a
                 key={idx}
                 href={item.link}
