@@ -5,21 +5,15 @@ import { motion } from 'framer-motion';
 import StickyFooter from "@/components/sticky-footer";
 import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { cn } from "@/lib/utils";
-import { NumberTicker } from "@/components/ui/number-ticker";
-import { AuroraText } from "@/components/ui/aurora-text";
-import { StatsSkeleton } from "@/components/ui/dashboard-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import ShapeHero from "@/components/kokonutui/shape-hero";
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 import ScrollText from "@/components/kokonutui/scroll-text";
 import TypewriterTitle from "@/components/kokonutui/type-writer";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
-import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
-import { FlipWords } from "@/components/ui/flip-words";
-import { Skeleton } from "@/components/ui/skeleton";
-import ShapeHero from "@/components/kokonutui/shape-hero";
 
 export default function Home() {
-  const [isStatsLoading, setIsStatsLoading] = useState(true);
   const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -35,7 +29,6 @@ export default function Home() {
     requestAnimationFrame(raf)
 
     // Simulate loading states
-    const statsTimer = setTimeout(() => setIsStatsLoading(false), 1500);
     const featuresTimer = setTimeout(() => setIsFeaturesLoading(false), 2000);
 
     // Scroll to top button visibility
@@ -48,7 +41,6 @@ export default function Home() {
 
     return () => {
       lenis.destroy()
-      clearTimeout(statsTimer);
       clearTimeout(featuresTimer);
       window.removeEventListener('scroll', handleScroll);
     }
@@ -154,7 +146,7 @@ export default function Home() {
             <MainMenusGradientCard
               title="Find Work"
               description="Discover opportunities that match your skills and location preferences with our smart matching system."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -171,7 +163,7 @@ export default function Home() {
             <MainMenusGradientCard
               title="Get Paid"
               description="Secure payments delivered instantly with multiple payment options and transparent pricing."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -188,7 +180,7 @@ export default function Home() {
             <MainMenusGradientCard
               title="Nearby Connections"
               description="Connect with workers in your area for quick and efficient hiring with location-based matching."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -205,7 +197,7 @@ export default function Home() {
             <MainMenusGradientCard
               title="Smart Search"
               description="Advanced location-based matching with AI-powered recommendations for perfect job matches."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -222,7 +214,7 @@ export default function Home() {
             <MainMenusGradientCard
               title="Verified Profiles"
               description="Work with trusted professionals. Profiles are verified for identity and skills."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -239,7 +231,7 @@ export default function Home() {
             <MainMenusGradientCard
               title="Trust & Safety"
               description="Ratings, reviews, and dispute support ensure a safe experience for everyone."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div className="flex flex-col items-center justify-center h-full gap-4">

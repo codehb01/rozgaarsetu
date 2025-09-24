@@ -156,7 +156,7 @@ export default function OnboardingPage() {
             <MainMenusGradientCard
               title="Join as Customer"
               description="Book workers, manage service requests and track jobs. Find skilled professionals for your needs."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div style={{ 
@@ -192,7 +192,7 @@ export default function OnboardingPage() {
             <MainMenusGradientCard
               title="Join as Worker"
               description="Create your profile, list your skills, and get hired for jobs. Start earning with your expertise."
-              withArrow={true}
+              withArrow={false}
               circleSize={300}
             >
               <div style={{ 

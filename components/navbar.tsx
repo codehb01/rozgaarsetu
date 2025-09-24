@@ -79,17 +79,28 @@ export function ResizableNavbar() {
           {mounted && (
             <button
               aria-label="Toggle theme"
-              className="relative h-9 w-9 rounded-full border border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 backdrop-blur hover:shadow-md transition-all flex items-center justify-center group"
+              className="relative h-10 w-10 rounded-full border border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 backdrop-blur hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center overflow-hidden"
               onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
             >
-              {/* Sun */}
-              <Sun
-                className="absolute h-5 w-5 text-amber-500 rotate-0 scale-100 transition-all duration-300 ease-out group-hover:scale-110 group-active:scale-95 dark:-rotate-90 dark:scale-0"
-              />
-              {/* Moon */}
-              <Moon
-                className="absolute h-5 w-5 text-blue-400 rotate-90 scale-0 transition-all duration-300 ease-out group-hover:scale-110 group-active:scale-95 dark:rotate-0 dark:scale-100"
-              />
+              {/* Container for icons with proper positioning */}
+              <div className="relative h-5 w-5">
+                {/* Sun Icon */}
+                <Sun
+                  className={`absolute top-0 left-0 h-5 w-5 text-amber-500 transition-all duration-500 ease-in-out ${
+                    currentTheme === "dark" 
+                      ? "opacity-0 scale-0 rotate-90" 
+                      : "opacity-100 scale-100 rotate-0"
+                  }`}
+                />
+                {/* Moon Icon */}
+                <Moon
+                  className={`absolute top-0 left-0 h-5 w-5 text-blue-400 transition-all duration-500 ease-in-out ${
+                    currentTheme === "dark" 
+                      ? "opacity-100 scale-100 rotate-0" 
+                      : "opacity-0 scale-0 -rotate-90"
+                  }`}
+                />
+              </div>
               <span className="sr-only">Toggle dark mode</span>
             </button>
           )}
