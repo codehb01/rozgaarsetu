@@ -61,10 +61,11 @@ export default function WorkerJobsPage() {
   const displayJobs = tab === "CURRENT" ? currentJobs : previousJobs;
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
-      <section className="mx-auto max-w-5xl px-6 py-10">
+    <div className="container mx-auto px-4 py-8">
+      <main className="min-h-screen">
+        <section>
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-light text-white">Job Requests</h1>
+          <h1 className="text-3xl font-light text-gray-900 dark:text-white">Job Requests</h1>
           <div className="flex gap-2">
             <Button
               variant={tab === "CURRENT" ? "default" : "outline"}
@@ -177,7 +178,8 @@ export default function WorkerJobsPage() {
             ))}
           </div>
         )}
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
   );
 }

@@ -51,40 +51,34 @@ export default function WorkerEarningsPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
-        <section className="mx-auto max-w-5xl px-6 py-10">
-          <EarningsSkeleton />
-        </section>
-      </main>
+      <div className="container mx-auto px-4 py-8">
+        <EarningsSkeleton />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
-        <section className="mx-auto max-w-5xl px-6 py-10">
-          <h1 className="text-3xl font-light text-white mb-6">Earnings</h1>
-          <div className="text-red-400">Error: {error}</div>
-        </section>
-      </main>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-light text-gray-900 dark:text-white mb-6">Earnings</h1>
+        <div className="text-red-600 dark:text-red-400">Error: {error}</div>
+      </div>
     );
   }
 
   if (!data) {
     return (
-      <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
-        <section className="mx-auto max-w-5xl px-6 py-10">
-          <h1 className="text-3xl font-light text-white mb-6">Earnings</h1>
-          <div className="text-gray-400">No earnings data available</div>
-        </section>
-      </main>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-light text-gray-900 dark:text-white mb-6">Earnings</h1>
+        <div className="text-gray-600 dark:text-gray-400">No earnings data available</div>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
-      <section className="mx-auto max-w-5xl px-6 py-10">
-        <h1 className="text-3xl font-light text-white mb-8">Earnings Overview</h1>
+    <div className="container mx-auto px-4 py-8">
+      <main className="min-h-screen">
+        <h1 className="text-3xl font-light text-gray-900 dark:text-white mb-8">Earnings Overview</h1>
         
         <div className="grid gap-6 mb-8 md:grid-cols-3">
           {/* Total Earnings */}
@@ -163,7 +157,7 @@ export default function WorkerEarningsPage() {
             </div>
           )}
         </Card>
-      </section>
-    </main>
+      </main>
+    </div>
   );
 }
