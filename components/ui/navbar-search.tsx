@@ -6,14 +6,14 @@ import { Autocomplete, AutocompleteItem } from "@heroui/react";
 import { Search, MapPin, ChevronDown } from "lucide-react";
 
 const SERVICES = [
-  { key: "plumber", label: "Plumber", description: "Pipe repairs, installations", emoji: "" },
-  { key: "electrician", label: "Electrician", description: "Electrical work, wiring", emoji: "" },
-  { key: "ac-technician", label: "AC Technician", description: "AC repair, maintenance", emoji: "" },
-  { key: "cleaner", label: "House Cleaner", description: "Home cleaning services", emoji: "" },
-  { key: "carpenter", label: "Carpenter", description: "Wood work, furniture", emoji: "" },
-  { key: "painter", label: "Painter", description: "Wall painting, decoration", emoji: "" },
-  { key: "gardener", label: "Gardener", description: "Garden maintenance", emoji: "" },
-  { key: "driver", label: "Driver", description: "Personal driver service", emoji: "" },
+  { key: "plumber", label: "Plumber", description: "Pipe repairs, installations", emoji: "🔧" },
+  { key: "electrician", label: "Electrician", description: "Electrical work, wiring", emoji: "⚡" },
+  { key: "ac-technician", label: "AC Technician", description: "AC repair, maintenance", emoji: "❄️" },
+  { key: "cleaner", label: "House Cleaner", description: "Home cleaning services", emoji: "🧹" },
+  { key: "carpenter", label: "Carpenter", description: "Wood work, furniture", emoji: "🔨" },
+  { key: "painter", label: "Painter", description: "Wall painting, decoration", emoji: "🎨" },
+  { key: "gardener", label: "Gardener", description: "Garden maintenance", emoji: "🌱" },
+  { key: "driver", label: "Driver", description: "Personal driver service", emoji: "🚗" },
 ];
 
 const LOCATION_OPTIONS = [
@@ -45,13 +45,49 @@ export default function NavbarSearch() {
   const locationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        () => setLocation("Current Location"),
-        () => setLocation("Mumbai, Maharashtra")
-      );
-    }
+    detectCurrentLocation();
   }, []);
+
+  const detectCurrentLocation = async () => {
+    try {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              // Try to get city name from coordinates
+              const { latitude, longitude } = position.coords;
+              const address = await reverseGeocode(latitude, longitude);
+              const cityName = extractCityFromAddress(address);
+              setLocation(cityName || "Current Location");
+            } catch {
+              setLocation("Current Location");
+            }
+          },
+          () => {
+            setLocation("Mumbai, Maharashtra"); // Default fallback
+          },
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
+        );
+      } else {
+        setLocation("Mumbai, Maharashtra");
+      }
+    } catch {
+      setLocation("Mumbai, Maharashtra");
+    }
+  };
+
+  const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
+    // Simple reverse geocoding - in production you'd use Google Maps API
+    return `${lat.toFixed(2)}, ${lng.toFixed(2)}`;
+  };
+
+  const extractCityFromAddress = (address: string): string | null => {
+    // Simple city extraction logic
+    if (address.includes("Mumbai") || address.includes("19.")) return "Mumbai, Maharashtra";
+    if (address.includes("Delhi") || address.includes("28.")) return "Delhi, NCR";
+    if (address.includes("Bangalore") || address.includes("12.")) return "Bangalore, Karnataka";
+    return null;
+  };
 
   // Typewriter effect for placeholder
   useEffect(() => {
@@ -110,11 +146,78 @@ export default function NavbarSearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleServiceSelection = (key: string | number | null) => {
+  const handleServiceSelection = async (key: string | number | null) => {
     if (key) {
       setSelectedService(key.toString());
-      console.log(`Searching for service: ${key} in ${location}`);
+      await performSearch(key.toString(), location);
     }
+  };
+
+  const performSearch = async (service: string, locationName: string) => {
+    try {
+      // Get coordinates for the location
+      const coords = await getLocationCoordinates(locationName);
+      
+      // Build search URL with parameters
+      const searchParams = new URLSearchParams({
+        service: service,
+        location: locationName,
+      });
+
+      if (coords) {
+        searchParams.append('lat', coords.lat.toString());
+        searchParams.append('lng', coords.lng.toString());
+      }
+
+      // Navigate to search results page
+      window.location.href = `/search/results?${searchParams.toString()}`;
+    } catch (error) {
+      console.error('Search error:', error);
+      // Fallback - search without coordinates
+      const searchParams = new URLSearchParams({
+        service: service,
+        location: locationName,
+      });
+      window.location.href = `/search/results?${searchParams.toString()}`;
+    }
+  };
+
+  const getLocationCoordinates = async (locationName: string): Promise<{lat: number, lng: number} | null> => {
+    // Fallback coordinates for common cities
+    const cityCoords: Record<string, {lat: number, lng: number}> = {
+      "mumbai, maharashtra": { lat: 19.0760, lng: 72.8777 },
+      "delhi, ncr": { lat: 28.6139, lng: 77.2090 },
+      "bangalore, karnataka": { lat: 12.9716, lng: 77.5946 },
+      "hyderabad, telangana": { lat: 17.3850, lng: 78.4867 },
+      "chennai, tamil nadu": { lat: 13.0827, lng: 80.2707 },
+      "pune, maharashtra": { lat: 18.5204, lng: 73.8567 },
+      "ahmedabad, gujarat": { lat: 23.0225, lng: 72.5714 },
+      "jaipur, rajasthan": { lat: 26.9124, lng: 75.7873 },
+    };
+
+    const cityKey = locationName.toLowerCase();
+    
+    if (cityKey === "current location") {
+      // Get current location coordinates
+      return new Promise((resolve) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              resolve({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              });
+            },
+            () => resolve(null),
+            { enableHighAccuracy: false, timeout: 5000 }
+          );
+        } else {
+          resolve(null);
+        }
+      });
+    }
+
+    return cityCoords[cityKey] || null;
   };
 
   return (
