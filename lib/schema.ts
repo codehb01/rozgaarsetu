@@ -15,36 +15,9 @@ export const workerFormSchema = z.object({
     .string()
     .regex(/^\d{12}$/, "Aadhar must be a 12 digit number"),
   qualification: z.string().min(2, "Qualification is required"),
-  certificates: z
-    .union([z.string(), z.array(z.string())])
-    .transform((val) =>
-      Array.isArray(val)
-        ? val.map((v) => v.trim()).filter(Boolean)
-        : val
-            .split(",")
-            .map((v) => v.trim())
-            .filter(Boolean)
-    )
-    .optional(),
-  skilledIn: z.union([z.string(), z.array(z.string())]).transform((val) =>
-    Array.isArray(val)
-      ? val.map((v) => v.trim()).filter(Boolean)
-      : val
-          .split(",")
-          .map((v) => v.trim())
-          .filter(Boolean)
-  ),
-  availableAreas: z
-    .union([z.string(), z.array(z.string())])
-    .transform((val) =>
-      Array.isArray(val)
-        ? val.map((v) => v.trim()).filter(Boolean)
-        : val
-            .split(",")
-            .map((v) => v.trim())
-            .filter(Boolean)
-    )
-    .optional(),
+  certificates: z.string().optional(),
+  skilledIn: z.string().min(1, "At least one skill is required"),
+  availableAreas: z.string().optional(),
   yearsExperience: z
     .number({ error: "Years of experience must be a number" })
     .min(0, "Must be 0 or more years"),

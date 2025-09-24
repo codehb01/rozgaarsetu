@@ -1,322 +1,281 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import BookWorkerButton from "@/components/book-worker-button";
-import prisma from "@/lib/prisma";
-import {
-  Wrench,
-  Plug,
-  Settings,
-  Hammer,
-  Paintbrush,
-  Sparkles,
-  Leaf,
-  Car,
-  Fan,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { DashboardSkeleton } from "@/components/ui/dashboard-skeleton";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import ShimmerText from "@/components/kokonutui/shimmer-text";
+import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
+// import prisma from "@/lib/prisma";
 
 const categories = [
-  {
-    key: "plumber",
-    label: "Plumber",
-    icon: Wrench,
-    gradient: "from-blue-500 to-cyan-500",
-  },
-  {
-    key: "electrician",
-    label: "Electrician",
-    icon: Plug,
-    gradient: "from-yellow-500 to-orange-500",
-  },
-  {
-    key: "mechanic",
-    label: "Mechanic",
-    icon: Settings,
-    gradient: "from-emerald-500 to-teal-500",
-  },
-  {
-    key: "carpenter",
-    label: "Carpenter",
-    icon: Hammer,
-    gradient: "from-amber-500 to-orange-600",
-  },
-  {
-    key: "painter",
-    label: "Painter",
-    icon: Paintbrush,
-    gradient: "from-purple-500 to-pink-500",
-  },
-  {
-    key: "cleaner",
-    label: "Cleaner",
-    icon: Sparkles,
-    gradient: "from-sky-500 to-indigo-500",
-  },
-  {
-    key: "gardener",
-    label: "Gardener",
-    icon: Leaf,
-    gradient: "from-green-500 to-lime-500",
-  },
-  {
-    key: "driver",
-    label: "Driver",
-    icon: Car,
-    gradient: "from-slate-500 to-gray-500",
-  },
-  {
-    key: "ac-technician",
-    label: "AC Technician",
-    icon: Fan,
-    gradient: "from-blue-600 to-indigo-600",
-  },
+  { key: "plumber", label: "Plumber", emoji: "🔧" },
+  { key: "electrician", label: "Electrician", emoji: "⚡" },
+  { key: "mechanic", label: "Mechanic", emoji: "🔧" },
+  { key: "carpenter", label: "Carpenter", emoji: "🔨" },
+  { key: "painter", label: "Painter", emoji: "🎨" },
+  { key: "cleaner", label: "Cleaner", emoji: "✨" },
+  { key: "gardener", label: "Gardener", emoji: "🌱" },
+  { key: "driver", label: "Driver", emoji: "🚗" },
+  { key: "ac-technician", label: "AC Technician", emoji: "❄️" },
 ];
 
-export default async function CustomerDashboardPage() {
-  const workers = await prisma.user.findMany({
-    where: { role: "WORKER" },
-    select: {
-      id: true,
-      name: true,
-      workerProfile: {
-        select: {
-          skilledIn: true,
-          city: true,
-          availableAreas: true,
-          yearsExperience: true,
-          qualification: true,
-          profilePic: true,
-          bio: true,
-        },
-      },
-    },
-    take: 6,
-    orderBy: { createdAt: "desc" },
-  });
+export default function CustomerDashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [workers, setWorkers] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Simulate loading workers from API
+    const loadWorkers = async () => {
+      try {
+        setIsLoading(true);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Mock worker data
+        const mockWorkers = [
+          {
+            id: "1",
+            name: "Rajesh Kumar",
+            workerProfile: {
+              skilledIn: ["plumber", "electrician"],
+              city: "Mumbai",
+              availableAreas: ["Andheri", "Bandra"],
+              yearsExperience: 5,
+              qualification: "ITI Certificate",
+              profilePic: null,
+              bio: "Experienced plumber and electrician"
+            }
+          },
+          // Add more mock workers as needed
+        ];
+        
+        setWorkers(mockWorkers);
+      } catch (error) {
+        console.error("Error loading workers:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWorkers();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+        {/* Premium Apple-style background gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-purple-50/20 dark:from-blue-950/20 dark:via-transparent dark:to-purple-950/10"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div className="relative z-10 py-12">
+          <DashboardSkeleton />
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
-        <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-24">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extralight text-white tracking-tight">
-              Find Your
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 font-light">
-                Perfect Worker
-              </span>
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 relative overflow-hidden">
+      {/* Premium Apple-style background gradients */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-purple-50/20 dark:from-blue-950/20 dark:via-transparent dark:to-purple-950/10"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+
+      <div className="relative z-10 py-12">
+        {/* Hero Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-16"
+          >
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tight mb-6">
+              <ShimmerText 
+                text="Find Your Perfect Worker"
+                className="text-4xl sm:text-5xl font-bold tracking-tight"
+              />
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-300 leading-relaxed">
-              Connect with skilled professionals in your area. Browse by
-              category or search for specific expertise.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Section */}
-      <section className="mx-auto max-w-7xl px-6 pb-16">
-        <div className="mb-12">
-          <h2 className="text-2xl sm:text-3xl font-light text-white mb-3">
-            Browse Categories
-          </h2>
-          <p className="text-gray-400 text-base">
-            Select a category to find skilled professionals
-          </p>
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {categories.map(({ key, label, icon: Icon, gradient }) => (
-            <Link
-              key={key}
-              href={`/customer/search?category=${encodeURIComponent(key)}`}
-              aria-label={`Browse ${label}s`}
-              className="group block"
-            >
-              <Card className="relative h-full border-0 bg-white/[0.03] backdrop-blur-xl hover:bg-white/[0.08] transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/10">
-                <div className="p-8">
-                  <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="relative">
-                      <div
-                        className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-3`}
-                      >
-                        <Icon className="h-8 w-8 text-white" />
-                      </div>
-                      <div
-                        className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${gradient} opacity-20 blur-xl transition-all duration-500 group-hover:opacity-40`}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-medium text-white group-hover:text-gray-100 transition-colors">
-                        {label}
-                      </h3>
-                      <p className="text-sm text-gray-400 leading-relaxed px-2">
-                        Professional {label.toLowerCase()}s ready to help
-                      </p>
-                    </div>
-
-                    <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-                      <div className="inline-flex items-center text-sm text-blue-400 font-medium">
-                        View professionals
-                        <svg
-                          className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 8l4 4m0 0l-4 4m4-4H3"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Featured Workers Section */}
-      <section className="mx-auto max-w-7xl px-6 pb-20">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-light text-white mb-2">
-              Featured Professionals
-            </h2>
-            <p className="text-gray-400 text-base">
-              Recently joined skilled workers
-            </p>
-          </div>
-          <Link href="/customer/search">
-            <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 px-6 py-3 text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25">
-              Browse All Workers
-            </Button>
-          </Link>
-        </div>
-
-        {workers.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-lg">
-              No workers available at the moment
+            <div className="max-w-2xl mx-auto">
+              <TextGenerateEffect 
+                words="Connect with skilled professionals in your area. Browse by category or search for specific expertise."
+                className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed"
+                duration={0.6}
+              />
             </div>
-            <p className="text-gray-500 text-sm mt-2">
-              Check back later for new professionals
+          </motion.div>
+        </section>
+
+        {/* Categories Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="mb-12"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Browse Categories
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Select a category to find skilled professionals
             </p>
-          </div>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {workers.map((w) => (
-              <Card
-                key={w.id}
-                className="group border-0 bg-white/[0.03] backdrop-blur-xl hover:bg-white/[0.08] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/20"
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {categories.map(({ key, label, emoji }, index) => (
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 * index, ease: "easeOut" }}
               >
-                <div className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="relative">
-                      <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-gray-600 to-gray-700 overflow-hidden flex items-center justify-center">
-                        <span className="text-white font-semibold text-lg">
-                          {(w.name ?? "U").charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 border-2 border-gray-900 rounded-full" />
+                <Link
+                  href={`/customer/search?category=${encodeURIComponent(key)}`}
+                  className="block group"
+                >
+                  <MainMenusGradientCard
+                    title={label}
+                    description={`Professional ${label.toLowerCase()}s ready to help`}
+                    withArrow={true}
+                    circleSize={300}
+                    className="h-32 flex flex-col items-center justify-center"
+                  >
+                    <div className="text-4xl transform group-hover:scale-110 transition-transform duration-200">
+                      {emoji}
                     </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-semibold text-lg mb-1 truncate group-hover:text-blue-300 transition-colors">
-                        {w.name ?? "Professional Worker"}
-                      </h3>
-
-                      <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                        <span className="truncate">
-                          {w.workerProfile?.qualification ||
-                            "Skilled Professional"}
-                        </span>
-                        <span className="text-gray-600">•</span>
-                        <span className="whitespace-nowrap">
-                          {w.workerProfile?.yearsExperience ?? 0}+ years
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
-                        <svg
-                          className="h-4 w-4 text-gray-500 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                        <span className="truncate">
-                          {w.workerProfile?.city || "Location"}
-                        </span>
-                        {w.workerProfile?.availableAreas &&
-                          w.workerProfile.availableAreas.length > 0 && (
-                            <>
-                              <span className="text-gray-600">•</span>
-                              <span className="truncate text-xs">
-                                +{w.workerProfile.availableAreas.length} areas
-                              </span>
-                            </>
-                          )}
-                      </div>
-
-                      {w.workerProfile?.skilledIn &&
-                        w.workerProfile.skilledIn.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {w.workerProfile.skilledIn
-                              .slice(0, 3)
-                              .map((skill, index) => (
-                                <span
-                                  key={index}
-                                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
-                            {w.workerProfile.skilledIn.length > 3 && (
-                              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20">
-                                +{w.workerProfile.skilledIn.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      <div className="mt-4 flex gap-2">
-                        <Link href={`/workers/${w.id}`}>
-                          <Button
-                            variant="secondary"
-                            className="bg-gray-700 text-white hover:bg-gray-600"
-                          >
-                            View
-                          </Button>
-                        </Link>
-                        <BookWorkerButton workerId={w.id} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+                  </MainMenusGradientCard>
+                </Link>
+              </motion.div>
             ))}
-          </div>
-        )}
-      </section>
+          </motion.div>
+        </section>
+
+        {/* Featured Workers Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6"
+          >
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Featured Professionals
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300">
+                Recently joined skilled workers
+              </p>
+            </div>
+            <Link 
+              href="/customer/search"
+              className="group inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 no-underline border-none cursor-pointer"
+            >
+              <span className="relative z-10">Browse All Workers</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            </Link>
+          </motion.div>
+
+          {workers.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="text-center py-16"
+            >
+              <div className="text-gray-600 dark:text-gray-400 text-xl mb-2">
+                No workers available at the moment
+              </div>
+              <p className="text-gray-500 dark:text-gray-500 text-base">
+                Check back later for new professionals
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+            >
+              {workers.map((w, index) => (
+                <motion.div
+                  key={w.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 * index, ease: "easeOut" }}
+                  className="group flex items-center gap-6 p-6 rounded-2xl transition-all duration-200 hover:bg-white/50 dark:hover:bg-gray-900/50 hover:backdrop-blur-xl border border-transparent hover:border-gray-200/50 dark:hover:border-gray-700/50"
+                >
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    {(w.name ?? "U").charAt(0).toUpperCase()}
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className="text-gray-900 dark:text-white font-bold text-xl mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                      {w.name ?? "Professional Worker"}
+                    </h3>
+
+                    <div className="flex items-center gap-4 mb-3 text-gray-600 dark:text-gray-400">
+                      <span className="font-medium">
+                        {w.workerProfile?.qualification || "Skilled Professional"}
+                      </span>
+                      <span className="text-gray-400 dark:text-gray-600">•</span>
+                      <span>
+                        {w.workerProfile?.yearsExperience ?? 0}+ years experience
+                      </span>
+                      <span className="text-gray-400 dark:text-gray-600">•</span>
+                      <span className="flex items-center gap-1">
+                        <span>📍</span>
+                        {w.workerProfile?.city || "Location"}
+                      </span>
+                    </div>
+
+                    {w.workerProfile?.skilledIn && w.workerProfile.skilledIn.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {w.workerProfile.skilledIn.slice(0, 4).map((skill: string, index: number) => (
+                          <span
+                            key={index}
+                            className="bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {w.workerProfile.skilledIn.length > 4 && (
+                          <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-sm font-medium">
+                            +{w.workerProfile.skilledIn.length - 4} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Link 
+                      href={`/workers/${w.id}`}
+                      className="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] no-underline"
+                    >
+                      View Profile
+                    </Link>
+                    <Link 
+                      href={`/customer/booking?worker=${w.id}`}
+                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25 no-underline"
+                    >
+                      Book Now
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }

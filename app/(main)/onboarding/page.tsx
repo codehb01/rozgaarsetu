@@ -2,271 +2,377 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { User, Wrench, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { setUserRole } from "@/app/api/actions/onboarding";
-import useFetch from "@/hooks/use-fetch";
-import {
-  workerFormSchema,
-  customerFormSchema,
-  type WorkerFormData,
-  type CustomerFormData,
-} from "@/lib/schema";
-
-// --- expected server response ---
-type OnboardingResponse = {
-  success: boolean;
-  redirect: string;
-};
+import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
+import { OnboardingSkeleton } from "@/components/ui/dashboard-skeleton";
 
 export default function OnboardingPage() {
-  const [step, setStep] = useState<
-    "choose-role" | "worker-form" | "customer-form"
-  >("choose-role");
+  const [step, setStep] = useState<"choose-role" | "worker-form" | "customer-form">("choose-role");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const router = useRouter();
 
-  const {
-    loading,
-    data,
-    fn: submitUserRole,
-  } = useFetch<OnboardingResponse, FormData>(setUserRole);
-
-  // ----------------- Customer form -----------------
-  const {
-    register: registerCustomer,
-    handleSubmit: handleCustomerSubmit,
-    formState: { errors: customerErrors },
-  } = useForm<CustomerFormData>({
-    resolver: zodResolver(customerFormSchema),
-    defaultValues: {
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-      postalCode: "",
-    },
-  });
-
-  // ----------------- Worker form -----------------
-  const {
-    register: registerWorker,
-    handleSubmit: handleWorkerSubmit,
-    formState: { errors: workerErrors },
-  } = useForm<WorkerFormData>({
-    resolver: zodResolver(workerFormSchema),
-    defaultValues: {
-      skilledIn: [],
-      qualification: "",
-      certificates: [],
-      aadharNumber: "",
-      yearsExperience: undefined,
-      profilePic: "",
-      bio: "",
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-      postalCode: "",
-      availableAreas: [],
-    },
-  });
-
-  // ----------------- Redirect after success -----------------
   useEffect(() => {
-    if (data?.success && data.redirect) {
-      router.push(data.redirect);
-    }
-  }, [data, router]);
+    // Simulate initial page load
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 1200);
 
-  // ----------------- Submit Handlers -----------------
-  const onCustomerSubmit = async (formDataValues: CustomerFormData) => {
-    if (loading) return;
-    const formData = new FormData();
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isInitialLoading) {
+    return <OnboardingSkeleton />;
+  }
+
+  const handleRoleSelection = (role: "customer" | "worker") => {
+    if (role === "customer") {
+      setStep("customer-form");
+    } else {
+      setStep("worker-form");
+    }
+  };
+
+  const handleCustomerSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
     formData.append("role", "CUSTOMER");
 
-    Object.entries(formDataValues).forEach(([key, val]) => {
-      formData.append(key, String(val));
-    });
-
-    await submitUserRole(formData);
+    try {
+      const response = await setUserRole(formData);
+      if (response.success && response.redirect) {
+        router.push(response.redirect);
+      } else if (response.error) {
+        setError(response.error);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const onWorkerSubmit = async (formDataValues: WorkerFormData) => {
-    if (loading) return;
-    const formData = new FormData();
+  const handleWorkerSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
     formData.append("role", "WORKER");
 
-    Object.entries(formDataValues).forEach(([key, val]) => {
-      if (Array.isArray(val)) {
-        formData.append(key, JSON.stringify(val)); // serialize arrays
-      } else if (val !== undefined && val !== null) {
-        formData.append(key, String(val));
-      }
-    });
+    // Handle comma-separated values
+    const skilledIn = formData.get("skilledIn") as string;
+    const certificates = formData.get("certificates") as string;
+    const availableAreas = formData.get("availableAreas") as string;
 
-    await submitUserRole(formData);
+    if (skilledIn) {
+      const skillsArray = skilledIn.split(',').map(s => s.trim()).filter(Boolean);
+      formData.set("skilledIn", JSON.stringify(skillsArray));
+    }
+    if (certificates) {
+      const certsArray = certificates.split(',').map(s => s.trim()).filter(Boolean);
+      formData.set("certificates", JSON.stringify(certsArray));
+    }
+    if (availableAreas) {
+      const areasArray = availableAreas.split(',').map(s => s.trim()).filter(Boolean);
+      formData.set("availableAreas", JSON.stringify(areasArray));
+    }
+
+    try {
+      const response = await setUserRole(formData);
+      if (response.success && response.redirect) {
+        router.push(response.redirect);
+      } else if (response.error) {
+        setError(response.error);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ----------------- UI -----------------
+  // Role Selection
   if (step === "choose-role") {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Customer card */}
-        <Card
-          className="border-emerald-900/20 hover:border-emerald-700/40 cursor-pointer transition-all"
-          onClick={() => setStep("customer-form")}
-        >
-          <CardContent className="pt-6 pb-6 flex flex-col items-center text-center">
-            <div className="p-4 bg-emerald-900/20 rounded-full mb-4">
-              <User className="h-8 w-8 text-emerald-400" />
-            </div>
-            <CardTitle className="text-xl font-semibold text-white mb-2">
-              Join as a Customer
-            </CardTitle>
-            <CardDescription className="mb-4">
-              Book workers, manage your service requests and track jobs.
-            </CardDescription>
-            <Button className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700">
-              Continue as Customer
-            </Button>
-          </CardContent>
-        </Card>
+      <div style={{ padding: "40px", maxWidth: "1000px", margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h1 style={{ fontSize: "3rem", fontWeight: "600", color: "#111827", marginBottom: "1rem" }}>
+            Choose Your Role
+          </h1>
+          <p style={{ fontSize: "1.25rem", color: "#6b7280" }}>
+            Select how you want to use RozgaarSetu
+          </p>
+        </div>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", marginTop: "20px" }}>
+          
+          {/* Customer Option */}
+          <div onClick={() => handleRoleSelection("customer")} style={{ cursor: "pointer" }}>
+            <MainMenusGradientCard
+              title="Join as Customer"
+              description="Book workers, manage service requests and track jobs. Find skilled professionals for your needs."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                height: "100%",
+                gap: "1rem"
+              }}>
+                <div style={{ fontSize: "4rem" }}>👤</div>
+                <button 
+                  style={{ 
+                    padding: "12px 24px", 
+                    backgroundColor: "#3b82f6", 
+                    color: "white", 
+                    border: "none", 
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s"
+                  }}
+                >
+                  Continue as Customer
+                </button>
+              </div>
+            </MainMenusGradientCard>
+          </div>
 
-        {/* Worker card */}
-        <Card
-          className="border-emerald-900/20 hover:border-emerald-700/40 cursor-pointer transition-all"
-          onClick={() => setStep("worker-form")}
-        >
-          <CardContent className="pt-6 pb-6 flex flex-col items-center text-center">
-            <div className="p-4 bg-emerald-900/20 rounded-full mb-4">
-              <Wrench className="h-8 w-8 text-emerald-400" />
-            </div>
-            <CardTitle className="text-xl font-semibold text-white mb-2">
-              Join as a Worker
-            </CardTitle>
-            <CardDescription className="mb-4">
-              Create your profile, list your skills, and get hired for jobs.
-            </CardDescription>
-            <Button className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700">
-              Continue as Worker
-            </Button>
-          </CardContent>
-        </Card>
+          {/* Worker Option */}
+          <div onClick={() => handleRoleSelection("worker")} style={{ cursor: "pointer" }}>
+            <MainMenusGradientCard
+              title="Join as Worker"
+              description="Create your profile, list your skills, and get hired for jobs. Start earning with your expertise."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                height: "100%",
+                gap: "1rem"
+              }}>
+                <div style={{ fontSize: "4rem" }}>🔧</div>
+                <button 
+                  style={{ 
+                    padding: "12px 24px", 
+                    backgroundColor: "#10b981", 
+                    color: "white", 
+                    border: "none", 
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s"
+                  }}
+                >
+                  Continue as Worker
+                </button>
+              </div>
+            </MainMenusGradientCard>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // ----------------- Customer Form -----------------
+  // Customer Form
   if (step === "customer-form") {
     return (
-      <Card className="border-emerald-900/20">
-        <CardContent className="pt-6">
-          <CardTitle className="text-2xl font-bold text-white mb-2">
-            Complete Your Customer Profile
-          </CardTitle>
-          <form
-            onSubmit={handleCustomerSubmit(onCustomerSubmit)}
-            className="space-y-4"
+      <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+        <h2>Complete Your Customer Profile</h2>
+        {error && (
+          <div style={{ 
+            padding: "10px", 
+            backgroundColor: "#f8d7da", 
+            color: "#721c24", 
+            border: "1px solid #f5c6cb", 
+            borderRadius: "4px", 
+            marginBottom: "20px" 
+          }}>
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleCustomerSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <input 
+            name="address" 
+            placeholder="Address" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="city" 
+            placeholder="City" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="state" 
+            placeholder="State" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="country" 
+            placeholder="Country" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="postalCode" 
+            placeholder="Postal Code" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ 
+              padding: "12px", 
+              backgroundColor: loading ? "#6c757d" : "#007bff", 
+              color: "white", 
+              border: "none", 
+              borderRadius: "4px",
+              cursor: loading ? "not-allowed" : "pointer",
+              fontSize: "16px"
+            }}
           >
-            <Input placeholder="Address" {...registerCustomer("address")} />
-            {customerErrors.address && (
-              <p className="text-red-500 text-sm">
-                {customerErrors.address.message}
-              </p>
-            )}
-
-            <Input placeholder="City" {...registerCustomer("city")} />
-            <Input placeholder="State" {...registerCustomer("state")} />
-            <Input placeholder="Country" {...registerCustomer("country")} />
-            <Input
-              placeholder="Postal Code"
-              {...registerCustomer("postalCode")}
-            />
-
-            <Button type="submit" disabled={loading}>
-              {loading ? (
-                <Loader2 className="animate-spin h-4 w-4" />
-              ) : (
-                "Submit"
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            {loading ? "Submitting..." : "Submit"}
+          </button>
+        </form>
+      </div>
     );
   }
 
-  // ----------------- Worker Form -----------------
+  // Worker Form
   if (step === "worker-form") {
     return (
-      <Card className="border-emerald-900/20">
-        <CardContent className="pt-6">
-          <CardTitle className="text-2xl font-bold text-white mb-2">
-            Complete Your Worker Profile
-          </CardTitle>
-          <form
-            onSubmit={handleWorkerSubmit(onWorkerSubmit)}
-            className="space-y-4"
+      <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+        <h2>Complete Your Worker Profile</h2>
+        {error && (
+          <div style={{ 
+            padding: "10px", 
+            backgroundColor: "#f8d7da", 
+            color: "#721c24", 
+            border: "1px solid #f5c6cb", 
+            borderRadius: "4px", 
+            marginBottom: "20px" 
+          }}>
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleWorkerSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <input 
+            name="aadharNumber" 
+            placeholder="Aadhar Number (12 digits)" 
+            required 
+            pattern="[0-9]{12}"
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="qualification" 
+            placeholder="Qualification" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="skilledIn" 
+            placeholder="Skills (comma separated)" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="yearsExperience" 
+            placeholder="Years of Experience" 
+            type="number" 
+            min="0"
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="certificates" 
+            placeholder="Certificates (comma separated, optional)" 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="profilePic" 
+            placeholder="Profile Picture URL (optional)" 
+            type="url"
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <textarea 
+            name="bio" 
+            placeholder="Bio (optional)" 
+            rows={3}
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px", resize: "vertical" }}
+          />
+          <input 
+            name="availableAreas" 
+            placeholder="Available Areas (comma separated, optional)" 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="address" 
+            placeholder="Address" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="city" 
+            placeholder="City" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="state" 
+            placeholder="State" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="country" 
+            placeholder="Country" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          <input 
+            name="postalCode" 
+            placeholder="Postal Code" 
+            required 
+            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
+          />
+          
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ 
+              padding: "12px", 
+              backgroundColor: loading ? "#6c757d" : "#28a745", 
+              color: "white", 
+              border: "none", 
+              borderRadius: "4px",
+              cursor: loading ? "not-allowed" : "pointer",
+              fontSize: "16px"
+            }}
           >
-            <Input
-              placeholder="Aadhar Number"
-              {...registerWorker("aadharNumber")}
-            />
-            <Input
-              placeholder="Qualification"
-              {...registerWorker("qualification")}
-            />
-            <Input
-              placeholder="Certificates (comma separated)"
-              {...registerWorker("certificates")}
-            />
-            <Input
-              placeholder="Years of Experience"
-              type="number"
-              {...registerWorker("yearsExperience", { valueAsNumber: true })}
-            />
-            <Input
-              placeholder="Profile Picture URL"
-              {...registerWorker("profilePic")}
-            />
-            <Textarea placeholder="Bio" {...registerWorker("bio")} />
-            <Input
-              placeholder="Skilled In (comma separated)"
-              {...registerWorker("skilledIn")}
-            />
-            <Input
-              placeholder="Available Areas (comma separated)"
-              {...registerWorker("availableAreas")}
-            />
-            <Input placeholder="Address" {...registerWorker("address")} />
-            <Input placeholder="City" {...registerWorker("city")} />
-            <Input placeholder="State" {...registerWorker("state")} />
-            <Input placeholder="Country" {...registerWorker("country")} />
-            <Input
-              placeholder="Postal Code"
-              {...registerWorker("postalCode")}
-            />
-
-            <Button type="submit" disabled={loading}>
-              {loading ? (
-                <Loader2 className="animate-spin h-4 w-4" />
-              ) : (
-                "Submit"
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            {loading ? "Submitting..." : "Submit"}
+          </button>
+        </form>
+      </div>
     );
   }
 
