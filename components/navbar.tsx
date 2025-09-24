@@ -16,6 +16,7 @@ import { useTheme } from "next-themes";
 import { Sun, Moon, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { LanguageSelectionDrawer } from "@/components/language-selection-drawer";
+import NavbarSearch from "@/components/ui/navbar-search";
 
 const navItems = [
   { name: "Home", link: "/" },
@@ -67,8 +68,10 @@ export function ResizableNavbar() {
           </a>
         </div>
 
-        {/* Desktop Navigation Items */}
-        <NavItems items={navItems} />
+        {/* Search Bar - Urban Company Style */}
+        <div className="hidden md:block flex-1 max-w-2xl">
+          <NavbarSearch placeholder="Search for services" showLocation={true} />
+        </div>
 
         {/* Theme Toggle + Authentication Buttons */}
         <div className="flex items-center space-x-2">
@@ -142,6 +145,11 @@ export function ResizableNavbar() {
 
         <MobileNavMenu isOpen={isOpen} onClose={() => setIsOpen(false)}>
           <div className="flex flex-col space-y-4">
+            {/* Mobile Search */}
+            <div className="md:hidden">
+              <NavbarSearch placeholder="Search for services" showLocation={true} />
+            </div>
+            
             {navItems.map((item, idx) => (
               <a
                 key={idx}

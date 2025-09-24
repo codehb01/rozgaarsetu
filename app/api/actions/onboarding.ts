@@ -53,10 +53,18 @@ export async function setUserRole(
       const state = formData.get("state")?.toString();
       const country = formData.get("country")?.toString();
       const postalCode = formData.get("postalCode")?.toString();
+      const latitude = formData.get("latitude")?.toString();
+      const longitude = formData.get("longitude")?.toString();
 
       if (!address || !city || !state || !country || !postalCode) {
         throw new Error("Missing required fields for customer");
       }
+
+      // Parse coordinates if available
+      const coords = {
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
+      };
 
       await prisma.$transaction([
         prisma.user.update({
@@ -65,7 +73,15 @@ export async function setUserRole(
         }),
         prisma.customerProfile.upsert({
           where: { userId: user.id },
-          update: { address, city, state, country, postalCode },
+          update: { 
+            address, 
+            city, 
+            state, 
+            country, 
+            postalCode,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+          },
           create: {
             userId: user.id,
             address,
@@ -73,6 +89,8 @@ export async function setUserRole(
             state,
             country,
             postalCode,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
           },
         }),
       ]);
@@ -99,6 +117,8 @@ export async function setUserRole(
       const state = formData.get("state")?.toString();
       const country = formData.get("country")?.toString();
       const postalCode = formData.get("postalCode")?.toString();
+      const latitude = formData.get("latitude")?.toString();
+      const longitude = formData.get("longitude")?.toString();
       const availableAreasRaw = formData.getAll("availableAreas") as string[];
       const availableAreas = availableAreasRaw
         .map((s) => s?.toString().trim())
@@ -115,6 +135,12 @@ export async function setUserRole(
       ) {
         throw new Error("Missing required fields for worker");
       }
+
+      // Parse coordinates if available
+      const coords = {
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
+      };
 
       // Check if aadharNumber is already used by another user
       const existingAadhar = await prisma.workerProfile.findFirst({
@@ -151,6 +177,8 @@ export async function setUserRole(
             state,
             country,
             postalCode,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
             availableAreas,
           },
           create: {
@@ -167,6 +195,8 @@ export async function setUserRole(
             state,
             country,
             postalCode,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
             availableAreas,
           },
         }),

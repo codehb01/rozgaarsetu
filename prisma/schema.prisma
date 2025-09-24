@@ -51,6 +51,8 @@ model WorkerProfile {
   state          String
   country        String
   postalCode     String
+  latitude       Float?    // Geocoded latitude for precise location
+  longitude      Float?    // Geocoded longitude for precise location
   availableAreas String[] // list of areas where worker can work
 
   createdAt DateTime @default(now())
@@ -67,6 +69,8 @@ model CustomerProfile {
   state      String
   country    String
   postalCode String
+  latitude   Float?    // Geocoded latitude for precise location
+  longitude  Float?    // Geocoded longitude for precise location
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

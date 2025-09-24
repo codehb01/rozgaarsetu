@@ -5,12 +5,28 @@ import { useRouter } from "next/navigation";
 import { setUserRole } from "@/app/api/actions/onboarding";
 import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { OnboardingSkeleton } from "@/components/ui/dashboard-skeleton";
+import LocationInput from "@/components/ui/location-input";
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<"choose-role" | "worker-form" | "customer-form">("choose-role");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [locationData, setLocationData] = useState<{
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+    latitude?: number;
+    longitude?: number;
+  }>({
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    postalCode: "",
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -39,8 +55,19 @@ export default function OnboardingPage() {
     setLoading(true);
     setError(null);
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData();
     formData.append("role", "CUSTOMER");
+    formData.append("address", locationData.address);
+    formData.append("city", locationData.city);
+    formData.append("state", locationData.state);
+    formData.append("country", locationData.country);
+    formData.append("postalCode", locationData.postalCode);
+    
+    // Add coordinates if available
+    if (locationData.latitude && locationData.longitude) {
+      formData.append("latitude", locationData.latitude.toString());
+      formData.append("longitude", locationData.longitude.toString());
+    }
 
     try {
       const response = await setUserRole(formData);
@@ -63,6 +90,19 @@ export default function OnboardingPage() {
 
     const formData = new FormData(e.currentTarget);
     formData.append("role", "WORKER");
+
+    // Add location data
+    formData.append("address", locationData.address);
+    formData.append("city", locationData.city);
+    formData.append("state", locationData.state);
+    formData.append("country", locationData.country);
+    formData.append("postalCode", locationData.postalCode);
+    
+    // Add coordinates if available
+    if (locationData.latitude && locationData.longitude) {
+      formData.append("latitude", locationData.latitude.toString());
+      formData.append("longitude", locationData.longitude.toString());
+    }
 
     // Handle comma-separated values
     const skilledIn = formData.get("skilledIn") as string;
@@ -206,51 +246,28 @@ export default function OnboardingPage() {
         )}
         
         <form onSubmit={handleCustomerSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          <input 
-            name="address" 
-            placeholder="Address" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="city" 
-            placeholder="City" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="state" 
-            placeholder="State" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="country" 
-            placeholder="Country" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="postalCode" 
-            placeholder="Postal Code" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
+          <div style={{ marginBottom: "20px" }}>
+            <h3 style={{ marginBottom: "10px", fontSize: "18px", fontWeight: "600" }}>Location Information</h3>
+            <LocationInput
+              onLocationChange={setLocationData}
+              initialLocation={locationData}
+            />
+          </div>
           
           <button 
             type="submit" 
-            disabled={loading}
+            disabled={loading || !locationData.address || !locationData.city}
             style={{ 
               padding: "12px", 
-              backgroundColor: loading ? "#6c757d" : "#007bff", 
+              backgroundColor: (loading || !locationData.address || !locationData.city) ? "#6c757d" : "#007bff", 
               color: "white", 
               border: "none", 
               borderRadius: "4px",
-              cursor: loading ? "not-allowed" : "pointer",
+              cursor: (loading || !locationData.address || !locationData.city) ? "not-allowed" : "pointer",
               fontSize: "16px"
             }}
           >
-            {loading ? "Submitting..." : "Submit"}
+            {loading ? "Submitting..." : "Complete Profile"}
           </button>
         </form>
       </div>
@@ -325,51 +342,29 @@ export default function OnboardingPage() {
             placeholder="Available Areas (comma separated, optional)" 
             style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
           />
-          <input 
-            name="address" 
-            placeholder="Address" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="city" 
-            placeholder="City" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="state" 
-            placeholder="State" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="country" 
-            placeholder="Country" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="postalCode" 
-            placeholder="Postal Code" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
+          
+          <div style={{ marginBottom: "20px" }}>
+            <h3 style={{ marginBottom: "10px", fontSize: "18px", fontWeight: "600" }}>Location Information</h3>
+            <LocationInput
+              onLocationChange={setLocationData}
+              initialLocation={locationData}
+            />
+          </div>
           
           <button 
             type="submit" 
-            disabled={loading}
+            disabled={loading || !locationData.address || !locationData.city}
             style={{ 
               padding: "12px", 
-              backgroundColor: loading ? "#6c757d" : "#28a745", 
+              backgroundColor: (loading || !locationData.address || !locationData.city) ? "#6c757d" : "#28a745", 
               color: "white", 
               border: "none", 
               borderRadius: "4px",
-              cursor: loading ? "not-allowed" : "pointer",
+              cursor: (loading || !locationData.address || !locationData.city) ? "not-allowed" : "pointer",
               fontSize: "16px"
             }}
           >
-            {loading ? "Submitting..." : "Submit"}
+            {loading ? "Submitting..." : "Complete Profile"}
           </button>
         </form>
       </div>

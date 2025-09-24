@@ -329,6 +329,12 @@ export default function CustomerSearchPage() {
               </div>
             </div>
           </motion.form>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.form>
 
           {/* Category Filters */}
           <motion.div 
