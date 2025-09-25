@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkUserId       String    @unique // Clerk's user ID
+  email     String   @unique
+  phone     String   @unique
+  name      String
+  role      UserRole @default(UNASSIGNED) // CUSTOMER | WORKER | ADMIN
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  customerProfile CustomerProfile?
+  workerProfile   WorkerProfile?
+  jobsPosted      Job[]           @relation("CustomerJobs")
+  appliedJobs     JobApplication[]
+  givenReviews    Review[]        @relation("CustomerReviews")
+  receivedReviews Review[]        @relation("WorkerReviews")
+  Translation     Translation[]
+
+  @@map("users")
+}
+
+model CustomerProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  address     String
+  city        String
+  state       String
+  country     String
+  postalCode  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("customer_profiles")
+}
+
+model WorkerProfile {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  skilledIn        String   // JSON array stored as text in SQLite
+  qualification    String?
+  certificates     String?  // JSON array stored as text in SQLite
+  aadharNumber     String   @unique
+  yearsExperience  Int?
+  profilePic       String?
+  bio              String?
+  address          String
+  city             String
+  state            String
+  country          String
+  postalCode       String
+  availableAreas   String   // JSON array stored as text in SQLite
+  rating           Float    @default(0.0)
+  totalEarnings    Float    @default(0.0)
+  isVerified       Boolean  @default(false)
+  isAvailable      Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobApplications JobApplication[]
+  receivedReviews Review[]         @relation("WorkerProfileReviews")
+
+  @@map("worker_profiles")
+}
+
+model Job {
+  id          String    @id @default(cuid())
+  customerId  String
+  title       String
+  description String
+  category    String    // e.g., "plumber", "electrician", "cleaner"
+  location    String
+  charge      Float
+  status      JobStatus @default(OPEN)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  customer     User             @relation("CustomerJobs", fields: [customerId], references: [id], onDelete: Cascade)
+  applications JobApplication[]
+  reviews      Review[]
+
+  @@map("jobs")
+}
+
+model JobApplication {
+  id         String              @id @default(cuid())
+  jobId      String
+  workerId   String
+  message    String?
+  quotedRate Float?
+  status     JobApplicationStatus @default(PENDING)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  // Relations
+  job    Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  worker User          @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  workerProfile WorkerProfile @relation(fields: [workerId], references: [userId])
+
+  @@unique([jobId, workerId])
+  @@map("job_applications")
+}
+
+model Review {
+  id             String @id @default(cuid())
+  jobId          String
+  customerId     String
+  workerId       String
+  workerProfileId String
+  rating         Int    // 1-5 stars
+  comment        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  job           Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  customer      User          @relation("CustomerReviews", fields: [customerId], references: [id], onDelete: Cascade)
+  worker        User          @relation("WorkerReviews", fields: [workerId], references: [id], onDelete: Cascade)
+  workerProfile WorkerProfile @relation("WorkerProfileReviews", fields: [workerProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, customerId, workerId])
+  @@map("reviews")
+}
+
+// Translation system models
+model Translation {
+  id           String      @id @default(cuid())
+  originalText String
+  translatedText String
+  sourceLanguage String
+  targetLanguage String
+  contentType    ContentType @default(OTHER)
+  contentId      String?
+  userId         String?
+  textHash       String      @unique
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  lastUsed       DateTime    @default(now())
+  usageCount     Int         @default(1)
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([textHash])
+  @@index([contentType, contentId])
+  @@index([sourceLanguage, targetLanguage])
+  @@map("translations")
+}
+
+// Enums
+enum UserRole {
+  UNASSIGNED
+  CUSTOMER
+  WORKER
+  ADMIN
+}
+
+enum JobStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum JobApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum ContentType {
+  REVIEW
+  JOB
+  BIO
+  OTHER
+}

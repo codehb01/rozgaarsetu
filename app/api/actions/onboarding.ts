@@ -1,13 +1,13 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import prisma, { withDatabaseErrorHandling } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 export type WorkerFormData = {
-  skilledIn: string[];
+  skilledIn: string[];        // Input as array
   qualification?: string;
-  certificates?: string[];
+  certificates?: string[];    // Input as array  
   aadharNumber: string;
   yearsExperience?: number;
   profilePic?: string;
@@ -17,7 +17,7 @@ export type WorkerFormData = {
   state: string;
   country: string;
   postalCode: string;
-  availableAreas: string[];
+  availableAreas: string[];   // Input as array
 };
 
 export type CustomerFormData = {
@@ -139,9 +139,9 @@ export async function setUserRole(
         prisma.workerProfile.upsert({
           where: { userId: user.id },
           update: {
-            skilledIn,
+            skilledIn: JSON.stringify(skilledIn),
             qualification,
-            certificates,
+            certificates: JSON.stringify(certificates),
             aadharNumber,
             yearsExperience,
             profilePic,
@@ -151,13 +151,13 @@ export async function setUserRole(
             state,
             country,
             postalCode,
-            availableAreas,
+            availableAreas: JSON.stringify(availableAreas),
           },
           create: {
             userId: user.id,
-            skilledIn,
+            skilledIn: JSON.stringify(skilledIn),
             qualification,
-            certificates,
+            certificates: JSON.stringify(certificates),
             aadharNumber,
             yearsExperience,
             profilePic,
@@ -167,7 +167,7 @@ export async function setUserRole(
             state,
             country,
             postalCode,
-            availableAreas,
+            availableAreas: JSON.stringify(availableAreas),
           },
         }),
       ]);
@@ -192,7 +192,7 @@ export async function getCurrentUser() {
   const { userId } = await auth();
   if (!userId) return null;
 
-  try {
+  return await withDatabaseErrorHandling(async () => {
     const user = await prisma.user.findUnique({
       where: { clerkUserId: userId },
       include: {
@@ -201,8 +201,5 @@ export async function getCurrentUser() {
       },
     });
     return user;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return null;
-  }
+  });
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage } from '@/contexts/language-context';
 
 const languages = [
   { code: 'en', name: 'English', nativeName: 'English' },

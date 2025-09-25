@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
 import { auth } from "@clerk/nextjs/server";
+import { parseSkills, parseAreas } from "@/lib/json-helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -109,7 +110,7 @@ export default async function WorkerOrSpecialityPage({
               <div className="mb-3">
                 <div className="text-sm text-gray-400">Skills</div>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  {(wp.skilledIn || []).map((s, i) => (
+                  {parseSkills(wp.skilledIn as unknown as string).map((s, i) => (
                     <span
                       key={i}
                       className="px-2 py-1 rounded-md text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20"
@@ -122,7 +123,7 @@ export default async function WorkerOrSpecialityPage({
               <div className="mb-3">
                 <div className="text-sm text-gray-400">Available Areas</div>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  {(wp.availableAreas || []).map((s, i) => (
+                  {parseAreas(wp.availableAreas as unknown as string).map((s, i) => (
                     <span
                       key={i}
                       className="px-2 py-1 rounded-md text-xs bg-gray-500/10 text-gray-300 border border-gray-500/20"
@@ -172,7 +173,9 @@ export default async function WorkerOrSpecialityPage({
     take: 200,
   });
   const workers = workersRaw.filter((w) =>
-    flattenStrings(w.workerProfile?.skilledIn).includes(normalized)
+    parseSkills(w.workerProfile?.skilledIn as unknown as string).some(skill => 
+      skill.toLowerCase().includes(normalized)
+    )
   );
 
   return (
@@ -206,12 +209,12 @@ export default async function WorkerOrSpecialityPage({
                     </div>
                     <div className="mt-1 text-sm text-gray-400">
                       {w.workerProfile?.city || "City"} •{" "}
-                      {(w.workerProfile?.availableAreas || [])
+                      {parseAreas(w.workerProfile?.availableAreas as unknown as string)
                         .slice(0, 2)
                         .join(", ")}
                     </div>
                     <div className="mt-2 text-xs text-gray-300">
-                      {(w.workerProfile?.skilledIn || [])
+                      {parseSkills(w.workerProfile?.skilledIn as unknown as string)
                         .slice(0, 4)
                         .join(" • ")}
                     </div>

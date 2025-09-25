@@ -88,7 +88,7 @@ export default function CustomerBookingsPage() {
               aria-selected={tab === "ONGOING"}
               tabIndex={0}
               onClick={() => setTab("ONGOING")}
-              onKeyDown={(e) => {
+              onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   setTab("ONGOING");
@@ -107,7 +107,7 @@ export default function CustomerBookingsPage() {
               aria-selected={tab === "PREVIOUS"}
               tabIndex={0}
               onClick={() => setTab("PREVIOUS")}
-              onKeyDown={(e) => {
+              onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   setTab("PREVIOUS");

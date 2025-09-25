@@ -12,7 +12,7 @@ import ScrollText from "@/components/kokonutui/scroll-text";
 import TypewriterTitle from "@/components/kokonutui/type-writer";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
-import { useLanguage } from "@/lib/language-context";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function Home() {
   const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
@@ -145,21 +145,17 @@ export default function Home() {
       {/* Statistics Section with ScrollText */}
       <section className="py-20">
         <ScrollText
-          text={`${t('home.activeWorkers')} • ${t('home.jobsCompleted')} • ${t('home.successRate')} • `}
+          texts={[t('home.activeWorkers'), t('home.jobsCompleted'), t('home.successRate')]}
           className="text-4xl font-bold"
-          direction="left"
         />
       </section>
 
       {/* How it works Section */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
-          <TypewriterTitle
-            words={[
-              { text: t('home.howItWorks.title') }
-            ]}
-            className="text-5xl font-light"
-          />
+          <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
+            {t('home.howItWorks.title')}
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -200,7 +196,11 @@ export default function Home() {
             {t('home.cta.desc')}
           </p>
           
-          <MainMenusGradientCard className="mx-auto max-w-sm">
+          <MainMenusGradientCard 
+            title={t('home.getStarted')}
+            description={t('home.learnMore')}
+            className="mx-auto max-w-sm"
+          >
             <div className="p-6 text-center">
               <h3 className="text-xl font-semibold mb-2">{t('home.getStarted')}</h3>
               <p className="text-gray-600 dark:text-gray-400">{t('home.learnMore')}</p>

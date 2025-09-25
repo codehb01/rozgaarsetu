@@ -38,9 +38,9 @@ model WorkerProfile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  skilledIn       String[] // plumber, electrician, etc.
+  skilledIn       String   // JSON string for array: ["plumber", "electrician"]
   qualification   String?
-  certificates    String[] // file URLs
+  certificates    String   // JSON string for array: ["url1", "url2"]
   aadharNumber    String   @unique
   yearsExperience Int?
   profilePic      String?
@@ -51,10 +51,17 @@ model WorkerProfile {
   state          String
   country        String
   postalCode     String
-  availableAreas String[] // list of areas where worker can work
+  availableAreas String   // JSON string for array: ["area1", "area2"]
+
+  rating           Float    @default(0.0)
+  totalEarnings    Float    @default(0.0)
+  isVerified       Boolean  @default(false)
+  isAvailable      Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("worker_profiles")
 }
 
 model CustomerProfile {
@@ -70,6 +77,8 @@ model CustomerProfile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("customer_profiles")
 }
 
 model Job {
@@ -139,4 +148,23 @@ model Review {
   comment String?
 
   createdAt DateTime @default(now())
+}
+
+model TranslationCache {
+  id           String   @id @default(uuid())
+  originalText String   // Original text to translate
+  translatedText String // Translated result
+  sourceLanguage String // Source language code (e.g., 'en')
+  targetLanguage String // Target language code (e.g., 'hi')
+  contentType   String  // Type of content: 'review', 'job', 'bio', etc.
+  contentId     String? // Optional ID of the related content
+  hashKey       String  @unique // Hash of originalText + sourceLanguage + targetLanguage
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastAccessedAt DateTime @default(now()) // For cache cleanup
+
+  @@index([hashKey])
+  @@index([contentType, contentId])
+  @@index([sourceLanguage, targetLanguage])
 }
