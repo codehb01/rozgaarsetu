@@ -230,8 +230,8 @@ function WorkerComparisonCard({ worker, googleApiKey }: { worker: typeof mockWor
 // Main enhanced demo component
 export default function EnhancedHybridTranslationDemo() {
   const { t, language } = useLanguage();
-  const [googleApiKey, setGoogleApiKey] = useState('AIzaSyBCvgLaNzWb5FPtoahuZiOXlvaGKTHzZ3w');
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [googleApiKey, setGoogleApiKey] = useState('');
+  const [showApiKeyInput, setShowApiKeyInput] = useState(true);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
