@@ -3,6 +3,7 @@
 import prisma, { withDatabaseErrorHandling } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { checkUser } from "@/lib/checkUser";
 
 export type WorkerFormData = {
   skilledIn: string[];        // Input as array
@@ -34,11 +35,9 @@ export async function setUserRole(
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  // Get user record
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-  });
-  if (!user) throw new Error("User not found in database");
+  // Get or create user record using checkUser
+  const user = await checkUser();
+  if (!user) throw new Error("Failed to get or create user");
 
   const roleRaw = formData.get("role");
   const role = typeof roleRaw === "string" ? roleRaw.toUpperCase() : "";

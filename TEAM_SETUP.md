@@ -3,17 +3,20 @@
 ## ⚙️ Environment Setup
 
 ### 1. Clone and Install
+
 ```bash
 git pull origin feature-translate-rc
 npm install
 ```
 
 ### 2. Create Environment File
+
 ```bash
 cp .env.example .env
 ```
 
 ### 3. Configure Your .env File
+
 ```env
 # Your own Neon database connection
 DATABASE_URL='postgresql://your_user:your_password@your_endpoint/your_db'
@@ -36,22 +39,26 @@ AZURE_TRANSLATOR_ENDPOINT=https://api.cognitive.microsofttranslator.com
 ```
 
 ### 4. Setup Database
+
 ```bash
 npx prisma migrate deploy
 npx prisma generate
 ```
 
 ### 5. Run Development Server
+
 ```bash
 npm run dev
 ```
 
 ## ✅ Verify Translation System
+
 1. Visit `http://localhost:3000`
 2. Use language selector in navbar
 3. Check translation cache in database: `npx prisma studio`
 
 ## 🚨 Security Note
+
 - Never commit `.env` files to git
 - Each team member needs their own database and Clerk keys
 - Google API key can be shared for development

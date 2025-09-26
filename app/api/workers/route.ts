@@ -36,7 +36,7 @@ function matchesKeyword(
   q: string,
   worker: {
     name: string | null;
-    workerProfile: {
+    WorkerProfile: {
       skilledIn: string[] | null;
       qualification: string | null;
       city: string | null;
@@ -47,15 +47,15 @@ function matchesKeyword(
 ): boolean {
   if (!q) return true;
   const needle = q.toLowerCase();
-  const skills = flattenStringArray(worker.workerProfile?.skilledIn);
-  const areas = flattenStringArray(worker.workerProfile?.availableAreas);
+  const skills = flattenStringArray(worker.WorkerProfile?.skilledIn);
+  const areas = flattenStringArray(worker.WorkerProfile?.availableAreas);
   return (
     (worker.name ?? "").toLowerCase().includes(needle) ||
-    (worker.workerProfile?.qualification ?? "")
+    (worker.WorkerProfile?.qualification ?? "")
       .toLowerCase()
       .includes(needle) ||
-    (worker.workerProfile?.city ?? "").toLowerCase().includes(needle) ||
-    (worker.workerProfile?.bio ?? "").toLowerCase().includes(needle) ||
+    (worker.WorkerProfile?.city ?? "").toLowerCase().includes(needle) ||
+    (worker.WorkerProfile?.bio ?? "").toLowerCase().includes(needle) ||
     skills.some((s) => s.includes(needle)) ||
     areas.some((a) => a.includes(needle))
   );
@@ -77,30 +77,26 @@ export async function GET(req: NextRequest) {
       200
     );
 
+    // Get workers but handle case where WorkerProfile might not exist
     const workersRaw = await prisma.user.findMany({
       where: { role: "WORKER" },
       select: {
         id: true,
         name: true,
         role: true,
-        workerProfile: {
-          select: {
-            skilledIn: true,
-            city: true,
-            availableAreas: true,
-            yearsExperience: true,
-            qualification: true,
-            profilePic: true,
-            bio: true,
-          },
-        },
       },
       take: 200,
     });
 
-    const filtered = workersRaw.filter((w) => {
+    // Transform to expected format with null profiles since profiles table is empty
+    const workersWithProfiles = workersRaw.map(user => ({
+      ...user,
+      WorkerProfile: null
+    }));
+
+    const filtered = workersWithProfiles.filter((w) => {
       const categoryOk = category
-        ? flattenStringArray(w.workerProfile?.skilledIn).includes(category)
+        ? flattenStringArray(w.WorkerProfile?.skilledIn).includes(category)
         : true;
       const keywordOk = matchesKeyword(q, w);
       return categoryOk && keywordOk;

@@ -8,104 +8,125 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  clerkUserId       String    @unique // Clerk's user ID
-  email     String   @unique
-  phone     String   @unique
-  name      String
-  role      UserRole @default(UNASSIGNED) // CUSTOMER | WORKER | ADMIN
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  workerProfile   WorkerProfile?
+  id              String           @id @default(uuid())
+  email           String           @unique
+  phone           String           @unique
+  name            String
+  role            UserRole         @default(UNASSIGNED)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  clerkUserId     String           @unique
   customerProfile CustomerProfile?
   jobsCreated     Job[]            @relation("CustomerJobs")
   jobsAssigned    Job[]            @relation("WorkerJobs")
-  transactions    Transaction[]
   reviewsGiven    Review[]         @relation("ReviewsByCustomer")
   reviewsReceived Review[]         @relation("ReviewsForWorker")
-}
-
-enum UserRole {
-  CUSTOMER
-  WORKER
-  UNASSIGNED
-}
-
-model WorkerProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  skilledIn       String   // JSON string for array: ["plumber", "electrician"]
-  qualification   String?
-  certificates    String   // JSON string for array: ["url1", "url2"]
-  aadharNumber    String   @unique
-  yearsExperience Int?
-  profilePic      String?
-  bio             String?
-
-  address        String
-  city           String
-  state          String
-  country        String
-  postalCode     String
-  availableAreas String   // JSON string for array: ["area1", "area2"]
-
-  rating           Float    @default(0.0)
-  totalEarnings    Float    @default(0.0)
-  isVerified       Boolean  @default(false)
-  isAvailable      Boolean  @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("worker_profiles")
-}
-
-model CustomerProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  address    String
-  city       String
-  state      String
-  country    String
-  postalCode String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("customer_profiles")
+  transactions    Transaction[]
+  workerProfile   WorkerProfile?
 }
 
 model Job {
-  id          String    @id @default(uuid())
+  id          String        @id @default(uuid())
   description String
   details     String?
   date        DateTime
   time        DateTime
   location    String
   charge      Float
-  status      JobStatus @default(PENDING)
-
-  // Relations
-  customerId String
-  customer   User   @relation("CustomerJobs", fields: [customerId], references: [id])
-
-  workerId String?
-  worker   User?   @relation("WorkerJobs", fields: [workerId], references: [id])
-
-  review Review?
-
+  status      JobStatus     @default(PENDING)
+  customerId  String
+  workerId    String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  customer    User          @relation("CustomerJobs", fields: [customerId], references: [id])
+  worker      User?         @relation("WorkerJobs", fields: [workerId], references: [id])
+  review      Review?
   Transaction Transaction[]
 
   @@index([customerId, status])
   @@index([workerId, status])
+}
+
+model Transaction {
+  id        String          @id @default(uuid())
+  userId    String
+  jobId     String?
+  amount    Float
+  type      TransactionType
+  createdAt DateTime        @default(now())
+  job       Job?            @relation(fields: [jobId], references: [id])
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  jobId      String   @unique
+  customerId String
+  workerId   String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  customer   User     @relation("ReviewsByCustomer", fields: [customerId], references: [id])
+  job        Job      @relation(fields: [jobId], references: [id])
+  worker     User     @relation("ReviewsForWorker", fields: [workerId], references: [id])
+}
+
+model TranslationCache {
+  id             String   @id @default(uuid())
+  originalText   String
+  translatedText String
+  sourceLanguage String
+  targetLanguage String
+  contentType    String
+  contentId      String?
+  hashKey        String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  lastAccessedAt DateTime @default(now())
+
+  @@index([hashKey])
+  @@index([contentType, contentId])
+  @@index([sourceLanguage, targetLanguage])
+}
+
+model CustomerProfile {
+  id         String   @id
+  userId     String   @unique
+  address    String
+  city       String
+  state      String
+  country    String
+  postalCode String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WorkerProfile {
+  id              String   @id
+  userId          String   @unique
+  skilledIn       String[]
+  qualification   String?
+  certificates    String[]
+  aadharNumber    String   @unique
+  yearsExperience Int?
+  profilePic      String?
+  bio             String?
+  address         String
+  city            String
+  state           String
+  country         String
+  postalCode      String
+  availableAreas  String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  CUSTOMER
+  WORKER
+  UNASSIGNED
 }
 
 enum JobStatus {
@@ -116,55 +137,8 @@ enum JobStatus {
   CANCELLED
 }
 
-model Transaction {
-  id        String          @id @default(uuid())
-  userId    String
-  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobId     String?
-  job       Job?            @relation(fields: [jobId], references: [id])
-  amount    Float
-  type      TransactionType
-  createdAt DateTime        @default(now())
-}
-
 enum TransactionType {
-  PAYMENT // customer payment for job
-  PAYOUT // worker withdrawal
-  REFUND // refund to customer
-}
-
-model Review {
-  id    String @id @default(uuid())
-  jobId String @unique
-  job   Job    @relation(fields: [jobId], references: [id])
-
-  customerId String
-  customer   User   @relation("ReviewsByCustomer", fields: [customerId], references: [id])
-
-  workerId String
-  worker   User   @relation("ReviewsForWorker", fields: [workerId], references: [id])
-
-  rating  Int // 1–5 stars
-  comment String?
-
-  createdAt DateTime @default(now())
-}
-
-model TranslationCache {
-  id           String   @id @default(uuid())
-  originalText String   // Original text to translate
-  translatedText String // Translated result
-  sourceLanguage String // Source language code (e.g., 'en')
-  targetLanguage String // Target language code (e.g., 'hi')
-  contentType   String  // Type of content: 'review', 'job', 'bio', etc.
-  contentId     String? // Optional ID of the related content
-  hashKey       String  @unique // Hash of originalText + sourceLanguage + targetLanguage
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  lastAccessedAt DateTime @default(now()) // For cache cleanup
-
-  @@index([hashKey])
-  @@index([contentType, contentId])
-  @@index([sourceLanguage, targetLanguage])
+  PAYMENT
+  PAYOUT
+  REFUND
 }
