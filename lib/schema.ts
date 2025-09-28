@@ -48,7 +48,19 @@ export const workerFormSchema = z.object({
   yearsExperience: z
     .number({ error: "Years of experience must be a number" })
     .min(0, "Must be 0 or more years"),
-  profilePic: z.string().url("Must be a valid URL").optional(),
+  hourlyRate: z
+    .number({ error: "Hourly rate must be a number" })
+    .min(1, "Hourly rate must be at least ₹1"),
+  minimumFee: z
+    .number({ error: "Minimum fee must be a number" })
+    .min(1, "Minimum fee must be at least ₹1"),
+  profilePic: z
+    .string()
+    .optional()
+    .transform((val) => val?.trim() || "")
+    .refine((val) => !val || z.string().url().safeParse(val).success, {
+      message: "Must be a valid URL",
+    }),
   bio: z.string().max(500, "Bio cannot exceed 500 characters").optional(),
   address: z.string().min(3, "Address is required"),
   city: z.string().min(2, "City is required"),
