@@ -10,6 +10,8 @@ export type WorkerFormData = {
   certificates?: string[];
   aadharNumber: string;
   yearsExperience?: number;
+  hourlyRate: number;
+  minimumFee: number;
   profilePic?: string;
   bio?: string;
   address: string;
@@ -78,19 +80,28 @@ export async function setUserRole(
       ]);
 
       revalidatePath("/");
-      return { success: true, redirect: "/customer/dashboard" };
+      return { success: true, redirect: "/onboarding/finish" };
     }
 
     if (role === "WORKER") {
-      const skilledInRaw = formData.getAll("skilledIn") as string[];
+      const skilledInRaw = formData.get("skilledIn")?.toString();
       const skilledIn = skilledInRaw
-        .map((s) => s?.toString().toLowerCase().trim())
-        .filter(Boolean);
+        ? JSON.parse(skilledInRaw)
+            .map((s: string) => s?.toLowerCase().trim())
+            .filter(Boolean)
+        : [];
       const qualification = formData.get("qualification")?.toString() || null;
-      const certificates = formData.getAll("certificates") as string[];
+      const certificatesRaw = formData.get("certificates")?.toString();
+      const certificates = certificatesRaw ? JSON.parse(certificatesRaw) : [];
       const aadharNumber = formData.get("aadharNumber")?.toString();
       const yearsExperience = formData.get("yearsExperience")
         ? parseInt(formData.get("yearsExperience")!.toString(), 10)
+        : null;
+      const hourlyRate = formData.get("hourlyRate")
+        ? parseFloat(formData.get("hourlyRate")!.toString())
+        : null;
+      const minimumFee = formData.get("minimumFee")
+        ? parseFloat(formData.get("minimumFee")!.toString())
         : null;
       const profilePic = formData.get("profilePic")?.toString() || null;
       const bio = formData.get("bio")?.toString() || null;
@@ -99,14 +110,22 @@ export async function setUserRole(
       const state = formData.get("state")?.toString();
       const country = formData.get("country")?.toString();
       const postalCode = formData.get("postalCode")?.toString();
-      const availableAreasRaw = formData.getAll("availableAreas") as string[];
+      const availableAreasRaw = formData.get("availableAreas")?.toString();
       const availableAreas = availableAreasRaw
-        .map((s) => s?.toString().trim())
-        .filter(Boolean);
+        ? JSON.parse(availableAreasRaw)
+            .map((s: string) => s?.trim())
+            .filter(Boolean)
+        : [];
+      const previousWorksRaw = formData.get("previousWorks")?.toString();
+      const previousWorks = previousWorksRaw
+        ? JSON.parse(previousWorksRaw)
+        : [];
 
       if (
         !skilledIn.length ||
         !aadharNumber ||
+        !hourlyRate ||
+        !minimumFee ||
         !address ||
         !city ||
         !state ||
@@ -144,6 +163,8 @@ export async function setUserRole(
             certificates,
             aadharNumber,
             yearsExperience,
+            hourlyRate,
+            minimumFee,
             profilePic,
             bio,
             address,
@@ -160,6 +181,8 @@ export async function setUserRole(
             certificates,
             aadharNumber,
             yearsExperience,
+            hourlyRate,
+            minimumFee,
             profilePic,
             bio,
             address,
@@ -172,8 +195,39 @@ export async function setUserRole(
         }),
       ]);
 
+      // Handle previous works if any
+      if (previousWorks.length > 0) {
+        const workerProfile = await prisma.workerProfile.findUnique({
+          where: { userId: user.id },
+          select: { id: true },
+        });
+
+        if (workerProfile) {
+          // Delete existing previous works and create new ones
+          await prisma.previousWork.deleteMany({
+            where: { workerId: workerProfile.id },
+          });
+
+          await prisma.previousWork.createMany({
+            data: previousWorks.map(
+              (work: {
+                id: string;
+                title: string;
+                description: string;
+                imageUrl: string;
+              }) => ({
+                workerId: workerProfile.id,
+                title: work.title,
+                description: work.description || null,
+                images: [work.imageUrl].filter(Boolean),
+              })
+            ),
+          });
+        }
+      }
+
       revalidatePath("/");
-      return { success: true, redirect: "/worker/dashboard" };
+      return { success: true, redirect: "/onboarding/finish" };
     }
 
     return { success: false, error: "Unhandled role" };

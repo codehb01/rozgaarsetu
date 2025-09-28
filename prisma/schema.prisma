@@ -53,9 +53,30 @@ model WorkerProfile {
   postalCode     String
   availableAreas String[] // list of areas where worker can work
 
+   hourlyRate   Float?   // Optional, in your preferred currency
+  minimumFee   Float?   // Optional, base fee after booking acceptance
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+
+  // New relation
+  previousWorks PreviousWork[]
 }
+
+model PreviousWork {
+  id          String   @id @default(uuid())
+  workerId    String
+  worker      WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  title       String?   // Optional title for the work (e.g., "Pipe Repair Project")
+  description String?   // Optional description
+  images      String[]  // Array of image URLs
+  location    String?   // Optional location name
+
+  createdAt   DateTime @default(now())
+}
+
 
 model CustomerProfile {
   id     String @id @default(uuid())
