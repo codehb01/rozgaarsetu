@@ -1,12 +1,16 @@
 import { getCurrentUser } from "@/app/api/actions/onboarding";
+import { checkUser } from "@/lib/checkUser";
 import { redirect } from "next/navigation";
 import React from "react";
+
 const OnBoardingLayout = async ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const user = await getCurrentUser();
+  // Ensure user exists in database first
+  const user = await checkUser();
+  
   // Only redirect away from onboarding for completed roles.
   if (user?.role === "CUSTOMER") {
     redirect("/customer/dashboard");

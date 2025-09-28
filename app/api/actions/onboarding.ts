@@ -12,20 +12,32 @@ export type WorkerFormData = {
   yearsExperience?: number;
   profilePic?: string;
   bio?: string;
-  address: string;
+  // OpenStreetMap address fields
+  formattedAddress: string;
+  streetNumber?: string;
+  streetName?: string;
+  locality?: string;
+  sublocality?: string;
   city: string;
   state: string;
   country: string;
   postalCode: string;
+  placeId: string;
   availableAreas: string[];
 };
 
 export type CustomerFormData = {
-  address: string;
+  // OpenStreetMap address fields
+  formattedAddress: string;
+  streetNumber?: string;
+  streetName?: string;
+  locality?: string;
+  sublocality?: string;
   city: string;
   state: string;
   country: string;
   postalCode: string;
+  placeId: string;
 };
 
 export async function setUserRole(
@@ -34,39 +46,56 @@ export async function setUserRole(
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  // Get user record
-  const user = await prisma.user.findUnique({
+  console.log("setUserRole called for userId:", userId);
+
+  // Get or create user record
+  let user = await prisma.user.findUnique({
     where: { clerkUserId: userId },
   });
-  if (!user) throw new Error("User not found in database");
+  
+  // If user doesn't exist, create them using checkUser logic
+  if (!user) {
+    const { checkUser } = await import("@/lib/checkUser");
+    user = await checkUser();
+    if (!user) throw new Error("Failed to create user in database");
+  }
+
+  console.log("User found/created:", user.id, user.role);
 
   const roleRaw = formData.get("role");
   const role = typeof roleRaw === "string" ? roleRaw.toUpperCase() : "";
+  console.log("Selected role:", role);
+  
   if (!role || !["WORKER", "CUSTOMER"].includes(role)) {
     throw new Error("Invalid role selection");
   }
 
   try {
     if (role === "CUSTOMER") {
-      const address = formData.get("address")?.toString();
+      // Get Google Maps address data
+      const formattedAddress = formData.get("formattedAddress")?.toString();
+      const placeId = formData.get("placeId")?.toString();
+      const streetNumber = formData.get("streetNumber")?.toString();
+      const streetName = formData.get("streetName")?.toString();
+      const locality = formData.get("locality")?.toString();
+      const sublocality = formData.get("sublocality")?.toString();
       const city = formData.get("city")?.toString();
       const state = formData.get("state")?.toString();
       const country = formData.get("country")?.toString();
       const postalCode = formData.get("postalCode")?.toString();
-      const latitude = formData.get("latitude")?.toString();
-      const longitude = formData.get("longitude")?.toString();
 
-      if (!address || !city || !state || !country || !postalCode) {
-        throw new Error("Missing required fields for customer");
+      console.log("Customer data:", { 
+        formattedAddress, placeId, streetNumber, streetName, 
+        locality, sublocality, city, state, country, postalCode 
+      });
+
+      if (!formattedAddress || !city || !state || !country || !postalCode) {
+        throw new Error("Missing required address fields for customer");
       }
 
-      // Parse coordinates if available
-      const coords = {
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
-      };
+      console.log("Creating customer profile for user:", user.id);
 
-      await prisma.$transaction([
+      const result = await prisma.$transaction([
         prisma.user.update({
           where: { clerkUserId: userId },
           data: { role: "CUSTOMER" },
@@ -74,73 +103,115 @@ export async function setUserRole(
         prisma.customerProfile.upsert({
           where: { userId: user.id },
           update: { 
-            address, 
+            formattedAddress,
+            placeId,
+            streetNumber,
+            streetName,
+            locality,
+            sublocality,
             city, 
             state, 
             country, 
             postalCode,
-            latitude: coords.latitude,
-            longitude: coords.longitude,
           },
           create: {
             userId: user.id,
-            address,
+            formattedAddress,
+            placeId,
+            streetNumber,
+            streetName,
+            locality,
+            sublocality,
             city,
             state,
             country,
             postalCode,
-            latitude: coords.latitude,
-            longitude: coords.longitude,
           },
         }),
       ]);
 
+      console.log("Customer profile created successfully:", result[1]);
       revalidatePath("/");
       return { success: true, redirect: "/customer/dashboard" };
     }
 
     if (role === "WORKER") {
-      const skilledInRaw = formData.getAll("skilledIn") as string[];
-      const skilledIn = skilledInRaw
-        .map((s) => s?.toString().toLowerCase().trim())
-        .filter(Boolean);
+      // Handle arrays that might be JSON strings or actual arrays
+      const skilledInRaw = formData.get("skilledIn")?.toString();
+      let skilledIn: string[] = [];
+      try {
+        skilledIn = skilledInRaw ? JSON.parse(skilledInRaw) : [];
+      } catch {
+        // Fallback to treating as comma-separated string
+        skilledIn = skilledInRaw ? skilledInRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+      }
+      skilledIn = skilledIn.map(s => s.toLowerCase().trim()).filter(Boolean);
+
       const qualification = formData.get("qualification")?.toString() || null;
-      const certificates = formData.getAll("certificates") as string[];
+      
+      const certificatesRaw = formData.get("certificates")?.toString();
+      let certificates: string[] = [];
+      try {
+        certificates = certificatesRaw ? JSON.parse(certificatesRaw) : [];
+      } catch {
+        certificates = certificatesRaw ? certificatesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+      }
+
       const aadharNumber = formData.get("aadharNumber")?.toString();
       const yearsExperience = formData.get("yearsExperience")
         ? parseInt(formData.get("yearsExperience")!.toString(), 10)
         : null;
       const profilePic = formData.get("profilePic")?.toString() || null;
       const bio = formData.get("bio")?.toString() || null;
-      const address = formData.get("address")?.toString();
+      
+      // Get Google Maps address data
+      const formattedAddress = formData.get("formattedAddress")?.toString();
+      const placeId = formData.get("placeId")?.toString();
+      const streetNumber = formData.get("streetNumber")?.toString();
+      const streetName = formData.get("streetName")?.toString();
+      const locality = formData.get("locality")?.toString();
+      const sublocality = formData.get("sublocality")?.toString();
       const city = formData.get("city")?.toString();
       const state = formData.get("state")?.toString();
       const country = formData.get("country")?.toString();
       const postalCode = formData.get("postalCode")?.toString();
-      const latitude = formData.get("latitude")?.toString();
-      const longitude = formData.get("longitude")?.toString();
-      const availableAreasRaw = formData.getAll("availableAreas") as string[];
-      const availableAreas = availableAreasRaw
-        .map((s) => s?.toString().trim())
-        .filter(Boolean);
+      
+      const availableAreasRaw = formData.get("availableAreas")?.toString();
+      let availableAreas: string[] = [];
+      try {
+        availableAreas = availableAreasRaw ? JSON.parse(availableAreasRaw) : [];
+      } catch {
+        availableAreas = availableAreasRaw ? availableAreasRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+      }
+
+      console.log("Worker data:", { 
+        skilledIn, certificates, availableAreas, aadharNumber, 
+        formattedAddress, placeId, streetNumber, streetName,
+        locality, sublocality, city, state, country, postalCode,
+        qualification, yearsExperience, bio 
+      });
 
       if (
         !skilledIn.length ||
         !aadharNumber ||
-        !address ||
+        !formattedAddress ||
         !city ||
         !state ||
         !country ||
         !postalCode
       ) {
-        throw new Error("Missing required fields for worker");
+        const missing = [];
+        if (!skilledIn.length) missing.push("skills");
+        if (!aadharNumber) missing.push("aadharNumber");
+        if (!formattedAddress) missing.push("address");
+        if (!city) missing.push("city");
+        if (!state) missing.push("state");
+        if (!country) missing.push("country");
+        if (!postalCode) missing.push("postalCode");
+        
+        console.log("Missing required fields:", missing);
+        throw new Error(`Missing required fields for worker: ${missing.join(", ")}`);
       }
-
-      // Parse coordinates if available
-      const coords = {
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
-      };
 
       // Check if aadharNumber is already used by another user
       const existingAadhar = await prisma.workerProfile.findFirst({
@@ -157,7 +228,9 @@ export async function setUserRole(
         };
       }
 
-      await prisma.$transaction([
+      console.log("Creating worker profile for user:", user.id);
+
+      const result = await prisma.$transaction([
         prisma.user.update({
           where: { clerkUserId: userId },
           data: { role: "WORKER" },
@@ -172,13 +245,16 @@ export async function setUserRole(
             yearsExperience,
             profilePic,
             bio,
-            address,
+            formattedAddress,
+            placeId,
+            streetNumber,
+            streetName,
+            locality,
+            sublocality,
             city,
             state,
             country,
             postalCode,
-            latitude: coords.latitude,
-            longitude: coords.longitude,
             availableAreas,
           },
           create: {
@@ -190,17 +266,22 @@ export async function setUserRole(
             yearsExperience,
             profilePic,
             bio,
-            address,
+            formattedAddress,
+            placeId,
+            streetNumber,
+            streetName,
+            locality,
+            sublocality,
             city,
             state,
             country,
             postalCode,
-            latitude: coords.latitude,
-            longitude: coords.longitude,
             availableAreas,
           },
         }),
       ]);
+
+      console.log("Worker profile created successfully:", result[1]);
 
       revalidatePath("/");
       return { success: true, redirect: "/worker/dashboard" };
@@ -223,13 +304,20 @@ export async function getCurrentUser() {
   if (!userId) return null;
 
   try {
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { clerkUserId: userId },
       include: {
         workerProfile: true,
         customerProfile: true,
       },
     });
+    
+    // If user doesn't exist, create them using checkUser logic
+    if (!user) {
+      const { checkUser } = await import("@/lib/checkUser");
+      user = await checkUser();
+    }
+    
     return user;
   } catch (error) {
     console.error("Error fetching user:", error);

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { setUserRole } from "@/app/api/actions/onboarding";
 import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { OnboardingSkeleton } from "@/components/ui/dashboard-skeleton";
-import LocationInput from "@/components/ui/location-input";
+import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<"choose-role" | "worker-form" | "customer-form">("choose-role");
@@ -13,19 +13,27 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [locationData, setLocationData] = useState<{
-    address: string;
+    formattedAddress: string;
+    placeId: string;
+    streetNumber?: string;
+    streetName?: string;
+    locality?: string;
+    sublocality?: string;
     city: string;
     state: string;
     country: string;
     postalCode: string;
-    latitude?: number;
-    longitude?: number;
+    latitude: number;
+    longitude: number;
   }>({
-    address: "",
+    formattedAddress: "",
+    placeId: "",
     city: "",
     state: "",
     country: "",
     postalCode: "",
+    latitude: 0,
+    longitude: 0,
   });
   const router = useRouter();
 
@@ -57,17 +65,16 @@ export default function OnboardingPage() {
 
     const formData = new FormData();
     formData.append("role", "CUSTOMER");
-    formData.append("address", locationData.address);
+    formData.append("formattedAddress", locationData.formattedAddress);
+    formData.append("placeId", locationData.placeId);
+    if (locationData.streetNumber) formData.append("streetNumber", locationData.streetNumber);
+    if (locationData.streetName) formData.append("streetName", locationData.streetName);
+    if (locationData.locality) formData.append("locality", locationData.locality);
+    if (locationData.sublocality) formData.append("sublocality", locationData.sublocality);
     formData.append("city", locationData.city);
     formData.append("state", locationData.state);
     formData.append("country", locationData.country);
     formData.append("postalCode", locationData.postalCode);
-    
-    // Add coordinates if available
-    if (locationData.latitude && locationData.longitude) {
-      formData.append("latitude", locationData.latitude.toString());
-      formData.append("longitude", locationData.longitude.toString());
-    }
 
     try {
       const response = await setUserRole(formData);
@@ -92,17 +99,16 @@ export default function OnboardingPage() {
     formData.append("role", "WORKER");
 
     // Add location data
-    formData.append("address", locationData.address);
+    formData.append("formattedAddress", locationData.formattedAddress);
+    formData.append("placeId", locationData.placeId);
+    if (locationData.streetNumber) formData.append("streetNumber", locationData.streetNumber);
+    if (locationData.streetName) formData.append("streetName", locationData.streetName);
+    if (locationData.locality) formData.append("locality", locationData.locality);
+    if (locationData.sublocality) formData.append("sublocality", locationData.sublocality);
     formData.append("city", locationData.city);
     formData.append("state", locationData.state);
     formData.append("country", locationData.country);
     formData.append("postalCode", locationData.postalCode);
-    
-    // Add coordinates if available
-    if (locationData.latitude && locationData.longitude) {
-      formData.append("latitude", locationData.latitude.toString());
-      formData.append("longitude", locationData.longitude.toString());
-    }
 
     // Handle comma-separated values
     const skilledIn = formData.get("skilledIn") as string;
@@ -248,22 +254,23 @@ export default function OnboardingPage() {
         <form onSubmit={handleCustomerSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div style={{ marginBottom: "20px" }}>
             <h3 style={{ marginBottom: "10px", fontSize: "18px", fontWeight: "600" }}>Location Information</h3>
-            <LocationInput
-              onLocationChange={setLocationData}
-              initialLocation={locationData}
+            <OpenStreetMapInput
+              onPlaceSelect={setLocationData}
+              placeholder="Enter your address"
+              value={locationData.formattedAddress}
             />
           </div>
           
           <button 
             type="submit" 
-            disabled={loading || !locationData.address || !locationData.city}
+            disabled={loading || !locationData.formattedAddress || !locationData.city}
             style={{ 
               padding: "12px", 
-              backgroundColor: (loading || !locationData.address || !locationData.city) ? "#6c757d" : "#007bff", 
+              backgroundColor: (loading || !locationData.formattedAddress || !locationData.city) ? "#6c757d" : "#007bff", 
               color: "white", 
               border: "none", 
               borderRadius: "4px",
-              cursor: (loading || !locationData.address || !locationData.city) ? "not-allowed" : "pointer",
+              cursor: (loading || !locationData.formattedAddress || !locationData.city) ? "not-allowed" : "pointer",
               fontSize: "16px"
             }}
           >
@@ -345,22 +352,23 @@ export default function OnboardingPage() {
           
           <div style={{ marginBottom: "20px" }}>
             <h3 style={{ marginBottom: "10px", fontSize: "18px", fontWeight: "600" }}>Location Information</h3>
-            <LocationInput
-              onLocationChange={setLocationData}
-              initialLocation={locationData}
+            <OpenStreetMapInput
+              onPlaceSelect={setLocationData}
+              placeholder="Enter your work address"
+              value={locationData.formattedAddress}
             />
           </div>
           
           <button 
             type="submit" 
-            disabled={loading || !locationData.address || !locationData.city}
+            disabled={loading || !locationData.formattedAddress || !locationData.city}
             style={{ 
               padding: "12px", 
-              backgroundColor: (loading || !locationData.address || !locationData.city) ? "#6c757d" : "#28a745", 
+              backgroundColor: (loading || !locationData.formattedAddress || !locationData.city) ? "#6c757d" : "#28a745", 
               color: "white", 
               border: "none", 
               borderRadius: "4px",
-              cursor: (loading || !locationData.address || !locationData.city) ? "not-allowed" : "pointer",
+              cursor: (loading || !locationData.formattedAddress || !locationData.city) ? "not-allowed" : "pointer",
               fontSize: "16px"
             }}
           >
