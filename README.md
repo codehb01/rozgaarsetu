@@ -1,24 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RozgaarSetu
+
+RozgaarSetu is a platform connecting workers with customers for various services. Built with Next.js 15, TypeScript, and modern web technologies.
+
+## Features
+
+- 🚀 **Multi-step Onboarding**: Comprehensive onboarding flow for workers and customers
+- 🔐 **Authentication**: Secure authentication with Clerk
+- 🖼️ **Image Uploads**: Cloudinary integration for profile pictures and work portfolios
+- 📱 **Responsive Design**: Mobile-first responsive design with Tailwind CSS
+- 🎨 **Modern UI**: Beautiful UI components with shadcn/ui
+- 📝 **Form Validation**: Robust form validation with Zod and React Hook Form
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Database**: Prisma ORM with PostgreSQL
+- **Authentication**: Clerk
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Image Storage**: Cloudinary
+- **Form Handling**: React Hook Form with Zod validation
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm/yarn/pnpm
+- PostgreSQL database
+- Cloudinary account
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd rozgaarsetu
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+
+   Copy the example environment file:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Add your environment variables to `.env.local`:
+
+   ```env
+   # Database
+   DATABASE_URL="your-postgresql-connection-string"
+
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+   CLERK_SECRET_KEY=your_clerk_secret_key
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+   # Cloudinary (for image uploads)
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+   ```
+
+### Setup Instructions
+
+#### 1. Database Setup
+
+```bash
+# Initialize Prisma
+npx prisma generate
+npx prisma db push
+```
+
+#### 2. Clerk Authentication Setup
+
+1. Create account at [Clerk.com](https://clerk.com)
+2. Create a new application
+3. Copy the API keys to your `.env.local`
+4. Configure sign-in/sign-up URLs
+
+#### 3. Cloudinary Setup
+
+1. Create account at [Cloudinary.com](https://cloudinary.com)
+2. Go to Dashboard to get your credentials
+3. Add Cloud Name, API Key, and API Secret to `.env.local`
+
+#### 4. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
 

@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Plus, X, Upload } from "lucide-react";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { ArrowLeft, Plus, X } from "lucide-react";
 
 // Work Image Component with fallback
 function WorkPreviewImage({
@@ -36,6 +37,7 @@ function WorkPreviewImage({
       width={200}
       height={128}
       className={className}
+      style={{ width: "auto", height: "auto" }}
       onError={() => setImageError(true)}
     />
   );
@@ -141,21 +143,13 @@ export default function PreviousWorkPage() {
               </div>
 
               <div>
-                <div className="flex items-center gap-2">
-                  <Upload className="h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Image URL (paste a link to your work image)"
-                    value={newWork.imageUrl}
-                    onChange={(e) =>
-                      setNewWork({ ...newWork, imageUrl: e.target.value })
-                    }
-                    className="bg-gray-800 border-gray-700 flex-1"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  You can upload images to imgur.com or similar service and
-                  paste the link here
-                </p>
+                <ImageUpload
+                  value={newWork.imageUrl}
+                  onChange={(url) => setNewWork({ ...newWork, imageUrl: url })}
+                  onRemove={() => setNewWork({ ...newWork, imageUrl: "" })}
+                  type="work"
+                  placeholder="Upload work image or paste URL"
+                />
               </div>
 
               <Button

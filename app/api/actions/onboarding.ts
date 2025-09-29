@@ -42,6 +42,8 @@ export async function setUserRole(
   });
   if (!user) throw new Error("User not found in database");
 
+  console.log("Processing form data for user:", userId);
+
   const roleRaw = formData.get("role");
   const role = typeof roleRaw === "string" ? roleRaw.toUpperCase() : "";
   if (!role || !["WORKER", "CUSTOMER"].includes(role)) {
@@ -84,15 +86,33 @@ export async function setUserRole(
     }
 
     if (role === "WORKER") {
+      console.log("Processing WORKER role");
       const skilledInRaw = formData.get("skilledIn")?.toString();
-      const skilledIn = skilledInRaw
-        ? JSON.parse(skilledInRaw)
-            .map((s: string) => s?.toLowerCase().trim())
-            .filter(Boolean)
-        : [];
+      console.log("skilledInRaw:", skilledInRaw);
+
+      let skilledIn: string[] = [];
+      try {
+        skilledIn = skilledInRaw
+          ? JSON.parse(skilledInRaw)
+              .map((s: string) => s?.toLowerCase().trim())
+              .filter(Boolean)
+          : [];
+      } catch (e) {
+        console.error("Error parsing skilledIn:", e);
+        throw new Error("Invalid skilledIn data format");
+      }
+
       const qualification = formData.get("qualification")?.toString() || null;
       const certificatesRaw = formData.get("certificates")?.toString();
-      const certificates = certificatesRaw ? JSON.parse(certificatesRaw) : [];
+      console.log("certificatesRaw:", certificatesRaw);
+
+      let certificates: string[] = [];
+      try {
+        certificates = certificatesRaw ? JSON.parse(certificatesRaw) : [];
+      } catch (e) {
+        console.error("Error parsing certificates:", e);
+        throw new Error("Invalid certificates data format");
+      }
       const aadharNumber = formData.get("aadharNumber")?.toString();
       const yearsExperience = formData.get("yearsExperience")
         ? parseInt(formData.get("yearsExperience")!.toString(), 10)
@@ -111,15 +131,36 @@ export async function setUserRole(
       const country = formData.get("country")?.toString();
       const postalCode = formData.get("postalCode")?.toString();
       const availableAreasRaw = formData.get("availableAreas")?.toString();
-      const availableAreas = availableAreasRaw
-        ? JSON.parse(availableAreasRaw)
-            .map((s: string) => s?.trim())
-            .filter(Boolean)
-        : [];
+      console.log("availableAreasRaw:", availableAreasRaw);
+
+      let availableAreas: string[] = [];
+      try {
+        availableAreas = availableAreasRaw
+          ? JSON.parse(availableAreasRaw)
+              .map((s: string) => s?.trim())
+              .filter(Boolean)
+          : [];
+      } catch (e) {
+        console.error("Error parsing availableAreas:", e);
+        throw new Error("Invalid availableAreas data format");
+      }
+
       const previousWorksRaw = formData.get("previousWorks")?.toString();
-      const previousWorks = previousWorksRaw
-        ? JSON.parse(previousWorksRaw)
-        : [];
+      console.log("previousWorksRaw:", previousWorksRaw);
+
+      let previousWorks: Array<{
+        id: string;
+        title: string;
+        description: string;
+        imageUrl: string;
+      }> = [];
+      try {
+        previousWorks = previousWorksRaw ? JSON.parse(previousWorksRaw) : [];
+      } catch (e) {
+        console.error("Error parsing previousWorks:", e);
+        // previousWorks is optional, so don't throw error
+        previousWorks = [];
+      }
 
       if (
         !skilledIn.length ||

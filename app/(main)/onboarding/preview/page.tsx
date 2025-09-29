@@ -72,6 +72,7 @@ function WorkImage({
       width={200}
       height={120}
       className={className}
+      style={{ width: "auto", height: "auto" }}
       onError={() => setImageError(true)}
     />
   );

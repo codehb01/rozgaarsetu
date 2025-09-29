@@ -2,14 +2,31 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "@/components/ui/image-upload";
 import { Loader2, ArrowLeft } from "lucide-react";
-import { workerFormSchema, type WorkerFormData } from "@/lib/schema";
+
+interface WorkerFormData {
+  aadharNumber: string;
+  qualification: string;
+  certificates: string;
+  skilledIn: string;
+  availableAreas: string;
+  yearsExperience: number;
+  hourlyRate: number;
+  minimumFee: number;
+  profilePic: string;
+  bio: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+}
 
 export default function WorkerDetailsPage() {
   const router = useRouter();
@@ -18,17 +35,17 @@ export default function WorkerDetailsPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<WorkerFormData>({
-    resolver: zodResolver(workerFormSchema),
+  } = useForm({
     defaultValues: {
-      skilledIn: [],
+      skilledIn: "",
       qualification: "",
-      certificates: [],
+      certificates: "",
       aadharNumber: "",
-      yearsExperience: undefined,
-      hourlyRate: undefined,
-      minimumFee: undefined,
+      yearsExperience: 0,
+      hourlyRate: 0,
+      minimumFee: 0,
       profilePic: "",
       bio: "",
       address: "",
@@ -36,15 +53,36 @@ export default function WorkerDetailsPage() {
       state: "",
       country: "",
       postalCode: "",
-      availableAreas: [],
+      availableAreas: "",
     },
   });
 
   const onSubmit = async (data: WorkerFormData) => {
     setIsLoading(true);
 
-    // Store form data in sessionStorage for later use
-    sessionStorage.setItem("workerDetails", JSON.stringify(data));
+    // Process array fields - convert comma-separated strings to arrays
+    const processedData = {
+      ...data,
+      skilledIn: data.skilledIn
+        .split(",")
+        .map((s: string) => s.trim())
+        .filter(Boolean),
+      certificates: data.certificates
+        ? data.certificates
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
+      availableAreas: data.availableAreas
+        ? data.availableAreas
+            .split(",")
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+        : [],
+    };
+
+    // Store processed form data in sessionStorage for later use
+    sessionStorage.setItem("workerDetails", JSON.stringify(processedData));
 
     // Navigate to previous work page
     router.push("/onboarding/previous-work");
@@ -305,18 +343,24 @@ export default function WorkerDetailsPage() {
                   Profile Picture (Optional)
                 </h3>
 
-                <div>
-                  <Input
-                    placeholder="Profile Picture URL"
-                    {...register("profilePic")}
-                    className="bg-gray-800 border-gray-700"
-                  />
-                  {errors.profilePic && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.profilePic.message}
-                    </p>
+                <Controller
+                  name="profilePic"
+                  control={control}
+                  render={({ field }) => (
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      onRemove={() => field.onChange("")}
+                      type="profile"
+                      placeholder="Upload profile picture or paste URL"
+                    />
                   )}
-                </div>
+                />
+                {errors.profilePic && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.profilePic.message}
+                  </p>
+                )}
               </div>
 
               <Button
