@@ -1,19 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { protectWorkerApi } from "@/lib/api-auth";
+import type { User } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth();
-    if (!userId)
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const worker = await prisma.user.findUnique({
-      where: { clerkUserId: userId },
-    });
-    if (!worker || worker.role !== "WORKER")
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const { user, response } = await protectWorkerApi(request);
+    if (response) return response;
+
+    const worker = user as User;
 
     const completedJobs = await prisma.job.findMany({
       where: { workerId: worker.id, status: "COMPLETED" },

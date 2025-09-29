@@ -1,23 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { protectCustomerApi } from "@/lib/api-auth";
+import type { User } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await auth();
-    if (!userId)
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { user, response } = await protectCustomerApi(req);
+    if (response) return response;
 
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkUserId: userId },
-    });
-    if (!dbUser)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    if (dbUser.role !== "CUSTOMER")
-      return NextResponse.json(
-        { error: "Only customers can create jobs" },
-        { status: 403 }
-      );
+    const customer = user as User;
 
     const body = await req.json();
     const { workerId, description, details, datetime, location, charge } =
@@ -54,7 +45,7 @@ export async function POST(req: NextRequest) {
 
     const job = await prisma.job.create({
       data: {
-        customerId: dbUser.id,
+        customerId: customer.id,
         workerId: worker.id,
         description,
         details: details || null,

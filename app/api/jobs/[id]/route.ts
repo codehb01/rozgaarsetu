@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function PATCH(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -23,7 +23,10 @@ export async function PATCH(
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    const job = await prisma.job.findUnique({ where: { id: params.id } });
+    const resolvedParams = await params;
+    const job = await prisma.job.findUnique({
+      where: { id: resolvedParams.id },
+    });
     if (!job)
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
 
