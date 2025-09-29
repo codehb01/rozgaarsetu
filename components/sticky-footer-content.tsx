@@ -41,13 +41,13 @@ const Nav = () => {
             <div className='flex flex-col gap-2'>
                 <h3 className='mb-2 uppercase text-slate-400 font-semibold'>Workers</h3>
                 <MenuAnimationItem text="Browse Jobs" />
-                <MenuAnimationItem text="Worker Dashboard" />
+                <MenuAnimationItem text="Worker Home" />
                 <MenuAnimationItem text="Earnings" />
                 <MenuAnimationItem text="Reviews" />
             </div>
             <div className='flex flex-col gap-2'>
                 <h3 className='mb-2 uppercase text-slate-400 font-semibold'>Customers</h3>
-                <MenuAnimationItem text="Customer Dashboard" />
+                <MenuAnimationItem text="Customer Home" />
                 <MenuAnimationItem text="Bookings" />
                 <MenuAnimationItem text="Search Workers" />
                 <MenuAnimationItem text="Profile" />

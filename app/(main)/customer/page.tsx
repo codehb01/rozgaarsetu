@@ -20,7 +20,7 @@ const categories = [
   { key: "ac-technician", label: "AC Technician", emoji: "❄️" },
 ];
 
-export default function CustomerDashboardPage() {
+export default function CustomerHomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [workers, setWorkers] = useState<any[]>([]);
 

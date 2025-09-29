@@ -39,22 +39,22 @@ export const FloatingDock = ({
     {
       title: "Home",
       icon: <IconHome className="w-6 h-6" />,
-      href: "/customer/dashboard",
+      href: "/customer",
     },
     {
       title: "Booking",
       icon: <IconCalendarEvent className="w-6 h-6" />,
-      href: "/customer/dashboard/booking",
+      href: "/customer/bookings",
     },
     {
       title: "Search",
       icon: <IconSearch className="w-6 h-6" />,
-      href: "/customer/dashboard/search",
+      href: "/customer/search",
     },
     {
       title: "Reviews",
       icon: <IconMessageCircle className="w-6 h-6" />,
-      href: "/customer/dashboard/reviews",
+      href: "/customer/reviews",
     },
   ];
 

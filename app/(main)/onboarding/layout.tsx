@@ -13,10 +13,10 @@ const OnBoardingLayout = async ({
   
   // Only redirect away from onboarding for completed roles.
   if (user?.role === "CUSTOMER") {
-    redirect("/customer/dashboard");
+    redirect("/customer");
   }
   if (user?.role === "WORKER") {
-    redirect("/worker/dashboard");
+    redirect("/worker");
   }
   return (
     <div className="container mx-auto px-4 py-12">

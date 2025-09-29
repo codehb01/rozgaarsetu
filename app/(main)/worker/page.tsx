@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DashboardSkeleton } from "@/components/ui/dashboard-skeleton";
 
-export default function WorkerDashboardPage() {
+export default function WorkerHomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [worker, setWorker] = useState<any>(null);
   const [stats, setStats] = useState<any>({});

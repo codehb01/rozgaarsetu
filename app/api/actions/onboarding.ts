@@ -132,7 +132,7 @@ export async function setUserRole(
 
       console.log("Customer profile created successfully:", result[1]);
       revalidatePath("/");
-      return { success: true, redirect: "/customer/dashboard" };
+      return { success: true, redirect: "/customer" };
     }
 
     if (role === "WORKER") {
@@ -284,7 +284,7 @@ export async function setUserRole(
       console.log("Worker profile created successfully:", result[1]);
 
       revalidatePath("/");
-      return { success: true, redirect: "/worker/dashboard" };
+      return { success: true, redirect: "/worker" };
     }
 
     return { success: false, error: "Unhandled role" };
