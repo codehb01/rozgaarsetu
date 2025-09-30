@@ -4,68 +4,88 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DashboardSkeleton } from "@/components/ui/dashboard-skeleton";
 
+interface Worker {
+  id: string;
+  name: string;
+  role: string;
+  workerProfile: {
+    skilledIn: string[];
+    city: string;
+    yearsExperience: number;
+    profilePic: string | null;
+    bio?: string;
+    qualification?: string;
+  } | null;
+}
+
+interface Job {
+  id: string;
+  description: string;
+  charge: number;
+  status: string;
+  createdAt: string;
+  customer: {
+    name: string;
+  };
+}
+
+interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  customer: {
+    name: string;
+  };
+}
+
+interface Stats {
+  totalJobs: number;
+  completedJobs: number;
+  pendingJobs: number;
+  inProgressJobs: number;
+  totalEarnings: number;
+  recentJobs: Job[];
+  recentReviews: Review[];
+}
+
 export default function WorkerHomePage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [worker, setWorker] = useState<any>(null);
-  const [stats, setStats] = useState<any>({});
+  const [worker, setWorker] = useState<Worker | null>(null);
+  const [stats, setStats] = useState<Stats>({
+    totalJobs: 0,
+    completedJobs: 0,
+    pendingJobs: 0,
+    inProgressJobs: 0,
+    totalEarnings: 0,
+    recentJobs: [],
+    recentReviews: []
+  });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
         setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1800));
+        setError(null);
         
-        // Mock worker data
-        const mockWorker = {
-          id: "1",
-          name: "John Worker",
-          role: "WORKER",
-          workerProfile: {
-            skilledIn: ["plumber", "electrician"],
-            city: "Mumbai",
-            yearsExperience: 5,
-            profilePic: null
-          }
-        };
-        
-        const mockStats = {
-          totalJobs: 15,
-          completedJobs: 12,
-          pendingJobs: 3,
-          totalEarnings: 25000,
-          recentJobs: [
-            {
-              id: "1",
-              title: "Bathroom Repair",
-              customer: { name: "Priya Sharma" },
-              charge: 2500,
-              status: "COMPLETED",
-              createdAt: new Date().toISOString()
-            },
-            {
-              id: "2", 
-              title: "Kitchen Plumbing",
-              customer: { name: "Raj Patel" },
-              charge: 1800,
-              status: "PENDING",
-              createdAt: new Date().toISOString()
-            },
-            {
-              id: "3",
-              title: "Water Tank Installation",
-              customer: { name: "Amit Kumar" },
-              charge: 3500,
-              status: "COMPLETED",
-              createdAt: new Date().toISOString()
-            }
-          ]
-        };
-        
-        setWorker(mockWorker);
-        setStats(mockStats);
+        const response = await fetch('/api/worker/dashboard', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setWorker(data.worker);
+        setStats(data.stats);
       } catch (error) {
         console.error("Error loading dashboard:", error);
+        setError("Failed to load dashboard data. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -78,6 +98,25 @@ export default function WorkerHomePage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <DashboardSkeleton />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+            Error Loading Dashboard
+          </h2>
+          <p className="text-red-600 dark:text-red-300 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
@@ -95,6 +134,7 @@ export default function WorkerHomePage() {
   const dashboardStats = [
     { title: "Total Jobs", value: stats.totalJobs?.toString() || "0", emoji: "💼", color: "#2563eb" },
     { title: "Pending Requests", value: stats.pendingJobs?.toString() || "0", emoji: "⏳", color: "#f59e0b" },
+    { title: "In Progress", value: stats.inProgressJobs?.toString() || "0", emoji: "🔄", color: "#8b5cf6" },
     { title: "Completed Jobs", value: stats.completedJobs?.toString() || "0", emoji: "✅", color: "#22c55e" },
     { title: "Total Earnings", value: `₹${stats.totalEarnings?.toLocaleString() || "0"}`, emoji: "💰", color: "#059669" },
   ];
@@ -111,13 +151,43 @@ export default function WorkerHomePage() {
       <main className="min-h-screen">
         {/* Hero Section */}
         <section className="mb-12">
-          <div className="text-center">
-            <h1 className="text-4xl font-light text-gray-900 dark:text-white mb-4">
-              Welcome Back, <span className="text-green-600 font-medium">{worker.name}</span>
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Manage your jobs, track earnings, and grow your professional career.
-            </p>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8">
+            <div className="flex items-start gap-6 flex-wrap">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                {worker.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Welcome Back, <span className="text-green-600">{worker.name}</span>
+                </h1>
+                {worker.workerProfile && (
+                  <div className="space-y-2">
+                    <p className="text-lg text-gray-600 dark:text-gray-300">
+                      📍 {worker.workerProfile.city} • 
+                      💼 {worker.workerProfile.yearsExperience} years experience
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {worker.workerProfile.skilledIn.map((skill, index) => (
+                        <span 
+                          key={index}
+                          className="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 rounded-full text-sm font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                    {worker.workerProfile.qualification && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        🎓 {worker.workerProfile.qualification}
+                      </p>
+                    )}
+                  </div>
+                )}
+                <p className="text-gray-600 dark:text-gray-300 mt-4">
+                  Manage your jobs, track earnings, and grow your professional career.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -132,7 +202,7 @@ export default function WorkerHomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
             {dashboardStats.map(({ title, value, emoji }) => (
               <div key={title} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center">
                 <div className="flex items-center justify-between">

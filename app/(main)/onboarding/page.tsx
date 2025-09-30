@@ -7,6 +7,8 @@ import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { OnboardingSkeleton } from "@/components/ui/dashboard-skeleton";
 import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
 import AddressTextarea from "@/components/ui/address-textarea";
+import ImageUpload from "@/components/ui/image-upload";
+import MultiFileUpload from "@/components/ui/multi-file-upload";
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<"choose-role" | "worker-form" | "customer-form">("choose-role");
@@ -14,6 +16,8 @@ export default function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string>("");
+  const [workSamples, setWorkSamples] = useState<File[]>([]);
   const [locationData, setLocationData] = useState<{
     formattedAddress: string;
     placeId: string;
@@ -184,48 +188,82 @@ export default function OnboardingPage() {
     setLoading(true);
     setError(null);
 
-    const formData = new FormData(e.currentTarget);
-    formData.append("role", "WORKER");
-
-    // Add location data
-    formData.append("formattedAddress", locationData.formattedAddress);
-    formData.append("placeId", locationData.placeId);
-    if (locationData.streetNumber) formData.append("streetNumber", locationData.streetNumber);
-    if (locationData.streetName) formData.append("streetName", locationData.streetName);
-    if (locationData.locality) formData.append("locality", locationData.locality);
-    if (locationData.sublocality) formData.append("sublocality", locationData.sublocality);
-    formData.append("city", locationData.city);
-    formData.append("state", locationData.state);
-    formData.append("country", locationData.country);
-    formData.append("postalCode", locationData.postalCode);
-
-    // Handle comma-separated values
-    const skilledIn = formData.get("skilledIn") as string;
-    const certificates = formData.get("certificates") as string;
-    const availableAreas = formData.get("availableAreas") as string;
-
-    if (skilledIn) {
-      const skillsArray = skilledIn.split(',').map(s => s.trim()).filter(Boolean);
-      formData.set("skilledIn", JSON.stringify(skillsArray));
-    }
-    if (certificates) {
-      const certsArray = certificates.split(',').map(s => s.trim()).filter(Boolean);
-      formData.set("certificates", JSON.stringify(certsArray));
-    }
-    if (availableAreas) {
-      const areasArray = availableAreas.split(',').map(s => s.trim()).filter(Boolean);
-      formData.set("availableAreas", JSON.stringify(areasArray));
-    }
-
     try {
-      const response = await setUserRole(formData);
-      if (response.success && response.redirect) {
-        router.push(response.redirect);
-      } else if (response.error) {
-        setError(response.error);
+      // First, upload work sample files if any
+      let workSampleUrls: string[] = [];
+
+      if (workSamples.length > 0) {
+        for (const sample of workSamples) {
+          const sampleFormData = new FormData();
+          sampleFormData.append('file', sample);
+          sampleFormData.append('type', 'work-sample');
+
+          const sampleResponse = await fetch('/api/upload', {
+            method: 'POST',
+            body: sampleFormData,
+          });
+
+          if (sampleResponse.ok) {
+            const sampleResult = await sampleResponse.json();
+            workSampleUrls.push(sampleResult.url);
+          }
+        }
+      }
+
+      // Now submit the form with file URLs
+      const formData = new FormData(e.currentTarget);
+      formData.append("role", "WORKER");
+
+      // Add uploaded profile picture URL (ImageUpload component handles this internally)
+      if (profilePicture) {
+        formData.append("profilePic", profilePicture);
+      }
+      if (workSampleUrls.length > 0) {
+        formData.append("workSamples", JSON.stringify(workSampleUrls));
+      }
+
+      // Add location data
+      formData.append("formattedAddress", locationData.formattedAddress);
+      formData.append("placeId", locationData.placeId);
+      if (locationData.streetNumber) formData.append("streetNumber", locationData.streetNumber);
+      if (locationData.streetName) formData.append("streetName", locationData.streetName);
+      if (locationData.locality) formData.append("locality", locationData.locality);
+      if (locationData.sublocality) formData.append("sublocality", locationData.sublocality);
+      formData.append("city", locationData.city);
+      formData.append("state", locationData.state);
+      formData.append("country", locationData.country);
+      formData.append("postalCode", locationData.postalCode);
+
+      // Handle comma-separated values
+      const skilledIn = formData.get("skilledIn") as string;
+      const certificates = formData.get("certificates") as string;
+      const availableAreas = formData.get("availableAreas") as string;
+
+      if (skilledIn) {
+        const skillsArray = skilledIn.split(',').map(s => s.trim()).filter(Boolean);
+        formData.set("skilledIn", JSON.stringify(skillsArray));
+      }
+      if (certificates) {
+        const certsArray = certificates.split(',').map(s => s.trim()).filter(Boolean);
+        formData.set("certificates", JSON.stringify(certsArray));
+      }
+      if (availableAreas) {
+        const areasArray = availableAreas.split(',').map(s => s.trim()).filter(Boolean);
+        formData.set("availableAreas", JSON.stringify(areasArray));
+      }
+
+      try {
+        const response = await setUserRole(formData);
+        if (response.success && response.redirect) {
+          router.push(response.redirect);
+        } else if (response.error) {
+          setError(response.error);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to submit onboarding form");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "An error occurred during file upload");
     } finally {
       setLoading(false);
     }
@@ -727,16 +765,18 @@ export default function OnboardingPage() {
                 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label htmlFor="profilePic" className="text-sm font-medium">
-                      Profile Picture URL
+                    <label className="text-sm font-medium">
+                      Profile Picture
                     </label>
-                    <input 
-                      id="profilePic"
-                      name="profilePic" 
-                      type="url"
-                      placeholder="https://example.com/your-photo.jpg (optional)" 
-                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    <ImageUpload
+                      value={profilePicture}
+                      onChange={setProfilePicture}
+                      uploadType="profile"
+                      accept="image/*"
+                      maxSize={5 * 1024 * 1024} // 5MB
+                      placeholder="Upload profile picture"
                     />
+                    <p className="text-xs text-muted-foreground">Upload a clear photo of yourself (max 5MB)</p>
                   </div>
                   
                   <div className="space-y-2">
@@ -765,6 +805,37 @@ export default function OnboardingPage() {
                     />
                     <p className="text-xs text-muted-foreground">Separate multiple areas with commas</p>
                   </div>
+                </div>
+              </div>
+
+              {/* Work Samples Section */}
+              <div className="bg-orange-50 dark:bg-orange-900/30 rounded-lg p-5 border border-orange-200 dark:border-orange-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Work Samples & Portfolio</h3>
+                    <p className="text-sm text-muted-foreground">Showcase your previous work</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Upload Work Samples
+                  </label>
+                  <MultiFileUpload
+                    value={workSamples}
+                    onChange={setWorkSamples}
+                    maxFiles={5}
+                    accept="image/*,.pdf"
+                    maxSize={10 * 1024 * 1024} // 10MB
+                    placeholder="Upload photos of your work"
+                    uploadType="work-sample"
+                  />
+                  <p className="text-xs text-muted-foreground">Upload up to 5 images or PDFs showing your best work (max 10MB each)</p>
                 </div>
               </div>
 
