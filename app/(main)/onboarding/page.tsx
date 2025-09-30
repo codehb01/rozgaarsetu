@@ -6,6 +6,7 @@ import { setUserRole } from "@/app/api/actions/onboarding";
 import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { OnboardingSkeleton } from "@/components/ui/dashboard-skeleton";
 import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
+import AddressTextarea from "@/components/ui/address-textarea";
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<"choose-role" | "worker-form" | "customer-form">("choose-role");
@@ -570,97 +571,334 @@ export default function OnboardingPage() {
   // Worker Form
   if (step === "worker-form") {
     return (
-      <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-        <h2>Complete Your Worker Profile</h2>
-        {error && (
-          <div style={{ 
-            padding: "10px", 
-            backgroundColor: "#f8d7da", 
-            color: "#721c24", 
-            border: "1px solid #f5c6cb", 
-            borderRadius: "4px", 
-            marginBottom: "20px" 
-          }}>
-            {error}
+      <div className="min-h-screen bg-background text-foreground py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-2">
+              Welcome to RozgaarSetu
+            </h1>
+            <p className="text-muted-foreground">
+              Complete your profile to start connecting with customers
+            </p>
           </div>
-        )}
-        
-        <form onSubmit={handleWorkerSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          <input 
-            name="aadharNumber" 
-            placeholder="Aadhar Number (12 digits)" 
-            required 
-            pattern="[0-9]{12}"
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="qualification" 
-            placeholder="Qualification" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="skilledIn" 
-            placeholder="Skills (comma separated)" 
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="yearsExperience" 
-            placeholder="Years of Experience" 
-            type="number" 
-            min="0"
-            required 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="certificates" 
-            placeholder="Certificates (comma separated, optional)" 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <input 
-            name="profilePic" 
-            placeholder="Profile Picture URL (optional)" 
-            type="url"
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          <textarea 
-            name="bio" 
-            placeholder="Bio (optional)" 
-            rows={3}
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px", resize: "vertical" }}
-          />
-          <input 
-            name="availableAreas" 
-            placeholder="Available Areas (comma separated, optional)" 
-            style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
-          />
-          
-          <div style={{ marginBottom: "20px" }}>
-            <h3 style={{ marginBottom: "10px", fontSize: "18px", fontWeight: "600" }}>Location Information</h3>
-            <OpenStreetMapInput
-              onPlaceSelect={setLocationData}
-              placeholder="Enter your work address"
-              value={locationData.formattedAddress}
-            />
+
+          {/* Main Form Card */}
+          <div className="bg-card border rounded-lg p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-1">
+                Complete Your Worker Profile
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Please fill in all required fields to continue
+              </p>
+            </div>
+            
+            {error && (
+              <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
+            )}
+            
+            <form onSubmit={handleWorkerSubmit} className="space-y-6">
+              
+              {/* Personal Details Section */}
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Personal Details</h3>
+                    <p className="text-sm text-muted-foreground">Your basic information</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="aadharNumber" className="text-sm font-medium">
+                      Aadhar Number <span className="text-destructive">*</span>
+                    </label>
+                    <input 
+                      id="aadharNumber"
+                      name="aadharNumber" 
+                      type="text"
+                      placeholder="Enter your 12-digit Aadhar number" 
+                      required 
+                      pattern="[0-9]{12}"
+                      maxLength={12}
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="qualification" className="text-sm font-medium">
+                      Qualification <span className="text-destructive">*</span>
+                    </label>
+                    <input 
+                      id="qualification"
+                      name="qualification" 
+                      type="text"
+                      placeholder="Enter your education qualification" 
+                      required 
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Details Section */}
+              <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-5 border border-blue-200 dark:border-blue-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Professional Information</h3>
+                    <p className="text-sm text-muted-foreground">Your skills and experience</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="skilledIn" className="text-sm font-medium">
+                      Skills <span className="text-destructive">*</span>
+                    </label>
+                    <input 
+                      id="skilledIn"
+                      name="skilledIn" 
+                      type="text"
+                      placeholder="Enter your skills (e.g., Plumbing, Electrical work, Carpentry)" 
+                      required 
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    />
+                    <p className="text-xs text-muted-foreground">Separate multiple skills with commas</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="yearsExperience" className="text-sm font-medium">
+                      Years of Experience <span className="text-destructive">*</span>
+                    </label>
+                    <input 
+                      id="yearsExperience"
+                      name="yearsExperience" 
+                      type="number"
+                      min="0"
+                      max="50"
+                      placeholder="Enter years of experience" 
+                      required 
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="certificates" className="text-sm font-medium">
+                      Certificates & Licenses
+                    </label>
+                    <input 
+                      id="certificates"
+                      name="certificates" 
+                      type="text"
+                      placeholder="Enter your certifications (optional)" 
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    />
+                    <p className="text-xs text-muted-foreground">Separate multiple certificates with commas</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Profile Information Section */}
+              <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-5 border border-purple-200 dark:border-purple-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Profile Information</h3>
+                    <p className="text-sm text-muted-foreground">Additional details about yourself</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="profilePic" className="text-sm font-medium">
+                      Profile Picture URL
+                    </label>
+                    <input 
+                      id="profilePic"
+                      name="profilePic" 
+                      type="url"
+                      placeholder="https://example.com/your-photo.jpg (optional)" 
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="bio" className="text-sm font-medium">
+                      Bio
+                    </label>
+                    <textarea 
+                      id="bio"
+                      name="bio" 
+                      rows={3}
+                      placeholder="Tell customers about yourself, your experience, and work style (optional)"
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-vertical"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="availableAreas" className="text-sm font-medium">
+                      Available Service Areas
+                    </label>
+                    <input 
+                      id="availableAreas"
+                      name="availableAreas" 
+                      type="text"
+                      placeholder="Areas where you can provide services (optional)" 
+                      className="w-full px-3 py-2 bg-background border border-input rounded-md text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    />
+                    <p className="text-xs text-muted-foreground">Separate multiple areas with commas</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location Information Section */}
+              <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-5 border border-green-200 dark:border-green-700">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Location Information</h3>
+                    <p className="text-sm text-muted-foreground">Where you're based for work</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label htmlFor="address" className="text-sm font-medium">
+                      Address <span className="text-destructive">*</span>
+                    </label>
+                    <div className="relative">
+                      <AddressTextarea
+                        id="address"
+                        name="address"
+                        rows={3}
+                        placeholder="Enter your complete address (Street, Area, City, State, PIN Code)"
+                        required
+                        value={locationData.formattedAddress || ''}
+                        onChange={(value) => setLocationData({
+                          ...locationData,
+                          formattedAddress: value
+                        })}
+                        onPlaceSelect={(placeData) => setLocationData({
+                          formattedAddress: placeData.formattedAddress,
+                          placeId: placeData.placeId,
+                          streetNumber: placeData.streetNumber,
+                          streetName: placeData.streetName,
+                          locality: placeData.locality,
+                          sublocality: placeData.sublocality,
+                          city: placeData.city,
+                          state: placeData.state,
+                          country: placeData.country,
+                          postalCode: placeData.postalCode,
+                          latitude: placeData.latitude,
+                          longitude: placeData.longitude,
+                        })}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      type="button"
+                      onClick={getCurrentLocation}
+                      disabled={locationLoading}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        locationLoading 
+                          ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                          : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                      }`}
+                    >
+                      {locationLoading ? (
+                        <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      )}
+                      {locationLoading ? 'Getting Location...' : 'Use Current Location'}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLocationData({
+                          formattedAddress: '',
+                          placeId: '',
+                          city: '',
+                          state: '',
+                          country: '',
+                          postalCode: '',
+                          latitude: 0,
+                          longitude: 0,
+                        });
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Clear
+                    </button>
+                  </div>
+                  
+                  <p className="text-xs text-muted-foreground">
+                    You can type your address manually or click "Use Current Location" to automatically detect your address
+                  </p>
+                </div>
+              </div>
+              
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button 
+                  type="submit" 
+                  disabled={loading || !locationData.formattedAddress}
+                  className={`w-full flex justify-center py-2.5 px-4 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
+                    loading || !locationData.formattedAddress
+                      ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  }`}
+                >
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Submitting...
+                    </div>
+                  ) : (
+                    'Complete Profile'
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-          
-          <button 
-            type="submit" 
-            disabled={loading || !locationData.formattedAddress || !locationData.city}
-            style={{ 
-              padding: "12px", 
-              backgroundColor: (loading || !locationData.formattedAddress || !locationData.city) ? "#6c757d" : "#28a745", 
-              color: "white", 
-              border: "none", 
-              borderRadius: "4px",
-              cursor: (loading || !locationData.formattedAddress || !locationData.city) ? "not-allowed" : "pointer",
-              fontSize: "16px"
-            }}
-          >
-            {loading ? "Submitting..." : "Complete Profile"}
-          </button>
-        </form>
+        </div>
       </div>
     );
   }
