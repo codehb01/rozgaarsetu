@@ -132,9 +132,9 @@ export default function OnboardingPage() {
 
   const handleRoleSelection = (role: "customer" | "worker") => {
     if (role === "customer") {
-      setStep("customer-form");
+      router.push("/onboarding/customer-details");
     } else {
-      setStep("worker-form");
+      router.push("/onboarding/worker-details");
     }
   };
 

@@ -8,15 +8,21 @@ const OnBoardingLayout = async ({
 }: {
   children: React.ReactNode;
 }) => {
-  // Ensure user exists in database first
-  const user = await checkUser();
-  
-  // Only redirect away from onboarding for completed roles.
-  if (user?.role === "CUSTOMER") {
-    redirect("/customer");
-  }
-  if (user?.role === "WORKER") {
-    redirect("/worker");
+  try {
+    // Ensure user exists in database first
+    const user = await checkUser();
+    
+    // Only redirect away from onboarding for completed roles.
+    if (user?.role === "CUSTOMER") {
+      redirect("/customer");
+    }
+    if (user?.role === "WORKER") {
+      redirect("/worker");
+    }
+  } catch (error) {
+    console.error("Error in onboarding layout:", error);
+    // If there's an error, we'll continue to render the onboarding
+    // The user might not be logged in properly
   }
   return (
     <div className="container mx-auto px-4 py-12">

@@ -1,13 +1,20 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import prisma from "./prisma";
-export const checkUser = async () => {
-  const user = await currentUser();
-  //   console.log(user);
-  if (!user) {
-    return null;
-  }
 
+export const checkUser = async () => {
   try {
+    // First check if user is authenticated
+    const { userId } = await auth();
+    if (!userId) {
+      return null;
+    }
+
+    // Then get user details
+    const user = await currentUser();
+    if (!user) {
+      return null;
+    }
+
     const loggedInUser = await prisma.user.findUnique({
       where: {
         clerkUserId: user.id,
@@ -89,7 +96,7 @@ export const checkUser = async () => {
     });
     return finalUser;
   } catch (error) {
-    console.error("Error checking user:", error);
+    console.error("Error in checkUser:", error);
     return null;
   }
 };

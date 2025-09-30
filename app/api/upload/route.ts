@@ -1,74 +1,144 @@
+import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
+
+// Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+interface CloudinaryUploadResult {
+  public_id: string;
+  secure_url: string;
+  [key: string]: unknown;
+}
 
 export async function POST(request: NextRequest) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    const data = await request.formData();
-    const file: File | null = data.get("file") as unknown as File;
-    const uploadType = data.get("uploadType") as string || "profile";
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    const type = formData.get("type") as string | null; // 'profile', 'work-sample', or 'document'
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    // Validate file type based on upload type
+    let allowedTypes: string[] = [];
+    let maxSize = 5 * 1024 * 1024; // Default 5MB
+
+    if (type === "profile") {
+      allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+      maxSize = 5 * 1024 * 1024; // 5MB for profile pics
+    } else if (type === "work-sample") {
+      allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
+      maxSize = 10 * 1024 * 1024; // 10MB for work samples
+    } else if (type === "document") {
+      allowedTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
+      maxSize = 10 * 1024 * 1024; // 10MB for documents
+    } else {
+      return NextResponse.json({ error: "Invalid upload type" }, { status: 400 });
+    }
+
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Invalid file type. Only JPEG, PNG, and WebP are allowed." },
+        { error: `Invalid file type. Allowed types: ${allowedTypes.join(", ")}` },
         { status: 400 }
       );
     }
 
-    // Validate file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // Validate file size
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File size too large. Maximum size is 5MB." },
+        { error: `File too large. Maximum size is ${Math.round(maxSize / (1024 * 1024))}MB.` },
         { status: 400 }
       );
     }
 
+    // Convert File -> Buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create upload directory structure
-    const uploadDir = join(process.cwd(), "public", "uploads", uploadType);
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
+    // Determine folder and transformation based on type
+    let folder: string;
+    let transformation: any[] = [];
+
+    switch (type) {
+      case "profile":
+        folder = "rozgaarsetu/profiles";
+        transformation = [
+          { width: 400, height: 400, crop: "fill", gravity: "face" },
+          { quality: "auto", fetch_format: "auto" },
+        ];
+        break;
+      case "work-sample":
+        folder = "rozgaarsetu/work-samples";
+        transformation = [
+          { width: 800, height: 600, crop: "limit" },
+          { quality: "auto", fetch_format: "auto" },
+        ];
+        break;
+      case "document":
+        folder = "rozgaarsetu/documents";
+        transformation = [
+          { quality: "auto", fetch_format: "auto" },
+        ];
+        break;
+      default:
+        folder = "rozgaarsetu/misc";
+        transformation = [
+          { quality: "auto", fetch_format: "auto" },
+        ];
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExtension = file.name.split(".").pop();
-    const fileName = `${userId}_${timestamp}.${fileExtension}`;
-    const filePath = join(uploadDir, fileName);
+    // Upload to Cloudinary
+    const result = await new Promise<CloudinaryUploadResult>(
+      (resolve, reject) => {
+        const uploadOptions: any = {
+          folder: folder,
+          public_id: `${userId}_${Date.now()}`, // Unique identifier with user ID
+          resource_type: file.type.startsWith("image/") ? "image" : "raw",
+        };
 
-    // Write file
-    await writeFile(filePath, buffer);
+        // Only add transformation for images
+        if (file.type.startsWith("image/")) {
+          uploadOptions.transformation = transformation;
+        }
 
-    // Return public URL
-    const publicUrl = `/uploads/${uploadType}/${fileName}`;
+        const stream = cloudinary.uploader.upload_stream(
+          uploadOptions,
+          (error: unknown, result: unknown) => {
+            if (error) return reject(error);
+            resolve(result as CloudinaryUploadResult);
+          }
+        );
 
-    return NextResponse.json({
-      success: true,
-      url: publicUrl,
-      fileName: fileName,
-      originalName: file.name,
-      size: file.size,
-      type: file.type
-    });
+        stream.end(buffer);
+      }
+    );
+
+    return NextResponse.json(
+      {
+        success: true,
+        url: result.secure_url,
+        publicId: result.public_id,
+        fileName: file.name,
+        originalName: file.name,
+        size: file.size,
+        type: file.type
+      },
+      { status: 200 }
+    );
 
   } catch (error) {
-    console.error("Upload error:", error);
+    console.error("Cloudinary upload error:", error);
     return NextResponse.json(
       { error: "Failed to upload file" },
       { status: 500 }
@@ -84,27 +154,25 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const fileName = searchParams.get("fileName");
-    const uploadType = searchParams.get("uploadType") || "profile";
+    const publicId = searchParams.get("publicId");
 
-    if (!fileName) {
-      return NextResponse.json({ error: "No filename provided" }, { status: 400 });
+    if (!publicId) {
+      return NextResponse.json({ error: "No public ID provided" }, { status: 400 });
     }
 
     // Security check: ensure the file belongs to the current user
-    if (!fileName.startsWith(userId)) {
+    if (!publicId.includes(userId)) {
       return NextResponse.json({ error: "Unauthorized to delete this file" }, { status: 403 });
     }
 
-    const filePath = join(process.cwd(), "public", "uploads", uploadType, fileName);
+    // Delete from Cloudinary
+    const result = await cloudinary.uploader.destroy(publicId);
 
-    // Delete file if it exists
-    if (existsSync(filePath)) {
-      const { unlink } = await import("fs/promises");
-      await unlink(filePath);
+    if (result.result === "ok") {
+      return NextResponse.json({ success: true, message: "File deleted successfully" });
+    } else {
+      return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
     }
-
-    return NextResponse.json({ success: true, message: "File deleted successfully" });
 
   } catch (error) {
     console.error("Delete error:", error);
