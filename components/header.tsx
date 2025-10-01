@@ -22,6 +22,7 @@ import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import { Sun, Moon, Circle } from "lucide-react";
 import { Button } from "./ui/button";
+import { useUserProfile } from "@/hooks/use-user-profile";
 
 // Dynamic import for ProfileButton
 import dynamic from "next/dynamic";
@@ -38,23 +39,49 @@ const ProfileButton = dynamic(() => import("./profile-button"), {
   ),
 });
 
-// Apple-style navigation items
-const navItems = [
-  { name: "Home", link: "/" },
-  { name: "Dashboard", link: "/customer/dashboard" },
-  { name: "Pricing", link: "/pricing" },
-  { name: "About", link: "/about" },
-];
-
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const { userProfile, loading, error } = useUserProfile();
 
   useEffect(() => setMounted(true), []);
 
+  // Log any errors for debugging
+  useEffect(() => {
+    if (error) {
+      console.error('Header: Error loading user profile:', error);
+    }
+  }, [error]);
+
   const currentTheme = theme === "system" ? systemTheme : theme;
+
+  // Dynamic navigation items based on user role
+  const getNavItems = () => {
+    const baseItems = [
+      { name: "Home", link: "/" },
+    ];
+
+    // Add dashboard link only when user is logged in and has a role assigned
+    if (userProfile) {
+      if (userProfile.role === "WORKER") {
+        baseItems.push({ name: "Dashboard", link: "/worker/dashboard" });
+      } else if (userProfile.role === "CUSTOMER") {
+        baseItems.push({ name: "Dashboard", link: "/customer/dashboard" });
+      }
+      // Don't add dashboard link for UNASSIGNED role - they should complete onboarding first
+    }
+
+    baseItems.push(
+      { name: "Pricing", link: "/pricing" },
+      { name: "About", link: "/about" }
+    );
+
+    return baseItems;
+  };
+
+  const navItems = getNavItems();
 
   // Apple-style conditional rendering
   const shouldShowNavItems = true;
@@ -81,15 +108,25 @@ export function Header() {
         {/* Apple-style Navigation Items */}
         {shouldShowNavItems && (
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item, idx) => (
-              <Link
-                key={idx}
-                href={item.link}
-                className="relative px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-all duration-200 font-medium text-sm"
-              >
-                {item.name}
-              </Link>
-            ))}
+            {loading ? (
+              // Show loading skeleton for navigation items
+              <>
+                <div className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse w-16 h-8"></div>
+                <div className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse w-20 h-8"></div>
+                <div className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse w-16 h-8"></div>
+                <div className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse w-14 h-8"></div>
+              </>
+            ) : (
+              navItems.map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={item.link}
+                  className="relative px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-all duration-200 font-medium text-sm"
+                >
+                  {item.name}
+                </Link>
+              ))
+            )}
           </div>
         )}
 
@@ -187,16 +224,26 @@ export function Header() {
         <MobileNavMenu isOpen={isOpen} onClose={() => setIsOpen(false)}>
           <div className="flex flex-col space-y-1 p-4">
             {/* Mobile Navigation Items */}
-            {navItems.map((item, idx) => (
-              <Link
-                key={idx}
-                href={item.link}
-                className="px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {loading ? (
+              // Show loading skeleton for mobile navigation
+              <>
+                <div className="px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse h-10"></div>
+                <div className="px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse h-10"></div>
+                <div className="px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse h-10"></div>
+                <div className="px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 animate-pulse h-10"></div>
+              </>
+            ) : (
+              navItems.map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={item.link}
+                  className="px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))
+            )}
             
             <div className="border-t border-gray-200/50 dark:border-gray-800/50 pt-4 mt-4 space-y-1">
               {/* Mobile Theme Toggle */}
