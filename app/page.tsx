@@ -1,409 +1,554 @@
-import Header from "../components/header";
-import { Button } from "../components/ui/button";
-import { Card } from "../components/ui/card";
+'use client'
+import { useEffect, useState } from "react";
+import Lenis from 'lenis';
+import { motion } from 'framer-motion';
+import Footer from "@/components/footer";
+import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import ShapeHero from "@/components/kokonutui/shape-hero";
+import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
+import ScrollText from "@/components/kokonutui/scroll-text";
+import TypewriterTitle from "@/components/kokonutui/type-writer";
+import ShimmerText from "@/components/kokonutui/shimmer-text";
+import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 
 export default function Home() {
+  const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect( () => {
+    // Simple Lenis setup that works better with sticky elements
+    const lenis = new Lenis()
+
+    function raf(time: number) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+
+    requestAnimationFrame(raf)
+
+    // Simulate loading states
+    const featuresTimer = setTimeout(() => setIsFeaturesLoading(false), 2000);
+
+    // Scroll to top button visibility
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowScrollTop(scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      lenis.destroy()
+      clearTimeout(featuresTimer);
+      window.removeEventListener('scroll', handleScroll);
+    }
+  }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <main className="min-h-screen bg-gray-900 overflow-hidden">
-      <Header />
-
-      {/* Hero Section */}
-      <section className="relative mx-auto max-w-6xl px-6 py-20 text-center mt-10 ">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden -z-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-600/5 to-purple-600/5 rounded-full blur-3xl animate-spin-slow"></div>
-        </div>
-
-        <div className="space-y-8 relative z-10">
-          <div className="animate-fade-in-up">
-            <h1 className="text-6xl md:text-7xl font-light text-white tracking-tight leading-tight">
-              Connect. Work.{" "}
-              <span className="text-blue-400 animate-pulse">Grow.</span>
-            </h1>
-          </div>
-
-          <div className="animate-fade-in-up delay-300">
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              The modern platform connecting blue-collar workers with
-              opportunities.
-              <br className="hidden md:block" />
-              <span className="text-blue-400 font-medium">
-                Simple, secure, and location-smart.
-              </span>
-            </p>
-          </div>
-
-          <div className="animate-fade-in-up delay-500">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-10 py-4 rounded-full text-lg font-medium transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
-              >
-                Get Started
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="px-10 py-4 rounded-full border-2 border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-gray-500 text-lg font-medium transform hover:scale-105 transition-all duration-300"
-              >
-                Learn More
-              </Button>
-            </div>
-          </div>
-
-          {/* Stats Section */}
-          <div className="animate-fade-in-up delay-700 pt-16">
-            <div className="flex flex-wrap justify-center gap-8 md:gap-16">
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-blue-400 animate-count-up">
-                  10K+
-                </div>
-                <div className="text-gray-400 text-sm md:text-base">
-                  Active Workers
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-green-400 animate-count-up">
-                  5K+
-                </div>
-                <div className="text-gray-400 text-sm md:text-base">
-                  Jobs Completed
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-purple-400 animate-count-up">
-                  95%
-                </div>
-                <div className="text-gray-400 text-sm md:text-base">
-                  Success Rate
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="bg-background text-foreground">
+      {/* Hero Section with ShapeHero */}
+      <ShapeHero 
+        title1="Connect. Work."
+        title2="Grow."
+        subtitle="The modern platform connecting blue-collar workers with opportunities."
+      />
 
       {/* Features Section */}
-      <section className="relative mx-auto max-w-6xl px-6 py-20">
-        <div className="text-center mb-16 animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl font-light text-white mb-4">
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
             Why Choose RozgaarSetu?
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Empowering connections between skilled workers and opportunities
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="group animate-slide-in-left delay-100">
-            <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/10">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-500">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
+        {isFeaturesLoading ? (
+          <div className="grid sm:grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
                 </div>
-                <h3 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors">
-                  Find Work
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors">
-                  Discover opportunities that match your skills and location
-                  preferences
-                </p>
+                <Skeleton className="h-5 w-32 mx-auto" />
               </div>
-            </Card>
+            </div>
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-32 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-4 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-36" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-36 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-2 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-20" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-24 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-28" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-4/5" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-32 mx-auto" />
+              </div>
+            </div>
+            <div className="md:col-span-3 p-2">
+              <div className="h-64 rounded-lg border p-6 space-y-4">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-5 w-28 mx-auto" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 md:grid-cols-6 gap-4">
+          {/* Card 1 - Find Work */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-3')}>
+            <MainMenusGradientCard
+              title="Find Work"
+              description="Discover opportunities that match your skills and location preferences with our smart matching system."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">💼</div>
+                <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  Opportunity Awaits
+                </div>
+              </div>
+            </MainMenusGradientCard>
           </div>
 
-          <div className="group animate-slide-in-left delay-200">
-            <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:shadow-green-500/10">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-500">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                    />
-                  </svg>
+          {/* Card 2 - Get Paid */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-3')}>
+            <MainMenusGradientCard
+              title="Get Paid"
+              description="Secure payments delivered instantly with multiple payment options and transparent pricing."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">💰</div>
+                <div className="text-lg font-semibold text-green-600 dark:text-green-400">
+                  Instant Payments
                 </div>
-                <h3 className="text-xl font-semibold text-white group-hover:text-green-400 transition-colors">
-                  Get Paid
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors">
-                  Secure payments delivered instantly with multiple payment
-                  options
-                </p>
               </div>
-            </Card>
+            </MainMenusGradientCard>
           </div>
 
-          <div className="group animate-slide-in-right delay-100">
-            <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/10">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-500">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
+          {/* Card 3 - Nearby Connections */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-4')}>
+            <MainMenusGradientCard
+              title="Nearby Connections"
+              description="Connect with workers in your area for quick and efficient hiring with location-based matching."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">📍</div>
+                <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                  Local Network
                 </div>
-                <h3 className="text-xl font-semibold text-white group-hover:text-purple-400 transition-colors">
-                  Nearby
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors">
-                  Connect with workers in your area for quick and efficient
-                  hiring
-                </p>
               </div>
-            </Card>
+            </MainMenusGradientCard>
           </div>
 
-          <div className="group animate-slide-in-right delay-200">
-            <Card className="p-8 bg-gray-800/50 border-gray-700 hover:bg-gray-800 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/10">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-500">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+          {/* Card 4 - Smart Search */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-2')}>
+            <MainMenusGradientCard
+              title="Smart Search"
+              description="Advanced location-based matching with AI-powered recommendations for perfect job matches."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-4xl">🔍</div>
+                <div className="text-base font-semibold text-orange-600 dark:text-orange-400">
+                  AI-Powered
                 </div>
-                <h3 className="text-xl font-semibold text-white group-hover:text-orange-400 transition-colors">
-                  Smart Search
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors">
-                  Advanced location-based matching with AI-powered
-                  recommendations
-                </p>
               </div>
-            </Card>
+            </MainMenusGradientCard>
+          </div>
+
+          {/* Card 5 - Verified Profiles */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-2')}>
+            <MainMenusGradientCard
+              title="Verified Profiles"
+              description="Work with trusted professionals. Profiles are verified for identity and skills."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-4xl">✅</div>
+                <div className="text-base font-semibold text-sky-600 dark:text-sky-400">
+                  Trusted & Verified
+                </div>
+              </div>
+            </MainMenusGradientCard>
+          </div>
+
+          {/* Card 6 - Trust & Safety */}
+          <div className={cn('p-2 rounded-lg', 'md:col-span-4')}>
+            <MainMenusGradientCard
+              title="Trust & Safety"
+              description="Ratings, reviews, and dispute support ensure a safe experience for everyone."
+              withArrow={false}
+              circleSize={300}
+            >
+              <div className="flex flex-col items-center justify-center h-full gap-4">
+                <div className="text-5xl">🛡️</div>
+                <div className="text-lg font-semibold text-teal-600 dark:text-teal-400">
+                  Safe & Reliable
+                </div>
+              </div>
+            </MainMenusGradientCard>
           </div>
         </div>
+        )}
       </section>
 
       {/* How It Works Section */}
-      <section className="relative mx-auto max-w-6xl px-6 py-20">
-        <div className="text-center mb-16 animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl font-light text-white mb-4">
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
             How It Works
           </h2>
-          <p className="text-xl text-gray-400">
-            Three simple steps to get started
+          <p className="text-xl text-gray-600 dark:text-gray-400">
+            Three simple steps to transform your career
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row justify-center items-center gap-12">
-          <div className="flex flex-col items-center text-center max-w-sm animate-fade-in-up delay-100">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-6 animate-bounce">
-              <span className="text-2xl font-bold text-white">1</span>
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-4">
-              Create Profile
-            </h3>
-            <p className="text-gray-400">
-              Sign up and create your professional profile with skills and
-              experience
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left side - Scroll Text Animation */}
+          <div className="order-2 lg:order-1">
+            <ScrollText
+              texts={[
+                "Create Profile",
+                "Showcase Skills", 
+                "Find Local Jobs",
+                "Apply Instantly",
+                "Work & Deliver",
+                "Get Paid Fast",
+                "Build Reputation",
+                "Grow Your Career"
+              ]}
+              className="h-[400px]"
+            />
           </div>
 
-          <div className="hidden lg:block w-24 h-px bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse"></div>
-
-          <div className="flex flex-col items-center text-center max-w-sm animate-fade-in-up delay-300">
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mb-6 animate-bounce delay-200">
-              <span className="text-2xl font-bold text-white">2</span>
+          {/* Right side - Step Cards */}
+          <div className="order-1 lg:order-2 space-y-8">
+            <div className="flex items-start gap-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border border-blue-100 dark:border-blue-800/30">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xl font-bold text-white">1</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Create Your Professional Profile
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Sign up in minutes and showcase your skills, experience, and availability. 
+                  Add photos, certifications, and set your service rates.
+                </p>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-4">Find Jobs</h3>
-            <p className="text-gray-400">
-              Browse and apply to jobs that match your skills and location
-            </p>
-          </div>
 
-          <div className="hidden lg:block w-24 h-px bg-gradient-to-r from-purple-500 to-green-500 animate-pulse delay-1000"></div>
-
-          <div className="flex flex-col items-center text-center max-w-sm animate-fade-in-up delay-500">
-            <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mb-6 animate-bounce delay-500">
-              <span className="text-2xl font-bold text-white">3</span>
+            <div className="flex items-start gap-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-xl border border-purple-100 dark:border-purple-800/30">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xl font-bold text-white">2</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Connect with Local Opportunities
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Our smart matching system finds jobs near you that match your skills. 
+                  Browse, apply, and negotiate terms directly with customers.
+                </p>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-white mb-4">Get Paid</h3>
-            <p className="text-gray-400">
-              Complete work and receive secure payments instantly
-            </p>
+
+            <div className="flex items-start gap-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-xl border border-green-100 dark:border-green-800/30">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xl font-bold text-white">3</span>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Work Smart, Get Paid Instantly
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Complete your work with confidence. Our secure payment system 
+                  ensures you get paid immediately after job completion.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="relative mx-auto max-w-6xl px-6 py-20">
-        <div className="text-center mb-16 animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl font-light text-white mb-4">
-            What Workers Say
-          </h2>
-          <p className="text-xl text-gray-400">
-            Real stories from our community
-          </p>
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <ShimmerText 
+            text="What Workers Say"
+            className="text-5xl font-light mb-4"
+          />
+          <TypewriterEffect
+            words={[
+              { text: "Real" },
+              { text: "stories" },
+              { text: "from" },
+              { text: "our" },
+              { text: "community", className: "text-blue-500 dark:text-blue-400" }
+            ]}
+            className="text-xl text-gray-600 dark:text-gray-400"
+            cursorClassName="bg-blue-500"
+          />
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="p-8 bg-gray-800/50 border-gray-700 animate-slide-in-up delay-100 hover:bg-gray-800 transition-all duration-500">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className="w-5 h-5 text-yellow-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-300 italic">
-                &quot;RozgaarSetu changed my life. I found steady work and the
-                payments are always on time.&quot;
-              </p>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold">R</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Testimonial 1 */}
+          <CardContainer className="inter-var">
+            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
+              <CardItem
+                translateZ="50"
+                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
+              >
+                <div className="flex items-center">
+                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
                 </div>
-                <div>
-                  <p className="text-white font-medium">Rajesh Kumar</p>
-                  <p className="text-gray-400 text-sm">Electrician</p>
+              </CardItem>
+              
+              <CardItem
+                as="p"
+                translateZ="60"
+                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
+              >
+                "RozgaarSetu changed my life. I found steady work and the payments are always on time."
+              </CardItem>
+              
+              <CardItem translateZ="100" className="w-full mt-6">
+                <div className="flex items-center gap-3">
+                  <CardItem translateZ="80">
+                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">R</span>
+                    </div>
+                  </CardItem>
+                  <div>
+                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
+                      Rajesh Kumar
+                    </CardItem>
+                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
+                      Electrician
+                    </CardItem>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Card>
+              </CardItem>
+            </CardBody>
+          </CardContainer>
 
-          <Card className="p-8 bg-gray-800/50 border-gray-700 animate-slide-in-up delay-300 hover:bg-gray-800 transition-all duration-500">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className="w-5 h-5 text-yellow-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-300 italic">
-                &quot;The platform is so easy to use. I can find work near my
-                home and get paid instantly.&quot;
-              </p>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold">P</span>
+          {/* Testimonial 2 */}
+          <CardContainer className="inter-var">
+            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
+              <CardItem
+                translateZ="50"
+                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
+              >
+                <div className="flex items-center">
+                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
                 </div>
-                <div>
-                  <p className="text-white font-medium">Priya Sharma</p>
-                  <p className="text-gray-400 text-sm">Cleaner</p>
+              </CardItem>
+              
+              <CardItem
+                as="p"
+                translateZ="60"
+                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
+              >
+                "The platform is so easy to use. I can find work near my home and get paid instantly."
+              </CardItem>
+              
+              <CardItem translateZ="100" className="w-full mt-6">
+                <div className="flex items-center gap-3">
+                  <CardItem translateZ="80">
+                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">P</span>
+                    </div>
+                  </CardItem>
+                  <div>
+                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
+                      Priya Sharma
+                    </CardItem>
+                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
+                      Cleaner
+                    </CardItem>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Card>
+              </CardItem>
+            </CardBody>
+          </CardContainer>
 
-          <Card className="p-8 bg-gray-800/50 border-gray-700 animate-slide-in-up delay-500 hover:bg-gray-800 transition-all duration-500">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className="w-5 h-5 text-yellow-400"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-300 italic">
-                &quot;Great platform for contractors like me. Professional,
-                reliable, and secure payments.&quot;
-              </p>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold">A</span>
+          {/* Testimonial 3 */}
+          <CardContainer className="inter-var">
+            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
+              <CardItem
+                translateZ="50"
+                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
+              >
+                <div className="flex items-center">
+                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
                 </div>
-                <div>
-                  <p className="text-white font-medium">Amit Singh</p>
-                  <p className="text-gray-400 text-sm">Plumber</p>
+              </CardItem>
+              
+              <CardItem
+                as="p"
+                translateZ="60"
+                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
+              >
+                "Great platform for contractors like me. Professional, reliable, and secure payments."
+              </CardItem>
+              
+              <CardItem translateZ="100" className="w-full mt-6">
+                <div className="flex items-center gap-3">
+                  <CardItem translateZ="80">
+                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">A</span>
+                    </div>
+                  </CardItem>
+                  <div>
+                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
+                      Amit Singh
+                    </CardItem>
+                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
+                      Plumber
+                    </CardItem>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Card>
+              </CardItem>
+            </CardBody>
+          </CardContainer>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative mx-auto max-w-4xl px-6 py-20 text-center">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-3xl blur-3xl"></div>
-        <div className="relative z-10 space-y-8 animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl font-light text-white">
-            Ready to transform your career?
-          </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Join thousands of workers already using RozgaarSetu to find better
-            opportunities and secure their future.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-12 py-4 rounded-full text-lg font-medium transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/25"
-            >
-              Start Today
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="px-12 py-4 rounded-full border-2 border-gray-600 text-gray-300 hover:bg-gray-800 hover:border-gray-500 text-lg font-medium transform hover:scale-105 transition-all duration-300"
-            >
-              Contact Sales
-            </Button>
+      {/* CTA Section - Apple Design System */}
+      <section className="relative overflow-hidden">
+        {/* Background with Apple-style gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-black dark:to-gray-900"></div>
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f1f1_1px,transparent_1px),linear-gradient(to_bottom,#f1f1f1_1px,transparent_1px)] bg-[size:6rem_4rem] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] opacity-20"></div>
+        
+        <div className="relative max-w-6xl mx-auto px-6 py-32">
+          <div className="text-center">
+            {/* Apple-style overline */}
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800/30 mb-8">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Transform Your Future</span>
+            </div>
+
+            {/* TypeWriter Enhanced Headline */}
+            <div className="mb-8">
+              <h2 className="text-6xl md:text-7xl font-thin text-gray-900 dark:text-white mb-2 tracking-tight">
+                Ready to
+              </h2>
+              <TypewriterTitle
+                sequences={[
+                  { text: "transform your career", deleteAfter: true, pauseAfter: 2000 },
+                  { text: "unlock new opportunities", deleteAfter: true, pauseAfter: 2000 },
+                  { text: "build your future", deleteAfter: true, pauseAfter: 2000 },
+                  { text: "start earning more", deleteAfter: false, pauseAfter: 3000 }
+                ]}
+                typingSpeed={80}
+                startDelay={1000}
+                autoLoop={true}
+                loopDelay={3000}
+              />
+            </div>
+
+            {/* Apple-style subtitle */}
+            <p className="text-xl md:text-2xl font-light text-gray-600 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed mb-12">
+              Join over <span className="font-medium text-gray-900 dark:text-white">10,000+ skilled workers</span> who have already discovered better opportunities and secured their financial future with RozgaarSetu.
+            </p>
+
+            {/* Apple-style CTA buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+              <a 
+                href="/onboarding"
+                className="group relative inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 no-underline border-none cursor-pointer min-w-[200px]"
+              >
+                <span className="relative z-10">Start Your Journey</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </a>
+              
+              <button className="group relative inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-gray-500/10 cursor-pointer min-w-[200px]">
+                <span className="relative z-10">Learn More</span>
+                <div className="absolute inset-0 bg-gray-50 dark:bg-gray-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </button>
+            </div>
           </div>
         </div>
       </section>
-    </main>
+      
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0 }}
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 group inline-flex items-center justify-center w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 ease-out hover:scale-110"
+          aria-label="Scroll to top"
+        >
+          <svg 
+            className="w-5 h-5 transform group-hover:-translate-y-0.5 transition-transform duration-200" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+        </motion.button>
+      )}
+      
+      <Footer />
+    </div>
   );
 }
