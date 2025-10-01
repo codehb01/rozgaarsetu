@@ -7,7 +7,7 @@ import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import ShapeHero from "@/components/kokonutui/shape-hero";
-import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
+import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import ScrollText from "@/components/kokonutui/scroll-text";
 import TypewriterTitle from "@/components/kokonutui/type-writer";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
@@ -450,126 +450,45 @@ export default function Home() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Testimonial 1 */}
-          <CardContainer className="inter-var">
-            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
-              <CardItem
-                translateZ="50"
-                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
-              >
-                <div className="flex items-center">
-                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
-                </div>
-              </CardItem>
-              
-              <CardItem
-                as="p"
-                translateZ="60"
-                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
-              >
-                "RozgaarSetu changed my life. I found steady work and the payments are always on time."
-              </CardItem>
-              
-              <CardItem translateZ="100" className="w-full mt-6">
-                <div className="flex items-center gap-3">
-                  <CardItem translateZ="80">
-                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold">R</span>
-                    </div>
-                  </CardItem>
-                  <div>
-                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
-                      Rajesh Kumar
-                    </CardItem>
-                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
-                      Electrician
-                    </CardItem>
-                  </div>
-                </div>
-              </CardItem>
-            </CardBody>
-          </CardContainer>
-
-          {/* Testimonial 2 */}
-          <CardContainer className="inter-var">
-            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
-              <CardItem
-                translateZ="50"
-                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
-              >
-                <div className="flex items-center">
-                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
-                </div>
-              </CardItem>
-              
-              <CardItem
-                as="p"
-                translateZ="60"
-                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
-              >
-                "The platform is so easy to use. I can find work near my home and get paid instantly."
-              </CardItem>
-              
-              <CardItem translateZ="100" className="w-full mt-6">
-                <div className="flex items-center gap-3">
-                  <CardItem translateZ="80">
-                    <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold">P</span>
-                    </div>
-                  </CardItem>
-                  <div>
-                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
-                      Priya Sharma
-                    </CardItem>
-                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
-                      Cleaner
-                    </CardItem>
-                  </div>
-                </div>
-              </CardItem>
-            </CardBody>
-          </CardContainer>
-
-          {/* Testimonial 3 */}
-          <CardContainer className="inter-var">
-            <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[350px] h-auto rounded-xl p-6 border">
-              <CardItem
-                translateZ="50"
-                className="text-xl font-bold text-neutral-600 dark:text-white mb-4"
-              >
-                <div className="flex items-center">
-                  <span className="text-yellow-500 text-xl">⭐⭐⭐⭐⭐</span>
-                </div>
-              </CardItem>
-              
-              <CardItem
-                as="p"
-                translateZ="60"
-                className="text-neutral-500 text-sm max-w-sm mt-4 dark:text-neutral-300 italic"
-              >
-                "Great platform for contractors like me. Professional, reliable, and secure payments."
-              </CardItem>
-              
-              <CardItem translateZ="100" className="w-full mt-6">
-                <div className="flex items-center gap-3">
-                  <CardItem translateZ="80">
-                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold">A</span>
-                    </div>
-                  </CardItem>
-                  <div>
-                    <CardItem translateZ="90" as="p" className="text-neutral-600 dark:text-white font-medium">
-                      Amit Singh
-                    </CardItem>
-                    <CardItem translateZ="70" as="p" className="text-neutral-400 dark:text-neutral-400 text-sm">
-                      Plumber
-                    </CardItem>
-                  </div>
-                </div>
-              </CardItem>
-            </CardBody>
-          </CardContainer>
+        {/* Infinite Moving Testimonials */}
+        <div className="relative">
+          <InfiniteMovingCards
+            items={[
+              {
+                quote: "RozgaarSetu changed my life. I found steady work and the payments are always on time.",
+                name: "Rajesh Kumar",
+                title: "Electrician"
+              },
+              {
+                quote: "The platform is easy to use. I can find work near my home and get paid instantly.",
+                name: "Priya Sharma",
+                title: "Cleaner"
+              },
+              {
+                quote: "Great platform for contractors. Professional, reliable, and secure payments.",
+                name: "Amit Singh",
+                title: "Plumber"
+              },
+              {
+                quote: "Finding consistent work was a challenge. RozgaarSetu gave me the stability I needed.",
+                name: "Deepak Verma",
+                title: "Painter"
+              },
+              {
+                quote: "Excellent support and user-friendly app. I recommend RozgaarSetu to all workers.",
+                name: "Sunita Devi",
+                title: "Cook"
+              },
+              {
+                quote: "Quick payments, verified customers, and transparent pricing. Much more rewarding.",
+                name: "Mohammad Ali",
+                title: "Carpenter"
+              }
+            ]}
+            direction="right"
+            speed="slow"
+            pauseOnHover={true}
+          />
         </div>
       </section>
 
