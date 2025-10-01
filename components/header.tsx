@@ -68,9 +68,12 @@ export function Header() {
             href="/"
             className="relative z-20 flex items-center space-x-3 px-2 py-1.5 text-sm font-normal text-black dark:text-white group"
           >
-            <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
-              <span className="text-white font-semibold text-sm">R</span>
-            </div>
+            {/* Hard Hat Logo */}
+            <img 
+              src="/hard-hat_11270170.svg" 
+              alt="RozgaarSetu Logo" 
+              className="w-8 h-8 object-contain hover:scale-105 transition-transform duration-200 filter brightness-0 dark:brightness-100 dark:invert"
+            />
             <span className="font-semibold text-black dark:text-white tracking-tight">RozgaarSetu</span>
           </Link>
         </div>
@@ -169,9 +172,12 @@ export function Header() {
         <MobileNavHeader>
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">R</span>
-              </div>
+              {/* Hard Hat Logo */}
+              <img 
+                src="/hard-hat_11270170.svg" 
+                alt="RozgaarSetu Logo" 
+                className="w-8 h-8 object-contain filter brightness-0 dark:brightness-100 dark:invert"
+              />
               <span className="font-semibold text-black dark:text-white tracking-tight">RozgaarSetu</span>
             </div>
             <MobileNavToggle isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
