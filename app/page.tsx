@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import Lenis from 'lenis';
 import { motion } from 'framer-motion';
-import Footer from "@/components/footer";
 import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -572,7 +571,6 @@ export default function Home() {
         </motion.button>
       )}
       
-      <Footer />
     </div>
   );
 }

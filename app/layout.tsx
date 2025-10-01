@@ -13,7 +13,6 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import Footer from "@/components/footer";
 import { Toaster } from "sonner";
 import ConditionalFooter from "@/components/conditional-footer";
 import ConditionalHeader from "@/components/conditional-header";
