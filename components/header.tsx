@@ -42,7 +42,6 @@ const ProfileButton = dynamic(() => import("./profile-button"), {
 const navItems = [
   { name: "Home", link: "/" },
   { name: "Dashboard", link: "/customer/dashboard" },
-  { name: "Find Workers", link: "/workers" },
   { name: "Pricing", link: "/pricing" },
   { name: "About", link: "/about" },
 ];
@@ -131,7 +130,7 @@ export function Header() {
               <SignInButton>
                 <NavbarButton 
                   variant="secondary" 
-                  className="bg-gray-100/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 border-0 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 backdrop-blur font-medium transition-all duration-200"
+                  className="bg-gray-100/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 border-0 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 backdrop-blur font-medium transition-all duration-200 rounded-full"
                 >
                   Sign In
                 </NavbarButton>
@@ -139,7 +138,7 @@ export function Header() {
               <SignUpButton>
                 <NavbarButton 
                   variant="primary"
-                  className="bg-blue-500 hover:bg-blue-600 text-white border-0 font-medium shadow-sm hover:shadow-md transition-all duration-200"
+                  className="bg-blue-500 hover:bg-blue-600 text-white border-0 font-medium shadow-sm hover:shadow-md transition-all duration-200 rounded-full"
                 >
                   Sign Up
                 </NavbarButton>
@@ -217,12 +216,12 @@ export function Header() {
               
               <SignedOut>
                 <SignInButton>
-                  <button className="w-full text-left px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 font-medium">
+                  <button className="w-full text-left px-4 py-3 rounded-full text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 font-medium">
                     Sign In
                   </button>
                 </SignInButton>
                 <SignUpButton>
-                  <button className="w-full bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-all duration-200 font-medium shadow-sm">
+                  <button className="w-full bg-blue-500 text-white px-4 py-3 rounded-full hover:bg-blue-600 transition-all duration-200 font-medium shadow-sm">
                     Sign Up
                   </button>
                 </SignUpButton>
