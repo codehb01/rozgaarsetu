@@ -85,28 +85,8 @@ const ProfileButton = () => {
     );
   }
 
-  // If user has a role, show Go to Dashboard button
-  const dashboardPath =
-    user.role === "WORKER" ? "/worker/dashboard" : "/customer/dashboard";
-
-  return (
-    <Link href={dashboardPath}>
-      <Button
-        variant="outline"
-        className="hidden md:inline-flex items-center gap-2 rounded-xl px-4 py-2 shadow-sm hover:shadow-md transition"
-      >
-        <LayoutDashboard className="h-5 w-5 text-emerald-500" />
-        <span className="font-medium">Dashboard</span>
-      </Button>
-      <Button
-        variant="ghost"
-        className="md:hidden w-10 h-10 p-0 rounded-full hover:bg-amber-50"
-        aria-label="Go to Dashboard"
-      >
-        <LayoutDashboard className="h-5 w-5 text-emerald-500" />
-      </Button>
-    </Link>
-  );
+  // If user has a role, return null (no dashboard button)
+  return null;
 };
 
 export default ProfileButton;

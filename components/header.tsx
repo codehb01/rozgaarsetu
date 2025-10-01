@@ -41,6 +41,7 @@ const ProfileButton = dynamic(() => import("./profile-button"), {
 // Apple-style navigation items
 const navItems = [
   { name: "Home", link: "/" },
+  { name: "Dashboard", link: "/customer/dashboard" },
   { name: "Find Workers", link: "/workers" },
   { name: "Pricing", link: "/pricing" },
   { name: "About", link: "/about" },
