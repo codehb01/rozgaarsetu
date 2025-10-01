@@ -59,7 +59,9 @@ const secondaryNavigation = [
 ]
 
 interface CustomerSidebarProps {
-  onMobileClose?: () => void
+  onMobileClose?: () => void;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
 }
 
 const Option = ({
@@ -147,17 +149,27 @@ const ToggleClose = ({
   );
 };
 
-export function CustomerSidebar({ onMobileClose }: CustomerSidebarProps) {
+export function CustomerSidebar({ onMobileClose, open = true, setOpen }: CustomerSidebarProps) {
   const pathname = usePathname()
   const [searchQuery, setSearchQuery] = useState("")
-  const [open, setOpen] = useState(true)
+  
+  // Use internal state only if no external state is provided (for mobile)
+  const [internalOpen, setInternalOpen] = useState(true)
+  const isOpen = setOpen ? open : internalOpen
+  const toggleOpen = setOpen ? ((newOpen: boolean | ((prev: boolean) => boolean)) => {
+    if (typeof newOpen === 'function') {
+      setOpen(newOpen(open))
+    } else {
+      setOpen(newOpen)
+    }
+  }) : setInternalOpen
 
   return (
     <motion.nav
       layout
       className="fixed left-0 top-16 h-full shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 flex flex-col overflow-hidden z-40"
       style={{
-        width: open ? "256px" : "fit-content",
+        width: isOpen ? "256px" : "fit-content",
         height: "calc(100vh - 4rem)", // Account for navbar height
       }}
     >
@@ -176,7 +188,7 @@ export function CustomerSidebar({ onMobileClose }: CustomerSidebarProps) {
       )}
 
       {/* Search Bar */}
-      {open && (
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -205,7 +217,7 @@ export function CustomerSidebar({ onMobileClose }: CustomerSidebarProps) {
             title={item.name}
             href={item.href}
             pathname={pathname}
-            open={open}
+            open={isOpen}
           />
         ))}
       </div>
@@ -219,13 +231,13 @@ export function CustomerSidebar({ onMobileClose }: CustomerSidebarProps) {
             title={item.name}
             href={item.href}
             pathname={pathname}
-            open={open}
+            open={isOpen}
           />
         ))}
       </div>
 
       {/* Profile Section */}
-      {open && (
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -258,7 +270,7 @@ export function CustomerSidebar({ onMobileClose }: CustomerSidebarProps) {
       )}
 
       {/* Collapse Button - Now at bottom but visible */}
-      <ToggleClose open={open} setOpen={setOpen} />
+      <ToggleClose open={isOpen} setOpen={toggleOpen} />
     </motion.nav>
   )
 }

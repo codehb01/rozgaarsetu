@@ -8,12 +8,16 @@ export const dynamic = "force-dynamic";
 
 export default function CustomerLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
       {/* Fixed Sidebar for desktop */}
       <div className="hidden lg:block">
-        <CustomerSidebar />
+        <CustomerSidebar 
+          open={desktopSidebarOpen} 
+          setOpen={setDesktopSidebarOpen}
+        />
       </div>
 
       {/* Mobile sidebar */}
@@ -38,8 +42,10 @@ export default function CustomerLayout({ children }) {
         </button>
       </div>
 
-      {/* Main content with margin for fixed sidebar */}
-      <main className="lg:ml-64 min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Main content with conditional margin based on sidebar state */}
+      <main className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-300 ${
+        desktopSidebarOpen ? "lg:ml-64" : "lg:ml-16"
+      }`}>
         <div className="px-4 py-6 sm:px-6 lg:px-8">
           {children}
         </div>
