@@ -12,6 +12,7 @@ import ScrollText from "@/components/kokonutui/scroll-text";
 import TypewriterTitle from "@/components/kokonutui/type-writer";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 
 export default function Home() {
   const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
@@ -58,6 +59,110 @@ export default function Home() {
         title2="Grow."
         subtitle="The modern platform connecting blue-collar workers with opportunities."
       />
+
+      {/* Platform Demo Section */}
+      <div className="flex flex-col overflow-hidden">
+        <ContainerScroll
+          titleComponent={
+            <>
+              <h1 className="text-4xl font-semibold text-black dark:text-white">
+                Experience RozgaarSetu in Action <br />
+                <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
+                  Your Success Platform
+                </span>
+              </h1>
+            </>
+          }
+        >
+          <div className="mx-auto rounded-2xl object-cover h-full object-left-top bg-white dark:bg-gray-900 border-4 border-gray-200 dark:border-gray-700 shadow-2xl">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 h-full rounded-xl p-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+                {/* Worker Dashboard Card */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Worker Dashboard</h3>
+                      <p className="text-sm text-gray-500">Live job opportunities</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-3 bg-blue-200 dark:bg-blue-800 rounded w-3/4 animate-pulse"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 animate-pulse"></div>
+                  </div>
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="text-2xl font-bold text-green-600">₹2,500</span>
+                    <span className="text-sm text-gray-500">Today's earnings</span>
+                  </div>
+                </div>
+
+                {/* Customer Platform Card */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 bg-green-600 rounded-full"></div>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Customer Portal</h3>
+                      <p className="text-sm text-gray-500">Find skilled workers</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-3 bg-green-200 dark:bg-green-800 rounded w-2/3 animate-pulse"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5 animate-pulse"></div>
+                  </div>
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="text-2xl font-bold text-blue-600">156</span>
+                    <span className="text-sm text-gray-500">Available workers</span>
+                  </div>
+                </div>
+
+                {/* Analytics Card */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                      <div className="w-6 h-6 bg-purple-600 rounded-full"></div>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Real-time Analytics</h3>
+                      <p className="text-sm text-gray-500">Track performance</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-3 bg-purple-200 dark:bg-purple-800 rounded w-5/6 animate-pulse"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                  </div>
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="text-2xl font-bold text-purple-600">98%</span>
+                    <span className="text-sm text-gray-500">Success rate</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Bottom Feature Bar */}
+              <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-blue-600 rounded-full animate-pulse"></div>
+                    </div>
+                    <span className="font-medium text-gray-900 dark:text-white">Live Job Matching</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-gray-500">Online</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ContainerScroll>
+      </div>
 
       {/* Features Section */}
       <section className="max-w-6xl mx-auto px-6 py-20">
