@@ -23,19 +23,51 @@ function ProfileImage({
   alt,
   className,
 }: {
-  src?: string;
+  src?: string | File[];
   alt: string;
   className: string;
 }) {
   const [imageError, setImageError] = useState(false);
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
-  if (!src || !src.trim() || imageError) {
+  // Handle different src types
+  let imageUrl: string | null = null;
+  
+  if (src) {
+    if (typeof src === 'string') {
+      imageUrl = src.trim() || null;
+    } else if (Array.isArray(src) && src.length > 0) {
+      // Check if the first item is actually a File object
+      const firstItem = src[0];
+      if (firstItem && typeof firstItem === 'object' && 'name' in firstItem && 'type' in firstItem) {
+        try {
+          const url = URL.createObjectURL(firstItem as File);
+          imageUrl = url;
+          setObjectUrl(url);
+        } catch (error) {
+          console.warn('Failed to create object URL:', error);
+          imageUrl = null;
+        }
+      }
+    }
+  }
+
+  // Cleanup object URL on unmount
+  useEffect(() => {
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [objectUrl]);
+
+  if (!imageUrl || imageError) {
     return <User className="h-16 w-16 text-gray-400" />;
   }
 
   return (
     <Image
-      src={src}
+      src={imageUrl}
       alt={alt}
       width={128}
       height={128}
@@ -51,15 +83,35 @@ function WorkImage({
   alt,
   className,
 }: {
-  src: string;
+  src: string | File[];
   alt: string;
   className: string;
 }) {
   const [imageError, setImageError] = useState(false);
 
-  if (!src || !src.trim() || imageError) {
+  // Handle different src types
+  let imageUrl: string | null = null;
+  
+  if (src) {
+    if (typeof src === 'string') {
+      imageUrl = src.trim() || null;
+    } else if (Array.isArray(src) && src.length > 0) {
+      // Check if the first item is actually a File object
+      const firstItem = src[0];
+      if (firstItem && typeof firstItem === 'object' && 'name' in firstItem && 'type' in firstItem) {
+        try {
+          imageUrl = URL.createObjectURL(firstItem as File);
+        } catch (error) {
+          console.warn('Failed to create object URL:', error);
+          imageUrl = null;
+        }
+      }
+    }
+  }
+
+  if (!imageUrl || imageError) {
     return (
-      <div className="w-full h-24 bg-gray-700 rounded flex items-center justify-center">
+      <div className="w-full h-24 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center border border-gray-200 dark:border-gray-600">
         <span className="text-gray-400 text-xs">No Image</span>
       </div>
     );
@@ -67,7 +119,7 @@ function WorkImage({
 
   return (
     <Image
-      src={src}
+      src={imageUrl}
       alt={alt}
       width={200}
       height={120}
@@ -93,7 +145,7 @@ type WorkerDetails = {
   yearsExperience: number;
   hourlyRate: number;
   minimumFee: number;
-  profilePic?: string;
+  profilePic?: File[];
   bio?: string;
   address: string;
   city: string;
@@ -114,7 +166,14 @@ type PreviousWork = {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
+  images: File[];
+  category?: string;
+  dateCompleted?: string;
+  duration?: string;
+  complexity?: string;
+  costRange?: string;
+  // Keep backward compatibility
+  imageUrl?: string;
 };
 
 export default function PreviewPage() {
@@ -212,36 +271,37 @@ export default function PreviewPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            className="text-gray-400 hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {isWorker ? "Previous Work" : "Details"}
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-6"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {isWorker ? "Previous Work" : "Details"}
+            </Button>
 
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Profile Preview
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Review your profile before submitting
-          </p>
-        </div>
+            <div className="text-center">
+              <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+                Profile Preview
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+                Review your professional profile before going live
+              </p>
+            </div>
+          </div>
 
         {isWorker && workerDetails ? (
           <>
             {/* Worker Profile Preview */}
-            <Card className="border-emerald-900/20 mb-6">
-              <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row gap-6">
+            <Card className="bg-white border-0 shadow-sm rounded-2xl mb-6">
+              <CardContent className="p-8">
+                <div className="flex flex-col md:flex-row gap-8">
                   <div className="flex-shrink-0">
-                    <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden">
+                    <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden shadow-md">
                       <ProfileImage
                         src={workerDetails.profilePic}
                         alt="Profile"
@@ -251,28 +311,28 @@ export default function PreviewPage() {
                   </div>
 
                   <div className="flex-1">
-                    <div className="mb-4">
-                      <h2 className="text-2xl font-bold text-white mb-2">
+                    <div className="mb-6">
+                      <h2 className="text-3xl font-semibold text-gray-900 mb-3">
                         {workerDetails.qualification || "Professional"}
                       </h2>
-                      <div className="flex items-center text-gray-400 mb-2">
-                        <MapPin className="h-4 w-4 mr-1" />
+                      <div className="flex items-center text-gray-600 mb-3">
+                        <MapPin className="h-5 w-5 mr-2" />
                         {workerDetails.city}, {workerDetails.state}
                       </div>
-                      <div className="flex items-center text-gray-400 mb-3">
-                        <Briefcase className="h-4 w-4 mr-1" />
+                      <div className="flex items-center text-gray-600 mb-4">
+                        <Briefcase className="h-5 w-5 mr-2" />
                         {workerDetails.yearsExperience} years experience
                       </div>
                     </div>
 
-                    <div className="mb-4">
-                      <h3 className="font-semibold text-white mb-2">Skills</h3>
+                    <div className="mb-6">
+                      <h3 className="text-lg font-medium text-gray-900 mb-3">Skills</h3>
                       <div className="flex flex-wrap gap-2">
                         {workerDetails.skilledIn.map((skill, index) => (
                           <Badge
                             key={index}
                             variant="secondary"
-                            className="bg-emerald-900/20 text-emerald-400"
+                            className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
                           >
                             {skill}
                           </Badge>
@@ -281,26 +341,26 @@ export default function PreviewPage() {
                     </div>
 
                     {workerDetails.bio && (
-                      <div className="mb-4">
-                        <h3 className="font-semibold text-white mb-2">About</h3>
-                        <p className="text-gray-300">{workerDetails.bio}</p>
+                      <div className="mb-6">
+                        <h3 className="text-lg font-medium text-gray-900 mb-3">About</h3>
+                        <p className="text-gray-600 leading-relaxed">{workerDetails.bio}</p>
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-semibold text-white mb-1">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <h4 className="text-sm font-medium text-gray-500 mb-1">
                           Hourly Rate
                         </h4>
-                        <p className="text-emerald-400">
+                        <p className="text-2xl font-semibold text-gray-900">
                           ₹{workerDetails.hourlyRate}/hour
                         </p>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-white mb-1">
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <h4 className="text-sm font-medium text-gray-500 mb-1">
                           Minimum Fee
                         </h4>
-                        <p className="text-emerald-400">
+                        <p className="text-2xl font-semibold text-gray-900">
                           ₹{workerDetails.minimumFee}
                         </p>
                       </div>
@@ -312,28 +372,28 @@ export default function PreviewPage() {
 
             {/* Previous Work */}
             {previousWorks.length > 0 && (
-              <Card className="border-emerald-900/20 mb-6">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold text-white mb-4 flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-emerald-400" />
+              <Card className="bg-white border-0 shadow-sm rounded-2xl mb-6">
+                <CardContent className="p-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-6 flex items-center">
+                    <Star className="h-5 w-5 mr-3 text-blue-600" />
                     Previous Work ({previousWorks.length})
                   </h3>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {previousWorks.map((work) => (
                       <div
                         key={work.id}
-                        className="border border-gray-700 rounded-lg p-3"
+                        className="bg-gray-50 border-0 rounded-xl p-4 hover:shadow-md transition-shadow"
                       >
                         <WorkImage
-                          src={work.imageUrl}
+                          src={work.images && work.images.length > 0 ? work.images : (work.imageUrl || "")}
                           alt={work.title}
-                          className="w-full h-24 object-cover rounded mb-2"
+                          className="w-full h-32 object-cover rounded-lg mb-4"
                         />
-                        <h4 className="font-medium text-white text-sm mb-1">
+                        <h4 className="font-medium text-gray-900 text-sm mb-2">
                           {work.title}
                         </h4>
                         {work.description && (
-                          <p className="text-gray-400 text-xs line-clamp-2">
+                          <p className="text-gray-600 text-xs line-clamp-2">
                             {work.description}
                           </p>
                         )}
@@ -346,17 +406,17 @@ export default function PreviewPage() {
 
             {/* Service Areas */}
             {workerDetails.availableAreas.length > 0 && (
-              <Card className="border-emerald-900/20 mb-6">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold text-white mb-4">
+              <Card className="bg-white border-0 shadow-sm rounded-2xl mb-6">
+                <CardContent className="p-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-6">
                     Service Areas
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {workerDetails.availableAreas.map((area, index) => (
                       <Badge
                         key={index}
                         variant="outline"
-                        className="border-gray-600 text-gray-300"
+                        className="border-gray-200 text-gray-700 bg-gray-50 hover:bg-gray-100 px-3 py-1"
                       >
                         {area}
                       </Badge>
@@ -369,27 +429,27 @@ export default function PreviewPage() {
         ) : (
           customerDetails && (
             /* Customer Profile Preview */
-            <Card className="border-emerald-900/20 mb-6">
-              <CardContent className="pt-6">
-                <div className="text-center mb-6">
-                  <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Card className="bg-white border-0 shadow-sm rounded-2xl mb-6">
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md">
                     <User className="h-12 w-12 text-gray-400" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
+                  <h2 className="text-3xl font-semibold text-gray-900 mb-4">
                     Welcome, Customer!
                   </h2>
-                  <div className="flex items-center justify-center text-gray-400 mb-2">
-                    <MapPin className="h-4 w-4 mr-1" />
+                  <div className="flex items-center justify-center text-gray-600 mb-2">
+                    <MapPin className="h-5 w-5 mr-2" />
                     {customerDetails.city}, {customerDetails.state}
                   </div>
                 </div>
 
                 <div className="max-w-md mx-auto">
-                  <h3 className="font-semibold text-white mb-4">
+                  <h3 className="text-lg font-medium text-gray-900 mb-6">
                     Address Information
                   </h3>
-                  <div className="space-y-2 text-gray-300">
-                    <p>{customerDetails.address}</p>
+                  <div className="space-y-3 text-gray-600 bg-gray-50 rounded-xl p-6">
+                    <p className="leading-relaxed">{customerDetails.address}</p>
                     <p>
                       {customerDetails.city}, {customerDetails.state}{" "}
                       {customerDetails.postalCode}
@@ -408,11 +468,12 @@ export default function PreviewPage() {
             onClick={handleSubmit}
             disabled={loading}
             size="lg"
-            className="bg-emerald-600 hover:bg-emerald-700 px-8"
+            className="bg-blue-600 hover:bg-blue-700 px-12 py-4 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg"
           >
-            {loading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : null}
+            {loading ? <Loader2 className="animate-spin h-5 w-5 mr-3" /> : null}
             {isWorker ? "Create Worker Profile" : "Create Customer Profile"}
           </Button>
+        </div>
         </div>
       </div>
     </div>
