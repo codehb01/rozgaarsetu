@@ -60,8 +60,8 @@ export function Header() {
   const shouldShowNavItems = true;
 
   return (
-    <Navbar className="fixed top-0 inset-x-0 z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-gray-200/20 dark:border-gray-800/20">
-      <NavBody>
+    <Navbar className="fixed top-0 inset-x-0 z-50">
+      <NavBody className="border-b border-gray-200/20 dark:border-gray-800/20">
         {/* Apple-inspired Logo */}
         <div className="flex items-center space-x-3">
           <Link
