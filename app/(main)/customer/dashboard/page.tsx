@@ -114,7 +114,7 @@ export default async function CustomerDashboardPage() {
             </p>
           </div>
           <Link href="/customer/search">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
+            <Button className="bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white shadow-sm">
               Browse All Workers
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -225,7 +225,7 @@ export default async function CustomerDashboardPage() {
               New professionals on the platform
             </p>
           </div>
-          <Link href="/customer/search" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium">
+          <Link href="/customer/search" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium">
             View all
           </Link>
         </div>
@@ -276,7 +276,7 @@ export default async function CustomerDashboardPage() {
                         {worker.workerProfile.skilledIn.slice(0, 2).map((skill: string, index: number) => (
                           <span
                             key={index}
-                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700"
                           >
                             {skill}
                           </span>

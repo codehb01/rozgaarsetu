@@ -15,6 +15,8 @@ import {
 } from "@clerk/nextjs";
 import Footer from "@/components/footer";
 import { Toaster } from "sonner";
+import ConditionalFooter from "@/components/conditional-footer";
+import ConditionalHeader from "@/components/conditional-header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -48,11 +50,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            {/* Header on all pages for UI consistency */}
             <Header />
             <main className="min-h-screen">{children}</main>
             <Toaster richColors />
-            {/* footer */}
-            <Footer />
+            {/* Conditional footer - hidden on customer/worker dashboards */}
+            <ConditionalFooter />
           </ThemeProvider>
         </body>
       </html>
