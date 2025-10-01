@@ -4,7 +4,7 @@ import { checkUserRole } from "@/lib/auth-utils";
 export const dynamic = "force-dynamic";
 
 export default async function CustomerLayout({ children }) {
-  // Ensure only customers can access customer routes
+  // Check that only customers can access customer routes
   await checkUserRole("CUSTOMER");
 
   return (

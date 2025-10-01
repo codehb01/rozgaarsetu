@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/app/api/actions/onboarding";
+import { checkUser } from "@/lib/checkUser";
 
-export type UserRole = "CUSTOMER" | "WORKER";
+export type UserRole = "CUSTOMER" | "WORKER" | "UNASSIGNED";
 
 /**
  * Get current user with role information
  */
 export async function getAuthenticatedUser() {
   try {
-    const user = await getCurrentUser();
+    const user = await checkUser();
     return user;
   } catch (error) {
     console.error("Error getting authenticated user:", error);
@@ -19,7 +19,9 @@ export async function getAuthenticatedUser() {
 /**
  * Check if user has required role
  */
-export async function checkUserRole(requiredRole: UserRole) {
+export async function checkUserRole(
+  requiredRole: Exclude<UserRole, "UNASSIGNED">
+) {
   const user = await getAuthenticatedUser();
 
   // User not found or not authenticated
@@ -28,7 +30,7 @@ export async function checkUserRole(requiredRole: UserRole) {
   }
 
   // User doesn't have a role yet (needs onboarding)
-  if (!user.role) {
+  if (!user.role || user.role === "UNASSIGNED") {
     redirect("/onboarding");
   }
 
@@ -52,7 +54,7 @@ export async function redirectToDashboard() {
     redirect("/sign-in");
   }
 
-  if (!user.role) {
+  if (!user.role || user.role === "UNASSIGNED") {
     redirect("/onboarding");
   }
 
@@ -64,15 +66,16 @@ export async function redirectToDashboard() {
 /**
  * Check if user can access onboarding (only if they don't have a role)
  */
-export async function checkOnboardingAccess() {
+export async function checkOnboardingAccess(allowWithRole = false) {
   const user = await getAuthenticatedUser();
 
   if (!user) {
     redirect("/sign-in");
   }
 
-  // If user already has a role, redirect to their dashboard
-  if (user.role) {
+  // If allowWithRole is true, don't redirect users who already have a role
+  // This is used for pages like /onboarding/finish
+  if (!allowWithRole && user.role && user.role !== "UNASSIGNED") {
     const redirectPath =
       user.role === "WORKER" ? "/worker/dashboard" : "/customer/dashboard";
     redirect(redirectPath);

@@ -164,7 +164,6 @@ export default function PreviewPage() {
       router.push(data.redirect);
     }
   }, [data, router]);
-
   const handleSubmit = async () => {
     if (!workerDetails && !customerDetails) return;
 
