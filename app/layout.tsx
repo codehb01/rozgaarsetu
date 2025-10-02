@@ -45,27 +45,40 @@ export default function RootLayout({
         baseTheme: undefined,
         elements: {
           formButtonPrimary: 
-            "bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl",
-          card: "bg-white shadow-xl rounded-2xl border-0 p-8",
-          headerTitle: "text-gray-900 font-semibold text-2xl",
-          headerSubtitle: "text-gray-600 mt-2",
+            "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold rounded-2xl py-4 px-6 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]",
+          card: "bg-transparent shadow-none border-0 p-0",
+          rootBox: "w-full",
+          headerTitle: "text-3xl font-bold text-gray-800 mb-2",
+          headerSubtitle: "text-gray-600 mb-8 text-lg",
           socialButtonsBlockButton: 
-            "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow-md",
+            "bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 rounded-xl font-medium py-3 px-4 transition-all duration-200 shadow-sm hover:shadow-md",
+          socialButtonsBlockButtonText: "font-medium text-gray-700",
           formFieldInput: 
-            "bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-3",
-          footerActionText: "text-gray-600",
+            "bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-4 text-gray-800 placeholder-gray-400 transition-all duration-200",
+          formFieldLabel: "text-gray-700 font-medium mb-3 text-sm uppercase tracking-wide",
+          footerActionText: "text-gray-500 text-sm",
           footerActionLink: "text-blue-600 hover:text-blue-700 font-medium",
           dividerLine: "bg-gray-200",
-          dividerText: "text-gray-500 text-sm",
-          formFieldLabel: "text-gray-700 font-medium mb-2",
+          dividerText: "text-gray-400 text-sm font-medium",
           identityPreviewText: "text-gray-600",
-          identityPreviewEditButton: "text-blue-600 hover:text-blue-700"
+          identityPreviewEditButton: "text-blue-600 hover:text-blue-700",
+          formResendCodeLink: "text-blue-600 hover:text-blue-700 font-medium",
+          otpCodeFieldInput: "border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+          formFieldSuccessText: "text-green-600",
+          formFieldErrorText: "text-red-500",
+          formFieldHintText: "text-gray-500 text-sm",
+          alternativeMethodsBlockButton: "text-blue-600 hover:text-blue-700 font-medium"
         },
         variables: {
-          colorPrimary: "#2563eb",
+          colorPrimary: "#3b82f6",
           colorTextOnPrimaryBackground: "#ffffff",
           borderRadius: "0.75rem",
-          spacingUnit: "1rem"
+          spacingUnit: "1rem",
+          fontFamily: "inherit"
+        },
+        layout: {
+          socialButtonsPlacement: "bottom",
+          socialButtonsVariant: "blockButton"
         }
       }}>
       <html lang="en" suppressHydrationWarning>
