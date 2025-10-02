@@ -11,7 +11,7 @@ export default function CustomerLayout({ children }) {
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Fixed Sidebar for desktop */}
       <div className="hidden lg:block">
         <CustomerSidebar 
@@ -24,14 +24,14 @@ export default function CustomerLayout({ children }) {
       {sidebarOpen && (
         <div className="relative z-50 lg:hidden">
           <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <div className="fixed inset-y-0 left-0 z-50 mt-16">
+          <div className="fixed inset-y-0 left-0 z-50">
             <CustomerSidebar onMobileClose={() => setSidebarOpen(false)} />
           </div>
         </div>
       )}
 
       {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-20 left-4 z-30">
+      <div className="lg:hidden fixed top-4 left-4 z-30">
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700"
