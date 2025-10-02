@@ -1,6 +1,24 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Scroll List Component Styles */
+.scrollbar-hidden {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+.scroll-list__wrp {
+  scroll-behavior: smooth;
+}
+
+.scroll-list__item {
+  scroll-snap-align: center;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

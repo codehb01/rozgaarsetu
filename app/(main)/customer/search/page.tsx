@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import ScrollList from "@/components/ui/scroll-list";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -71,7 +72,7 @@ export default function CustomerSearchPage() {
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState<string>(initialCategory);
   const [sortBy, setSortBy] = useState("relevance");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "scroll">("scroll");
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -258,6 +259,17 @@ export default function CustomerSearchPage() {
             >
               <FiList className="h-4 w-4" />
             </button>
+            <button
+              onClick={() => setViewMode("scroll")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "scroll"
+                  ? "bg-white dark:bg-gray-700 shadow-sm"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+              title="Scroll View"
+            >
+              <FiTrendingUp className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
@@ -301,104 +313,197 @@ export default function CustomerSearchPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className={`grid gap-6 ${
-                viewMode === "grid" 
-                  ? "sm:grid-cols-2 lg:grid-cols-3" 
-                  : "grid-cols-1"
-              }`}
             >
-              {workers.map((worker, index) => (
-                <motion.div
-                  key={worker.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-all duration-200 group">
-                    <div className="flex items-start gap-4">
-                      {/* Profile Picture */}
-                      <div className="relative">
-                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
-                          {worker.workerProfile?.profilePic ? (
-                            <img
-                              src={worker.workerProfile.profilePic}
-                              alt={worker.name || "Worker"}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <FiUser className="h-8 w-8 text-white" />
-                          )}
+              {viewMode === "scroll" ? (
+                <ScrollList
+                  data={workers}
+                  itemHeight={220}
+                  renderItem={(worker: Worker, index: number) => (
+                    <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-all duration-200 group">
+                      <div className="flex items-start gap-4">
+                        {/* Profile Picture */}
+                        <div className="relative">
+                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                            {worker.workerProfile?.profilePic ? (
+                              <img
+                                src={worker.workerProfile.profilePic}
+                                alt={worker.name || "Worker"}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <FiUser className="h-8 w-8 text-white" />
+                            )}
+                          </div>
+                          <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" />
                         </div>
-                        <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" />
-                      </div>
 
-                      {/* Worker Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate">
-                          {worker.name ?? "Professional Worker"}
-                        </h3>
-                        
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                            {worker.workerProfile?.qualification || "Skilled Professional"}
-                          </span>
-                          <span className="text-gray-400">•</span>
-                          <div className="flex items-center gap-1">
-                            <FiClock className="h-3 w-3 text-gray-400" />
+                        {/* Worker Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                            {worker.name ?? "Professional Worker"}
+                          </h3>
+                          
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                              {worker.workerProfile?.qualification || "Skilled Professional"}
+                            </span>
+                            <span className="text-gray-400">•</span>
+                            <div className="flex items-center gap-1">
+                              <FiClock className="h-3 w-3 text-gray-400" />
+                              <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {worker.workerProfile?.yearsExperience ?? 0} years
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1 mb-3">
+                            <FiMapPin className="h-4 w-4 text-gray-400" />
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {worker.workerProfile?.yearsExperience ?? 0} years
+                              {worker.workerProfile?.city || "Location"} 
+                              {worker.workerProfile?.availableAreas?.length && (
+                                <span className="ml-1">
+                                  +{worker.workerProfile.availableAreas.length} areas
+                                </span>
+                              )}
                             </span>
                           </div>
-                        </div>
 
-                        <div className="flex items-center gap-1 mb-3">
-                          <FiMapPin className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {worker.workerProfile?.city || "Location"} 
-                            {worker.workerProfile?.availableAreas?.length && (
-                              <span className="ml-1">
-                                +{worker.workerProfile.availableAreas.length} areas
-                              </span>
-                            )}
-                          </span>
-                        </div>
+                          {/* Skills */}
+                          {worker.workerProfile?.skilledIn && (
+                            <div className="flex flex-wrap gap-1 mb-4">
+                              {worker.workerProfile.skilledIn.slice(0, 3).map((skill: string, i: number) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                              {worker.workerProfile.skilledIn.length > 3 && (
+                                <span className="px-2 py-1 text-xs text-gray-500">
+                                  +{worker.workerProfile.skilledIn.length - 3} more
+                                </span>
+                              )}
+                            </div>
+                          )}
 
-                        {/* Skills */}
-                        {worker.workerProfile?.skilledIn && (
-                          <div className="flex flex-wrap gap-1 mb-4">
-                            {worker.workerProfile.skilledIn.slice(0, 3).map((skill, i) => (
-                              <span
-                                key={i}
-                                className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
+                          {/* Action Buttons */}
+                          <div className="flex gap-2">
+                            <Link href={`/workers/${worker.id}`} className="flex-1">
+                              <Button
+                                variant="outline"
+                                className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                               >
-                                {skill}
-                              </span>
-                            ))}
-                            {worker.workerProfile.skilledIn.length > 3 && (
-                              <span className="px-2 py-1 text-xs text-gray-500">
-                                +{worker.workerProfile.skilledIn.length - 3} more
-                              </span>
-                            )}
+                                View Profile
+                              </Button>
+                            </Link>
+                            <BookWorkerButton workerId={worker.id} />
                           </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2">
-                          <Link href={`/workers/${worker.id}`} className="flex-1">
-                            <Button
-                              variant="outline"
-                              className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                              View Profile
-                            </Button>
-                          </Link>
-                          <BookWorkerButton workerId={worker.id} />
                         </div>
                       </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
+                    </Card>
+                  )}
+                />
+              ) : (
+                <div className={`grid gap-6 ${
+                  viewMode === "grid" 
+                    ? "sm:grid-cols-2 lg:grid-cols-3" 
+                    : "grid-cols-1"
+                }`}>
+                  {workers.map((worker: Worker, index: number) => (
+                    <motion.div
+                      key={worker.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-all duration-200 group">
+                        <div className="flex items-start gap-4">
+                          {/* Profile Picture */}
+                          <div className="relative">
+                            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                              {worker.workerProfile?.profilePic ? (
+                                <img
+                                  src={worker.workerProfile.profilePic}
+                                  alt={worker.name || "Worker"}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <FiUser className="h-8 w-8 text-white" />
+                              )}
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" />
+                          </div>
+
+                          {/* Worker Info */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                              {worker.name ?? "Professional Worker"}
+                            </h3>
+                            
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                {worker.workerProfile?.qualification || "Skilled Professional"}
+                              </span>
+                              <span className="text-gray-400">•</span>
+                              <div className="flex items-center gap-1">
+                                <FiClock className="h-3 w-3 text-gray-400" />
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                  {worker.workerProfile?.yearsExperience ?? 0} years
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 mb-3">
+                              <FiMapPin className="h-4 w-4 text-gray-400" />
+                              <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {worker.workerProfile?.city || "Location"} 
+                                {worker.workerProfile?.availableAreas?.length && (
+                                  <span className="ml-1">
+                                    +{worker.workerProfile.availableAreas.length} areas
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+
+                            {/* Skills */}
+                            {worker.workerProfile?.skilledIn && (
+                              <div className="flex flex-wrap gap-1 mb-4">
+                                {worker.workerProfile.skilledIn.slice(0, 3).map((skill: string, i: number) => (
+                                  <span
+                                    key={i}
+                                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                                {worker.workerProfile.skilledIn.length > 3 && (
+                                  <span className="px-2 py-1 text-xs text-gray-500">
+                                    +{worker.workerProfile.skilledIn.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-2">
+                              <Link href={`/workers/${worker.id}`} className="flex-1">
+                                <Button
+                                  variant="outline"
+                                  className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                  View Profile
+                                </Button>
+                              </Link>
+                              <BookWorkerButton workerId={worker.id} />
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
