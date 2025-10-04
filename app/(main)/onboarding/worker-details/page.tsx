@@ -44,6 +44,8 @@ interface WorkerFormData {
   state: string;
   country: string;
   postalCode: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface Step {
@@ -145,6 +147,8 @@ export default function WorkerDetailsPage() {
     if (addr.state) setValue("state", addr.state)
     if (addr.country) setValue("country", addr.country)
     if (addr.postalCode) setValue("postalCode", addr.postalCode)
+    if (res?.coords?.lat) setValue("latitude", res.coords.lat)
+    if (res?.coords?.lng) setValue("longitude", res.coords.lng)
   }
 
   // When user clicks "Use my location", hook updates `place`; reflect into form
@@ -152,6 +156,10 @@ export default function WorkerDetailsPage() {
     // best-effort: only set if address field is empty to avoid clobbering typed input
     if (!watch("address")) {
       applyGeocode(place)
+      if (place?.coords) {
+        setValue("latitude", place.coords.lat)
+        setValue("longitude", place.coords.lng)
+      }
     }
   }
 

@@ -7,6 +7,8 @@ export const customerFormSchema = z.object({
   state: z.string().min(2, "State is required"),
   country: z.string().min(2, "Country is required"),
   postalCode: z.string().min(4, "Postal code is required"),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 });
 
 // ----------------- Worker Schema -----------------
@@ -67,6 +69,8 @@ export const workerFormSchema = z.object({
   state: z.string().min(2, "State is required"),
   country: z.string().min(2, "Country is required"),
   postalCode: z.string().min(4, "Postal code is required"),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 });
 
 export type CustomerFormData = z.infer<typeof customerFormSchema>;

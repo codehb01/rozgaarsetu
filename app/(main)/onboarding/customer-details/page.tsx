@@ -7,12 +7,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { ArrowLeft, LocateFixed, Loader2 } from "lucide-react";
 import { customerFormSchema, type CustomerFormData } from "@/lib/schema";
 import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
 import { useLocation } from "@/hooks/use-location";
 import { Button as UIButton } from "@/components/ui/button";
-import { LocateFixed, Loader2 as Spinner } from "lucide-react";
 import { formatDisplayAddress } from "@/lib/location";
 
 export default function CustomerDetailsPage() {
@@ -37,21 +36,7 @@ export default function CustomerDetailsPage() {
   });
 
   const { getCurrentPosition, status: geoStatus, place } = useLocation();
-
-  const applyGeocode = (res: any) => {
-    const addr = res?.address || {}
-    setValue("address", formatDisplayAddress(addr) || res?.displayName || "")
-    if (addr.city) setValue("city", addr.city)
-    if (addr.state) setValue("state", addr.state)
-    if (addr.country) setValue("country", addr.country)
-    if (addr.postalCode) setValue("postalCode", addr.postalCode)
-  }
-
-  if (typeof window !== "undefined" && place && geoStatus === "success") {
-    if (!watch("address")) {
-      applyGeocode(place)
-    }
-  }
+ 
 
   const onSubmit = async (data: CustomerFormData) => {
     setIsLoading(true);
@@ -64,6 +49,25 @@ export default function CustomerDetailsPage() {
 
     setIsLoading(false);
   };
+
+  // When geocode or browser location is available, set latitude/longitude into form data
+  // Note: CustomerFormData already allows latitude/longitude (schema updated)
+  const applyGeocode = (res: any) => {
+    const addr = res?.address || {}
+    if (addr.city) setValue("city", addr.city)
+    if (addr.state) setValue("state", addr.state)
+    if (addr.country) setValue("country", addr.country)
+    if (addr.postalCode) setValue("postalCode", addr.postalCode)
+    if (res?.coords?.lat) setValue("latitude", res.coords.lat)
+    if (res?.coords?.lng) setValue("longitude", res.coords.lng)
+  }
+
+  if (typeof window !== "undefined" && place && geoStatus === "success") {
+    if (!watch("address")) {
+      setValue("address", formatDisplayAddress(place.address) || place.displayName || "")
+      applyGeocode(place)
+    }
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -116,7 +120,7 @@ export default function CustomerDetailsPage() {
                       disabled={geoStatus === "locating"}
                     >
                       {geoStatus === "locating" ? (
-                        <Spinner className="h-4 w-4 mr-2 animate-spin" />
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       ) : (
                         <LocateFixed className="h-4 w-4 mr-2" />
                       )}
