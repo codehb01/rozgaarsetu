@@ -70,6 +70,13 @@ RozgaarSetu is a platform connecting workers with customers for various services
    CLOUDINARY_CLOUD_NAME=your_cloud_name
    CLOUDINARY_API_KEY=your_api_key
    CLOUDINARY_API_SECRET=your_api_secret
+
+   # App URL (used for Referer in geocoding requests)
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+   # OpenStreetMap Nominatim identification (required by usage policy)
+   # Provide a descriptive UA with contact method for production deployments.
+   NOMINATIM_USER_AGENT="RozgaarSetu/1.0 (contact: you@example.com)"
    ```
 
 ### Setup Instructions
@@ -102,6 +109,12 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Location and Geocoding
+
+- This project uses OpenStreetMap Nominatim for geocoding (search and reverse geocode); all requests are proxied via our Next.js API and cached in-memory (10 min TTL) to be friendly to rate limits.
+- We also send proper identification headers per the Nominatim usage policy. Configure `NEXT_PUBLIC_APP_URL` and `NOMINATIM_USER_AGENT` in your `.env.local`.
+- A minimal best-effort 1 req/sec throttle is applied per endpoint. In serverless/multi-instance environments, consider a centralized rate limiter (e.g., Redis) if you expect higher traffic.
 
 ## Learn More
 

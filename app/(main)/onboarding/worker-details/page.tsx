@@ -20,9 +20,13 @@ import {
   Camera,
   CheckCircle,
   Plus,
-  X
+  X,
+  LocateFixed
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
+import { useLocation } from "@/hooks/use-location";
+import { formatDisplayAddress } from "@/lib/location";
 
 interface WorkerFormData {
   aadharNumber: string;
@@ -129,6 +133,27 @@ export default function WorkerDetailsPage() {
       availableAreas: [],
     },
   });
+
+  // Geolocation hook for autofill
+  const { getCurrentPosition, status: geoStatus, place } = useLocation();
+
+  // Apply geocode result to form fields
+  const applyGeocode = (res: any) => {
+    const addr = res?.address || {}
+    setValue("address", formatDisplayAddress(addr) || res?.displayName || "")
+    if (addr.city) setValue("city", addr.city)
+    if (addr.state) setValue("state", addr.state)
+    if (addr.country) setValue("country", addr.country)
+    if (addr.postalCode) setValue("postalCode", addr.postalCode)
+  }
+
+  // When user clicks "Use my location", hook updates `place`; reflect into form
+  if (typeof window !== "undefined" && place && geoStatus === "success") {
+    // best-effort: only set if address field is empty to avoid clobbering typed input
+    if (!watch("address")) {
+      applyGeocode(place)
+    }
+  }
 
   const currentStepData = steps.find(step => step.id === currentStep);
   const isLastStep = currentStep === steps.length;
@@ -643,13 +668,31 @@ export default function WorkerDetailsPage() {
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Full Address
                             </label>
-                            <Input
-                              placeholder="Street address, building name, etc."
-                              {...register("address", {
-                                required: "Address is required"
-                              })}
-                              className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
-                            />
+                            <div className="flex gap-2">
+                              <div className="flex-1">
+                                <OpenStreetMapInput
+                                  value={watch("address")}
+                                  onChange={(v) => setValue("address", v)}
+                                  onSelect={applyGeocode}
+                                  placeholder="Street address, building name, etc."
+                                  inputClassName="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={getCurrentPosition}
+                                className="whitespace-nowrap"
+                                disabled={geoStatus === "locating"}
+                              >
+                                {geoStatus === "locating" ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <LocateFixed className="h-4 w-4 mr-2" />
+                                )}
+                                Use my location
+                              </Button>
+                            </div>
                             {errors.address && (
                               <p className="text-red-500 text-sm mt-1">
                                 {errors.address.message}

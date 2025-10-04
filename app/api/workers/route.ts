@@ -5,6 +5,9 @@ type SearchParams = {
   q?: string | null;
   category?: string | null;
   limit?: string | null;
+  sort?: string | null;
+  lat?: string | null;
+  lng?: string | null;
 };
 
 function flattenStringArray(values: string[] | null | undefined): string[] {
@@ -32,19 +35,7 @@ function flattenStringArray(values: string[] | null | undefined): string[] {
   return Array.from(new Set(out));
 }
 
-function matchesKeyword(
-  q: string,
-  worker: {
-    name: string | null;
-    workerProfile: {
-      skilledIn: string[] | null;
-      qualification: string | null;
-      city: string | null;
-      availableAreas: string[] | null;
-      bio: string | null;
-    } | null;
-  }
-): boolean {
+function matchesKeyword(q: string, worker: any): boolean {
   if (!q) return true;
   const needle = q.toLowerCase();
   const skills = flattenStringArray(worker.workerProfile?.skilledIn);
@@ -68,6 +59,9 @@ export async function GET(req: NextRequest) {
       q: url.searchParams.get("q"),
       category: url.searchParams.get("category"),
       limit: url.searchParams.get("limit"),
+      sort: url.searchParams.get("sort"),
+      lat: url.searchParams.get("lat"),
+      lng: url.searchParams.get("lng"),
     };
 
     const q = sp.q?.toLowerCase().trim() ?? "";
@@ -76,8 +70,11 @@ export async function GET(req: NextRequest) {
       Math.max(parseInt(sp.limit || "50", 10) || 50, 1),
       200
     );
+    const sort = (sp.sort || "relevance").toLowerCase();
+    const lat = sp.lat ? parseFloat(sp.lat) : undefined;
+    const lng = sp.lng ? parseFloat(sp.lng) : undefined;
 
-    const workersRaw = await prisma.user.findMany({
+    const workersRaw = (await prisma.user.findMany({
       where: { role: "WORKER" },
       select: {
         id: true,
@@ -92,11 +89,12 @@ export async function GET(req: NextRequest) {
             qualification: true,
             profilePic: true,
             bio: true,
+            // latitude / longitude will be added after DB migration + prisma generate
           },
         },
       },
       take: 200,
-    });
+    })) as any[];
 
     const filtered = workersRaw.filter((w) => {
       const categoryOk = category
@@ -106,7 +104,7 @@ export async function GET(req: NextRequest) {
       return categoryOk && keywordOk;
     });
 
-    const result = filtered.slice(0, limit);
+  const result = filtered.slice(0, limit);
     return NextResponse.json({ count: result.length, workers: result });
   } catch (err) {
     console.error("/api/workers error", err);

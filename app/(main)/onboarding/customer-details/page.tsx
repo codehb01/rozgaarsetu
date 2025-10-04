@@ -9,6 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { customerFormSchema, type CustomerFormData } from "@/lib/schema";
+import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
+import { useLocation } from "@/hooks/use-location";
+import { Button as UIButton } from "@/components/ui/button";
+import { LocateFixed, Loader2 as Spinner } from "lucide-react";
+import { formatDisplayAddress } from "@/lib/location";
 
 export default function CustomerDetailsPage() {
   const router = useRouter();
@@ -18,6 +23,8 @@ export default function CustomerDetailsPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
     defaultValues: {
@@ -28,6 +35,23 @@ export default function CustomerDetailsPage() {
       postalCode: "",
     },
   });
+
+  const { getCurrentPosition, status: geoStatus, place } = useLocation();
+
+  const applyGeocode = (res: any) => {
+    const addr = res?.address || {}
+    setValue("address", formatDisplayAddress(addr) || res?.displayName || "")
+    if (addr.city) setValue("city", addr.city)
+    if (addr.state) setValue("state", addr.state)
+    if (addr.country) setValue("country", addr.country)
+    if (addr.postalCode) setValue("postalCode", addr.postalCode)
+  }
+
+  if (typeof window !== "undefined" && place && geoStatus === "success") {
+    if (!watch("address")) {
+      applyGeocode(place)
+    }
+  }
 
   const onSubmit = async (data: CustomerFormData) => {
     setIsLoading(true);
@@ -73,11 +97,32 @@ export default function CustomerDetailsPage() {
                 </h3>
 
                 <div>
-                  <Input
-                    placeholder="Address"
-                    {...register("address")}
-                    className="bg-gray-800 border-gray-700"
-                  />
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Full Address</label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <OpenStreetMapInput
+                        value={watch("address")}
+                        onChange={(v) => setValue("address", v)}
+                        onSelect={applyGeocode}
+                        placeholder="Search your address"
+                        inputClassName="bg-gray-800 border-gray-700"
+                      />
+                    </div>
+                    <UIButton
+                      type="button"
+                      variant="outline"
+                      onClick={getCurrentPosition}
+                      className="whitespace-nowrap"
+                      disabled={geoStatus === "locating"}
+                    >
+                      {geoStatus === "locating" ? (
+                        <Spinner className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <LocateFixed className="h-4 w-4 mr-2" />
+                      )}
+                      Use my location
+                    </UIButton>
+                  </div>
                   {errors.address && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.address.message}

@@ -6,6 +6,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ScrollList from "@/components/ui/scroll-list";
+import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
+import type { GeocodeResult } from "@/lib/location";
+import { useLocation } from "@/hooks/use-location";
+import { toast } from "sonner";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -70,6 +74,8 @@ export default function CustomerSearchPage() {
 
   const [q, setQ] = useState("");
   const [location, setLocation] = useState("");
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const { getCurrentPosition, status, error: locError, place: locPlace, coords: locCoords } = useLocation();
   const [category, setCategory] = useState<string>(initialCategory);
   const [sortBy, setSortBy] = useState("relevance");
   const [viewMode, setViewMode] = useState<"grid" | "list" | "scroll">("scroll");
@@ -77,10 +83,12 @@ export default function CustomerSearchPage() {
   const [loading, setLoading] = useState(false);
   const [workers, setWorkers] = useState<Worker[]>([]);
 
-  const fetchWorkers = async (opts?: { q?: string; category?: string; location?: string; sortBy?: string }) => {
+  const fetchWorkers = async (opts?: { q?: string; category?: string; location?: string; sortBy?: string; lat?: number; lng?: number }) => {
     const qs = new URLSearchParams();
     if (opts?.q) qs.set("q", opts.q);
     if (opts?.location) qs.set("location", opts.location);
+    if (opts?.lat) qs.set("lat", String(opts.lat));
+    if (opts?.lng) qs.set("lng", String(opts.lng));
     if (opts?.category && opts.category !== "All") qs.set("category", opts.category.toLowerCase());
     if (opts?.sortBy && opts.sortBy !== "relevance") qs.set("sort", opts.sortBy);
     qs.set("limit", "30");
@@ -101,12 +109,25 @@ export default function CustomerSearchPage() {
   };
 
   useEffect(() => {
-    fetchWorkers({ q, category, location, sortBy });
+    fetchWorkers({ q, category, location, sortBy, lat: coords?.lat, lng: coords?.lng });
   }, [category, sortBy]);
+
+  // Reflect browser geolocation into input once fetched
+  useEffect(() => {
+    if (locCoords && !coords) {
+      setCoords({ lat: locCoords.lat, lng: locCoords.lng });
+    }
+    if (locPlace && !location) {
+      setLocation(locPlace.displayName);
+    }
+  }, [locCoords, locPlace]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchWorkers({ q, category, location, sortBy });
+    if (sortBy === "nearest" && !coords) {
+      toast.info("Tip: Set a location or use 'Use my location' to get nearest results.")
+    }
+    fetchWorkers({ q, category, location, sortBy, lat: coords?.lat, lng: coords?.lng });
   };
 
   const onCategoryClick = (cat: string) => {
@@ -166,13 +187,38 @@ export default function CustomerSearchPage() {
               {/* Location Search Input - Ready for OpenStreetMap */}
               <div className="relative lg:w-72">
                 <FiMapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
-                  placeholder="Enter location or area..."
+                <OpenStreetMapInput
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="pl-12 h-12 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(v) => { setLocation(v); if (!v) setCoords(null); }}
+                  onSelect={(place: GeocodeResult) => {
+                    setLocation(place.displayName);
+                    setCoords(place.coords);
+                  }}
+                  placeholder="Enter location or area..."
+                  inputClassName="pl-12 pr-10 h-12 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {location && (
+                  <button
+                    type="button"
+                    aria-label="Clear location"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    onClick={() => { setLocation(""); setCoords(null); }}
+                  >
+                    ×
+                  </button>
+                )}
               </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="h-12 px-4 whitespace-nowrap"
+                onClick={() => getCurrentPosition()}
+                title="Use my current location"
+              >
+                <FiMap className="h-5 w-5 mr-2" />
+                Use my location
+              </Button>
 
               {/* Search Button */}
               <Button

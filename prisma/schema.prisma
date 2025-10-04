@@ -53,6 +53,10 @@ model WorkerProfile {
   postalCode     String
   availableAreas String[] // list of areas where worker can work
 
+  // Optional geographic coordinates for proximity search
+  latitude      Float?
+  longitude     Float?
+
    hourlyRate   Float?   // Optional, in your preferred currency
   minimumFee   Float?   // Optional, base fee after booking acceptance
 
