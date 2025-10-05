@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
+import OpenBookFromQuery from "@/components/open-book-from-query";
 import { auth } from "@clerk/nextjs/server";
 
 export const dynamic = "force-dynamic";
@@ -77,7 +78,10 @@ export default async function WorkerOrSpecialityPage({
           <div className="mb-6 flex items-center justify-between gap-4">
             <h1 className="text-3xl font-light text-white">{worker.name}</h1>
             {current?.role === "CUSTOMER" && (
-              <BookWorkerButton workerId={worker.id} />
+              <>
+                <BookWorkerButton workerId={worker.id} />
+                <OpenBookFromQuery workerId={worker.id} />
+              </>
             )}
           </div>
           <Card className="border-gray-800 bg-gray-800/50 p-6 mb-6">

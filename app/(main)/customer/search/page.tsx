@@ -11,6 +11,7 @@ import { useLocation } from "@/hooks/use-location";
 import { toast } from "sonner";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
+import MapPreview from "@/components/ui/map-preview";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   FiSearch, 
@@ -287,9 +288,12 @@ export default function CustomerSearchPage() {
             </div>
           </form>
         </section>
-      </div>
+  </div>
 
-      {/* Main Content */}
+  {/* Map preview */}
+  <MapPreview workers={workers} center={coords ?? undefined} />
+
+  {/* Main Content */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
         {/* Compact Controls Bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
@@ -388,71 +392,36 @@ export default function CustomerSearchPage() {
               {viewMode === "scroll" ? (
                 <ScrollList
                   data={workers}
-                  itemHeight={360}
-                  renderItem={(worker: Worker, index: number) => (
-                    <Card className="p-4 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg h-full flex flex-col justify-between">
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className="text-2xl font-semibold text-gray-900 dark:text-white truncate">
-                            {worker.name ?? 'Professional Worker'}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Worker: {worker.workerProfile?.qualification ?? 'Worker'}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {typeof worker.distanceKm === 'number' ? (
-                            <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">
-                              {worker.distanceKm < 1 ? `${Math.round(worker.distanceKm * 1000)} m` : `${worker.distanceKm.toFixed(1)} km`}
-                            </span>
-                          ) : (
-                            <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300">Distance unknown</span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Two tiles row */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
-                            <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-300" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-900 dark:text-white">Experience</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.yearsExperience ?? 0} years</p>
-                          </div>
-                        </div>
-
-                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
-                            <FiMapPin className="w-5 h-5 text-green-600 dark:text-green-300" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-gray-900 dark:text-white">Location</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.city ?? 'Unknown'}</p>
+                  itemHeight={150}
+                  renderItem={(w: Worker, i: number) => {
+                    const name = w.name ?? "Professional";
+                    const initial = name.charAt(0);
+                    const skills = w.workerProfile?.skilledIn && w.workerProfile!.skilledIn!.length > 0 ? w.workerProfile!.skilledIn!.slice(0,3).join(", ") : "No skills listed";
+                    const distance = typeof w.distanceKm === "number" ? (w.distanceKm < 1 ? `${Math.round(w.distanceKm * 1000)} m` : `${w.distanceKm.toFixed(1)} km`) : "—";
+                    return (
+                      <div key={w.id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-4">
+                        <div className="flex items-start gap-4">
+                          <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">{initial}</div>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="truncate">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{name}</h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{skills}</p>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">{distance}</div>
+                                <div className="text-xs text-gray-500 mt-1">{w.workerProfile?.yearsExperience ?? 0} yrs</div>
+                              </div>
+                            </div>
+                            <div className="mt-3 flex items-center gap-3">
+                              <Link href={`/worker/${w.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
+                              <BookWorkerButton workerId={w.id} className="px-3 py-1" />
+                            </div>
                           </div>
                         </div>
                       </div>
-
-                      {/* Large info box (skill or rate) */}
-                      <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg mb-4">
-                        <p className="text-xs font-medium text-gray-900 dark:text-white">Top skills</p>
-                        <p className="text-base text-gray-700 dark:text-gray-300 mt-2">
-                          {worker.workerProfile?.skilledIn && worker.workerProfile.skilledIn.length > 0 ? worker.workerProfile.skilledIn.slice(0,3).join(', ') : 'No skills listed'}
-                        </p>
-                      </div>
-
-                      {/* Additional details */}
-                      <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
-                        <p className="text-xs font-medium text-blue-600">Additional Details</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">{worker.workerProfile?.bio ?? '—'}</p>
-                      </div>
-
-                      {/* Primary action */}
-                      <div>
-                        <BookWorkerButton workerId={worker.id} />
-                      </div>
-                    </Card>
-                  )}
+                    );
+                  }}
                 />
               ) : (
                 <div className={`grid gap-6 ${
@@ -460,66 +429,42 @@ export default function CustomerSearchPage() {
                     ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
                     : "grid-cols-1"
                 }`}>
-                  {workers.map((worker: Worker, index: number) => (
-                    <motion.div
-                      key={worker.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <Card className="p-4 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg h-full flex flex-col justify-between">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white truncate">{worker.name ?? 'Professional Worker'}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Worker: {worker.workerProfile?.qualification ?? 'Worker'}</p>
-                          </div>
-                          <div>
-                            {typeof worker.distanceKm === 'number' ? (
-                              <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">{worker.distanceKm < 1 ? `${Math.round(worker.distanceKm * 1000)} m` : `${worker.distanceKm.toFixed(1)} km`}</span>
-                            ) : (
-                              <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300">Distance unknown</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
-                              <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-300" />
-                            </div>
-                            <div>
-                              <p className="text-xs font-medium text-gray-900 dark:text-white">Experience</p>
-                              <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.yearsExperience ?? 0} years</p>
-                            </div>
-                          </div>
-
-                          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
-                              <FiMapPin className="w-5 h-5 text-green-600 dark:text-green-300" />
-                            </div>
-                            <div>
-                              <p className="text-xs font-medium text-gray-900 dark:text-white">Location</p>
-                              <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.city ?? 'Unknown'}</p>
+                  {workers.map((worker: Worker, index: number) => {
+                    const name = worker.name ?? "Professional";
+                    const initial = name.charAt(0);
+                    const skills = worker.workerProfile?.skilledIn && worker.workerProfile!.skilledIn!.length > 0 ? worker.workerProfile!.skilledIn!.slice(0,3).join(", ") : "No skills listed";
+                    const distance = typeof worker.distanceKm === "number" ? (worker.distanceKm < 1 ? `${Math.round(worker.distanceKm * 1000)} m` : `${worker.distanceKm.toFixed(1)} km`) : "—";
+                    return (
+                      <motion.div
+                        key={worker.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-4">
+                          <div className="flex items-start gap-4">
+                            <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">{initial}</div>
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="truncate">
+                                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{name}</h3>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{skills}</p>
+                                </div>
+                                <div className="text-right flex-shrink-0">
+                                  <div className="text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">{distance}</div>
+                                  <div className="text-xs text-gray-500 mt-1">{worker.workerProfile?.yearsExperience ?? 0} yrs</div>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex items-center gap-3">
+                                <Link href={`/worker/${worker.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
+                                <BookWorkerButton workerId={worker.id} className="px-3 py-1" />
+                              </div>
                             </div>
                           </div>
                         </div>
-
-                        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg mb-4">
-                          <p className="text-xs font-medium text-gray-900 dark:text-white">Top skills</p>
-                          <p className="text-base text-gray-700 dark:text-gray-300 mt-2">{worker.workerProfile?.skilledIn && worker.workerProfile.skilledIn.length > 0 ? worker.workerProfile.skilledIn.slice(0,3).join(', ') : 'No skills listed'}</p>
-                        </div>
-
-                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
-                          <p className="text-xs font-medium text-blue-600">Additional Details</p>
-                          <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">{worker.workerProfile?.bio ?? '—'}</p>
-                        </div>
-
-                        <div>
-                          <BookWorkerButton workerId={worker.id} />
-                        </div>
-                      </Card>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>
