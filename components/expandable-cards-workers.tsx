@@ -22,7 +22,7 @@ type WorkerLite = {
 export default function ExpandableCardsWorkers({ workers }: { workers: WorkerLite[] }) {
   const [active, setActive] = useState<string | null>(null);
   const id = useId();
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {

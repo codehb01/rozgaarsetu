@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { useLocation } from "@/hooks/use-location";
 import { toast } from "sonner";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
+import SkillBadge from '@/components/ui/skill-badge';
 import MapPreview from "@/components/ui/map-preview";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -25,6 +27,7 @@ import {
   FiCheck,
   FiLoader
 } from "react-icons/fi";
+  import StaggeredDropDown from "@/components/ui/staggered-dropdown";
 
 type Worker = {
   id: string;
@@ -44,17 +47,25 @@ type Worker = {
 };
 
 const CATEGORIES = [
-  "All",
-  "Electrician", 
-  "Plumber",
-  "Carpenter",
-  "Painter",
-  "Cleaner",
-  "Mechanic",
-  "Gardener",
-  "Driver",
-  "AC Technician",
+  'All',
+  'Plumbing',
+  'Electrical',
+  'Carpentry',
+  'Painting',
+  'Cleaning',
+  'Gardening',
+  'AC Repair',
+  'Appliance Repair',
+  'Masonry',
+  'Welding',
+  'Roofing',
+  'Flooring',
+  'Pest Control',
+  'Moving',
+  'Handyman',
 ];
+
+type ViewMode = "grid" | "list" | "scroll" | "map";
 
 const SORT_OPTIONS = [
   { value: "relevance", label: "Most Relevant" },
@@ -81,11 +92,46 @@ export default function CustomerSearchPage() {
   const [isLocating, setIsLocating] = useState(false);
   const [category, setCategory] = useState<string>(initialCategory);
   const [sortBy, setSortBy] = useState("relevance");
-  const [viewMode, setViewMode] = useState<"grid" | "list" | "scroll">("scroll");
+  const [viewMode, setViewMode] = useState<ViewMode>("scroll");
   // filters panel removed in this simplified UI
   const [locMenuOpen, setLocMenuOpen] = useState(false);
+  const locButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [menuPos, setMenuPos] = useState<{ left: number; top: number; width: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [workers, setWorkers] = useState<Worker[]>([]);
+
+  // Compute counts per category from the currently fetched workers (client-side)
+  const categoryCounts = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const c of CATEGORIES) map[c] = 0;
+    for (const w of workers) {
+      // infer normalized category strings from common worker fields
+      const anyW = w as any;
+      const wCatRaw = anyW.category ?? anyW.workerProfile?.category ?? anyW.workerProfile?.jobCategory ?? null;
+      const skills: string[] = (anyW.workerProfile?.skilledIn ?? []) as string[];
+
+      // count 'All'
+      map['All'] = (map['All'] || 0) + 1;
+
+      if (wCatRaw && typeof wCatRaw === 'string') {
+        const norm = wCatRaw.trim().toLowerCase();
+        for (const c of CATEGORIES) {
+          if (c.toLowerCase() === norm) map[c] = (map[c] || 0) + 1;
+        }
+      }
+
+      // also try matching against skilledIn entries (some workers list skills instead of category)
+      if (Array.isArray(skills) && skills.length > 0) {
+        for (const s of skills) {
+          const normS = String(s).trim().toLowerCase();
+          for (const c of CATEGORIES) {
+            if (c.toLowerCase() === normS) map[c] = (map[c] || 0) + 1;
+          }
+        }
+      }
+    }
+    return map;
+  }, [workers]);
 
   const fetchWorkers = async (opts?: { q?: string; category?: string; location?: string; sortBy?: string; lat?: number; lng?: number }) => {
     const qs = new URLSearchParams();
@@ -186,7 +232,7 @@ export default function CustomerSearchPage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header Section */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-transparent border-b border-transparent">
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
             <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -197,9 +243,11 @@ export default function CustomerSearchPage() {
             </p>
           </div>
 
-          {/* Enhanced Search Form */}
-          <form onSubmit={onSubmit} className="max-w-4xl">
-            <div className="flex flex-col lg:flex-row gap-3 mb-4 items-center">
+          {/* Enhanced Search + Controls Container */}
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+            {/* Enhanced Search Form */}
+            <form onSubmit={onSubmit} className="max-w-4xl">
+              <div className="flex flex-col lg:flex-row gap-3 mb-4 items-center">
               {/* Single Search Input */}
               <div className="relative flex-1">
                 <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -207,22 +255,29 @@ export default function CustomerSearchPage() {
                   placeholder="Search for services, skills, or worker names..."
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  className="pl-12 h-12 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="pl-12 pr-48 h-12 text-base bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
                   {/* Location dropdown trigger */}
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setLocMenuOpen(!locMenuOpen)}
-                      className="h-10 px-3 ml-2 mr-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm flex items-center gap-2"
+                      ref={locButtonRef}
+                      onClick={() => {
+                        if (!locMenuOpen) {
+                          const rect = locButtonRef.current?.getBoundingClientRect();
+                          if (rect) setMenuPos({ left: rect.left + window.scrollX, top: rect.bottom + window.scrollY, width: rect.width });
+                        }
+                        setLocMenuOpen(!locMenuOpen);
+                      }}
+                      className="h-8 px-4 ml-2 rounded-full bg-amber-500/15 hover:bg-amber-500/20 text-amber-500 text-sm inline-flex items-center gap-2"
                       aria-expanded={locMenuOpen}
                     >
-                      <FiMapPin className="h-4 w-4 text-gray-600" />
+                      <FiMapPin className="h-5 w-5 text-amber-500" />
                       <span className="truncate max-w-[12rem] text-sm">{location || (locPlace?.displayName ?? 'Select location')}</span>
                     </button>
-                    {locMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                    {locMenuOpen && menuPos && typeof document !== 'undefined' && createPortal(
+                      <div style={{ position: 'fixed', left: menuPos.left, top: menuPos.top, width: Math.max(240, menuPos.width) }} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[99999]">
                         <div className="p-3">
                           <button
                             className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -249,7 +304,8 @@ export default function CustomerSearchPage() {
                             >{city}</button>
                           ))}
                         </div>
-                      </div>
+                      </div>,
+                      document.body
                     )}
                   </div>
                 </div>
@@ -258,218 +314,171 @@ export default function CustomerSearchPage() {
               {/* Search Button */}
               <Button
                 type="submit"
-                className="h-12 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm transition-all duration-200 hover:shadow-md"
+                className="h-10 w-30 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-sm transition-all duration-200 hover:shadow-md"
               >
                 <FiSearch className="h-5 w-5 mr-2" />
                 Search
               </Button>
             </div>
 
-            {/* Compact Category Pills (small) */}
-            <div className="flex flex-wrap gap-2">
+              {/* Compact Category Pills (small) - pill style with count badge */}
+              <div className="flex flex-wrap gap-2 mb-3">
               {CATEGORIES.map((cat) => {
                 const active = cat === category;
+                // use client-side computed counts from fetched workers
+                const count = categoryCounts[cat] ?? 0;
                 return (
                   <motion.button
                     key={cat}
                     onClick={() => onCategoryClick(cat)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
+                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-all duration-150 ${
                       active
-                        ? "bg-blue-600 text-white shadow"
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm border"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                     }`}
                   >
-                    {cat}
+                    <span className="truncate max-w-[8rem]">{cat}</span>
+                    <span className={`flex items-center justify-center h-5 w-5 text-[11px] font-semibold rounded-full ${
+                      active ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border'
+                    }`}>{count}</span>
                   </motion.button>
                 );
               })}
-            </div>
-          </form>
-        </section>
-  </div>
-
-  {/* Map preview */}
-  <MapPreview workers={workers} center={coords ?? undefined} />
-
-  {/* Main Content */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-        {/* Compact Controls Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-          <div className="flex items-center gap-2">
-            {/* Sort Dropdown only - no duplicate nearest button */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 h-9 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
-            >
-              {SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === "grid"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-            >
-              <FiGrid className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === "list"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-            >
-              <FiList className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("scroll")}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === "scroll"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-              title="Scroll View"
-            >
-              <FiTrendingUp className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Results */}
-        <AnimatePresence mode="wait">
-          {loading ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className={`grid gap-6 ${
-                viewMode === "grid" 
-                  ? "sm:grid-cols-2 lg:grid-cols-3" 
-                  : "grid-cols-1"
-              }`}
-            >
-              {Array.from({ length: 6 }).map((_, i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </motion.div>
-          ) : workers.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-16"
-            >
-              <div className="h-32 w-32 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
-                <FiUser className="h-16 w-16 text-gray-400" />
               </div>
-              <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-                No workers found
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Try adjusting your search criteria or explore different categories
-              </p>
-              <Button onClick={() => { setQ(""); setLocation(""); setCategory("All"); }}>
-                Clear Filters
-              </Button>
-            </motion.div>
+            </form>
+
+            {/* Compact Controls Bar (moved into same container) */}
+            <div className="flex items-center justify-between gap-4 mt-2">
+              <div className="flex items-center gap-2">
+                <StaggeredDropDown items={SORT_OPTIONS} selected={sortBy} onSelect={(v) => setSortBy(v)} />
+              </div>
+
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                <button onClick={() => setViewMode("grid")} className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`}><FiGrid className="h-4 w-4"/></button>
+                <button onClick={() => setViewMode("list")} className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`}><FiList className="h-4 w-4"/></button>
+                <button onClick={() => setViewMode("scroll")} className={`p-2 rounded-md ${viewMode === 'scroll' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`} title="Scroll View"><FiTrendingUp className="h-4 w-4"/></button>
+                <button onClick={() => setViewMode("map")} className={`p-2 rounded-md ${(viewMode as any) === 'map' ? 'bg-white dark:bg-gray-700 shadow-sm' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`} title="Map View"><FiMapPin className="h-4 w-4"/></button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Main Content with two-column layout: results (left) and map (right) */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex flex-col gap-6">
+          
+
+          {/* If user chose Map view, show a full-width map */}
+          {(viewMode as any) === 'map' ? (
+            <div>
+              <MapPreview workers={workers} center={coords ?? undefined} height={720} />
+            </div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {viewMode === "scroll" ? (
-                <ScrollList
-                  data={workers}
-                  itemHeight={150}
-                  renderItem={(w: Worker, i: number) => {
-                    const name = w.name ?? "Professional";
-                    const initial = name.charAt(0);
-                    const skills = w.workerProfile?.skilledIn && w.workerProfile!.skilledIn!.length > 0 ? w.workerProfile!.skilledIn!.slice(0,3).join(", ") : "No skills listed";
-                    const distance = typeof w.distanceKm === "number" ? (w.distanceKm < 1 ? `${Math.round(w.distanceKm * 1000)} m` : `${w.distanceKm.toFixed(1)} km`) : "—";
-                    return (
-                      <div key={w.id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-4">
-                        <div className="flex items-start gap-4">
-                          <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">{initial}</div>
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="truncate">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{name}</h3>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{skills}</p>
-                              </div>
-                              <div className="text-right flex-shrink-0">
-                                <div className="text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">{distance}</div>
-                                <div className="text-xs text-gray-500 mt-1">{w.workerProfile?.yearsExperience ?? 0} yrs</div>
-                              </div>
-                            </div>
-                            <div className="mt-3 flex items-center gap-3">
-                              <Link href={`/worker/${w.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
-                              <BookWorkerButton workerId={w.id} className="px-3 py-1" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }}
-                />
+            <>
+              {/* Left: results */}
+              <div>
+
+            {/* Results */}
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, i) => (<SkeletonCard key={i}/>))}
+                </motion.div>
+              ) : workers.length === 0 ? (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-16">
+                  <div className="h-32 w-32 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6"><FiUser className="h-16 w-16 text-gray-400"/></div>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">No workers found</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">Try adjusting your search criteria or explore different categories</p>
+                  <Button onClick={() => { setQ(""); setLocation(""); setCategory("All"); }}>Clear Filters</Button>
+                </motion.div>
               ) : (
-                <div className={`grid gap-6 ${
-                  viewMode === "grid" 
-                    ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-                    : "grid-cols-1"
-                }`}>
-                  {workers.map((worker: Worker, index: number) => {
-                    const name = worker.name ?? "Professional";
-                    const initial = name.charAt(0);
-                    const skills = worker.workerProfile?.skilledIn && worker.workerProfile!.skilledIn!.length > 0 ? worker.workerProfile!.skilledIn!.slice(0,3).join(", ") : "No skills listed";
-                    const distance = typeof worker.distanceKm === "number" ? (worker.distanceKm < 1 ? `${Math.round(worker.distanceKm * 1000)} m` : `${worker.distanceKm.toFixed(1)} km`) : "—";
-                    return (
-                      <motion.div
-                        key={worker.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-4">
-                          <div className="flex items-start gap-4">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  {viewMode === 'scroll' ? (
+                    <ScrollList data={workers} itemHeight={150} renderItem={(w: Worker) => {
+                      const name = w.name ?? 'Professional'; const initial = name.charAt(0);
+                      const skills = w.workerProfile?.skilledIn && w.workerProfile!.skilledIn!.length > 0 ? w.workerProfile!.skilledIn!.slice(0,3) : [];
+                      const distance = typeof w.distanceKm === 'number' ? (w.distanceKm < 1 ? `${Math.round(w.distanceKm*1000)} m` : `${w.distanceKm.toFixed(1)} km`) : '—';
+                        return (
+                        <div key={w.id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-4">
+                          <div className="flex items-center gap-4">
                             <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">{initial}</div>
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between gap-3">
-                                <div className="truncate">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <div className="min-w-0">
                                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{name}</h3>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{skills}</p>
+                                  <div className="mt-1 flex items-center gap-2 flex-wrap">
+                                    {skills.length > 0 ? skills.map((s: string) => (<SkillBadge key={s} skill={s} />)) : <span className="text-xs text-gray-500 dark:text-gray-400">No skills listed</span>}
+                                  </div>
                                 </div>
-                                <div className="text-right flex-shrink-0">
+                                <div className="flex items-center gap-3 ml-4 flex-shrink-0">
                                   <div className="text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">{distance}</div>
-                                  <div className="text-xs text-gray-500 mt-1">{worker.workerProfile?.yearsExperience ?? 0} yrs</div>
+                                  <div className="text-xs text-gray-500">{w.workerProfile?.yearsExperience ?? 0} yrs</div>
                                 </div>
                               </div>
-                              <div className="mt-3 flex items-center gap-3">
-                                <Link href={`/worker/${worker.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
-                                <BookWorkerButton workerId={worker.id} className="px-3 py-1" />
+                            </div>
+                            <div className="flex-shrink-0 ml-4">
+                              <div className="flex items-center gap-3 h-full">
+                                <Link href={`/worker/${w.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
+                                <BookWorkerButton workerId={w.id} className="px-3 py-1"/>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                      );
+                    }} />
+                  ) : (
+                    <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
+                      {workers.map((worker: Worker, index: number) => {
+                        const name = worker.name ?? 'Professional'; const initial = name.charAt(0);
+                        const skills = worker.workerProfile?.skilledIn && worker.workerProfile!.skilledIn!.length > 0 ? worker.workerProfile!.skilledIn!.slice(0,3) : [];
+                        const distance = typeof worker.distanceKm === 'number' ? (worker.distanceKm < 1 ? `${Math.round(worker.distanceKm*1000)} m` : `${worker.distanceKm.toFixed(1)} km`) : '—';
+                        return (
+                          <motion.div key={worker.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.06 }}>
+                            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-4">
+                              <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">{initial}</div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between">
+                                    <div className="min-w-0">
+                                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{name}</h3>
+                                      <div className="mt-1 flex items-center gap-2 flex-wrap">
+                                        {skills.length > 0 ? skills.map((s: string) => (<SkillBadge key={s} skill={s} />)) : <span className="text-xs text-gray-500 dark:text-gray-400">No skills listed</span>}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+                                      <div className="text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">{distance}</div>
+                                      <div className="text-xs text-gray-500">{worker.workerProfile?.yearsExperience ?? 0} yrs</div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex-shrink-0 ml-4">
+                                  <div className="flex items-center gap-3 h-full">
+                                    <Link href={`/worker/${worker.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
+                                    <BookWorkerButton workerId={worker.id} className="px-3 py-1"/>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </motion.div>
               )}
-            </motion.div>
+            </AnimatePresence>
+          </div>
+
+              {/* Map preview (stacked below results) */}
+              <div>
+                <MapPreview workers={workers} center={coords ?? undefined} height={560} />
+              </div>
+            </>
           )}
-        </AnimatePresence>
+        </div>
       </section>
     </main>
   );
