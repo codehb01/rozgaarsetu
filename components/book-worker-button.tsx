@@ -13,9 +13,10 @@ import {
 
 type Props = {
   workerId: string;
+  className?: string;
 };
 
-export default function BookWorkerButton({ workerId }: Props) {
+export default function BookWorkerButton({ workerId, className }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +64,7 @@ export default function BookWorkerButton({ workerId }: Props) {
     <>
       <Button
         onClick={() => setOpen(true)}
-        className="bg-blue-600 hover:bg-blue-500 text-white"
+        className={`${className ?? ''} bg-blue-600 hover:bg-blue-500 text-white`}
       >
         Book
       </Button>

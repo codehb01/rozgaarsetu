@@ -191,6 +191,35 @@ export async function setUserRole(
         };
       }
 
+      // Parse optional latitude/longitude from the form (strings -> numbers)
+      const latRaw = formData.get("latitude")?.toString();
+      const lngRaw = formData.get("longitude")?.toString();
+      const latitude = latRaw ? parseFloat(latRaw) : undefined;
+      const longitude = lngRaw ? parseFloat(lngRaw) : undefined;
+
+      // Build profile payload and include lat/lng when present. Cast to `any` for now to
+      // avoid TypeScript errors until the Prisma client is regenerated after applying
+      // the create-only migration.
+      const profileData: any = {
+        skilledIn,
+        qualification,
+        certificates,
+        aadharNumber,
+        yearsExperience,
+        hourlyRate,
+        minimumFee,
+        profilePic,
+        bio,
+        address,
+        city,
+        state,
+        country,
+        postalCode,
+        availableAreas,
+      };
+      if (typeof latitude === "number" && !Number.isNaN(latitude)) profileData.latitude = latitude;
+      if (typeof longitude === "number" && !Number.isNaN(longitude)) profileData.longitude = longitude;
+
       await prisma.$transaction([
         prisma.user.update({
           where: { clerkUserId: userId },
@@ -198,41 +227,8 @@ export async function setUserRole(
         }),
         prisma.workerProfile.upsert({
           where: { userId: user.id },
-          update: {
-            skilledIn,
-            qualification,
-            certificates,
-            aadharNumber,
-            yearsExperience,
-            hourlyRate,
-            minimumFee,
-            profilePic,
-            bio,
-            address,
-            city,
-            state,
-            country,
-            postalCode,
-            availableAreas,
-          },
-          create: {
-            userId: user.id,
-            skilledIn,
-            qualification,
-            certificates,
-            aadharNumber,
-            yearsExperience,
-            hourlyRate,
-            minimumFee,
-            profilePic,
-            bio,
-            address,
-            city,
-            state,
-            country,
-            postalCode,
-            availableAreas,
-          },
+          update: profileData,
+          create: { userId: user.id, ...profileData },
         }),
       ]);
 

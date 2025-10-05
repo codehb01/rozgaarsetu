@@ -6,8 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ScrollList from "@/components/ui/scroll-list";
-import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
-import type { GeocodeResult } from "@/lib/location";
+// OpenStreetMapInput removed; we use a compact location dropdown instead
 import { useLocation } from "@/hooks/use-location";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -16,20 +15,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   FiSearch, 
   FiMapPin, 
-  FiFilter, 
   FiStar, 
   FiClock, 
   FiUser,
-  FiMap,
   FiGrid,
   FiList,
-  FiTrendingUp
+  FiTrendingUp,
+  FiCheck,
+  FiLoader
 } from "react-icons/fi";
 
 type Worker = {
   id: string;
   name: string | null;
   role: string;
+  // distance may be provided by the API (DB-side Haversine) as distanceKm or distance_km
+  distanceKm?: number | null;
   workerProfile: {
     skilledIn: string[] | null;
     city: string | null;
@@ -76,10 +77,12 @@ export default function CustomerSearchPage() {
   const [location, setLocation] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const { getCurrentPosition, status, error: locError, place: locPlace, coords: locCoords } = useLocation();
+  const [isLocating, setIsLocating] = useState(false);
   const [category, setCategory] = useState<string>(initialCategory);
   const [sortBy, setSortBy] = useState("relevance");
   const [viewMode, setViewMode] = useState<"grid" | "list" | "scroll">("scroll");
-  const [showFilters, setShowFilters] = useState(false);
+  // filters panel removed in this simplified UI
+  const [locMenuOpen, setLocMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [workers, setWorkers] = useState<Worker[]>([]);
 
@@ -99,7 +102,12 @@ export default function CustomerSearchPage() {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch workers");
       const data = await res.json();
-      setWorkers(data.workers || []);
+      // Normalize possible distance fields from the API to `distanceKm`
+      const normalize = (w: any) => ({
+        ...w,
+        distanceKm: w.distanceKm ?? w.distance_km ?? w.distance ?? w.distanceInKm ?? w.distance_in_km ?? null,
+      });
+      setWorkers((data.workers || []).map(normalize));
     } catch (e) {
       console.error(e);
       setWorkers([]);
@@ -108,9 +116,10 @@ export default function CustomerSearchPage() {
     }
   };
 
+  // Refetch when category, sort or coords change (coords will be populated after geolocation completes)
   useEffect(() => {
     fetchWorkers({ q, category, location, sortBy, lat: coords?.lat, lng: coords?.lng });
-  }, [category, sortBy]);
+  }, [category, sortBy, coords]);
 
   // Reflect browser geolocation into input once fetched
   useEffect(() => {
@@ -121,6 +130,23 @@ export default function CustomerSearchPage() {
       setLocation(locPlace.displayName);
     }
   }, [locCoords, locPlace]);
+
+  // Automatically prompt for location on page load so nearest results are possible
+  useEffect(() => {
+    // only ask if we don't already have coords
+    if (!coords) {
+      // best-effort: ask for current position once
+      try { getCurrentPosition(); } catch (e) { /* ignore */ }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // stop locating spinner when location status updates or coords arrive
+  useEffect(() => {
+    // stop locating spinner when status becomes success or error
+    if (status === 'success' || status === 'error') setIsLocating(false);
+    if (locCoords) setIsLocating(false);
+  }, [status, locCoords]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -172,8 +198,8 @@ export default function CustomerSearchPage() {
 
           {/* Enhanced Search Form */}
           <form onSubmit={onSubmit} className="max-w-4xl">
-            <div className="flex flex-col lg:flex-row gap-3 mb-4">
-              {/* Main Search Input */}
+            <div className="flex flex-col lg:flex-row gap-3 mb-4 items-center">
+              {/* Single Search Input */}
               <div className="relative flex-1">
                 <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
@@ -182,43 +208,51 @@ export default function CustomerSearchPage() {
                   onChange={(e) => setQ(e.target.value)}
                   className="pl-12 h-12 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+                  {/* Location dropdown trigger */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setLocMenuOpen(!locMenuOpen)}
+                      className="h-10 px-3 ml-2 mr-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm flex items-center gap-2"
+                      aria-expanded={locMenuOpen}
+                    >
+                      <FiMapPin className="h-4 w-4 text-gray-600" />
+                      <span className="truncate max-w-[12rem] text-sm">{location || (locPlace?.displayName ?? 'Select location')}</span>
+                    </button>
+                    {locMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                        <div className="p-3">
+                          <button
+                            className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                            onClick={() => {
+                              setLocMenuOpen(false);
+                              if (locCoords) {
+                                setCoords({ lat: locCoords.lat, lng: locCoords.lng });
+                                setLocation(locPlace?.displayName ?? `Current location`);
+                              } else {
+                                // request location
+                                getCurrentPosition();
+                              }
+                            }}
+                          >
+                            Use my current location
+                          </button>
+                          <div className="border-t border-gray-100 dark:border-gray-700 my-2" />
+                          <div className="text-sm text-gray-500 mb-2">Popular cities</div>
+                          {['Mumbai','Pune','Chennai','Bengaluru','Delhi'].map((city) => (
+                            <button
+                              key={city}
+                              className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                              onClick={() => { setLocation(city); setCoords(null); setLocMenuOpen(false); }}
+                            >{city}</button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-
-              {/* Location Search Input - Ready for OpenStreetMap */}
-              <div className="relative lg:w-72">
-                <FiMapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <OpenStreetMapInput
-                  value={location}
-                  onChange={(v) => { setLocation(v); if (!v) setCoords(null); }}
-                  onSelect={(place: GeocodeResult) => {
-                    setLocation(place.displayName);
-                    setCoords(place.coords);
-                  }}
-                  placeholder="Enter location or area..."
-                  inputClassName="pl-12 pr-10 h-12 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                {location && (
-                  <button
-                    type="button"
-                    aria-label="Clear location"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                    onClick={() => { setLocation(""); setCoords(null); }}
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="h-12 px-4 whitespace-nowrap"
-                onClick={() => getCurrentPosition()}
-                title="Use my current location"
-              >
-                <FiMap className="h-5 w-5 mr-2" />
-                Use my location
-              </Button>
 
               {/* Search Button */}
               <Button
@@ -230,7 +264,7 @@ export default function CustomerSearchPage() {
               </Button>
             </div>
 
-            {/* Compact Category Pills */}
+            {/* Compact Category Pills (small) */}
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => {
                 const active = cat === category;
@@ -240,9 +274,9 @@ export default function CustomerSearchPage() {
                     onClick={() => onCategoryClick(cat)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
                       active
-                        ? "bg-blue-600 text-white shadow-md"
+                        ? "bg-blue-600 text-white shadow"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
                   >
@@ -259,17 +293,8 @@ export default function CustomerSearchPage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
         {/* Compact Controls Bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 h-9"
-            >
-              <FiFilter className="h-4 w-4" />
-              Filters
-            </Button>
-            
-            {/* Sort Dropdown */}
+          <div className="flex items-center gap-2">
+            {/* Sort Dropdown only - no duplicate nearest button */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -363,89 +388,68 @@ export default function CustomerSearchPage() {
               {viewMode === "scroll" ? (
                 <ScrollList
                   data={workers}
-                  itemHeight={220}
+                  itemHeight={360}
                   renderItem={(worker: Worker, index: number) => (
-                    <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-all duration-200 group">
-                      <div className="flex items-start gap-4">
-                        {/* Profile Picture */}
-                        <div className="relative">
-                          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
-                            {worker.workerProfile?.profilePic ? (
-                              <img
-                                src={worker.workerProfile.profilePic}
-                                alt={worker.name || "Worker"}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <FiUser className="h-8 w-8 text-white" />
-                            )}
-                          </div>
-                          <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" />
-                        </div>
-
-                        {/* Worker Info */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate">
-                            {worker.name ?? "Professional Worker"}
+                    <Card className="p-4 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg h-full flex flex-col justify-between">
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-2xl font-semibold text-gray-900 dark:text-white truncate">
+                            {worker.name ?? 'Professional Worker'}
                           </h3>
-                          
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                              {worker.workerProfile?.qualification || "Skilled Professional"}
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Worker: {worker.workerProfile?.qualification ?? 'Worker'}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {typeof worker.distanceKm === 'number' ? (
+                            <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">
+                              {worker.distanceKm < 1 ? `${Math.round(worker.distanceKm * 1000)} m` : `${worker.distanceKm.toFixed(1)} km`}
                             </span>
-                            <span className="text-gray-400">•</span>
-                            <div className="flex items-center gap-1">
-                              <FiClock className="h-3 w-3 text-gray-400" />
-                              <span className="text-sm text-gray-600 dark:text-gray-400">
-                                {worker.workerProfile?.yearsExperience ?? 0} years
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-1 mb-3">
-                            <FiMapPin className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {worker.workerProfile?.city || "Location"} 
-                              {worker.workerProfile?.availableAreas?.length && (
-                                <span className="ml-1">
-                                  +{worker.workerProfile.availableAreas.length} areas
-                                </span>
-                              )}
-                            </span>
-                          </div>
-
-                          {/* Skills */}
-                          {worker.workerProfile?.skilledIn && (
-                            <div className="flex flex-wrap gap-1 mb-4">
-                              {worker.workerProfile.skilledIn.slice(0, 3).map((skill: string, i: number) => (
-                                <span
-                                  key={i}
-                                  className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
-                              {worker.workerProfile.skilledIn.length > 3 && (
-                                <span className="px-2 py-1 text-xs text-gray-500">
-                                  +{worker.workerProfile.skilledIn.length - 3} more
-                                </span>
-                              )}
-                            </div>
+                          ) : (
+                            <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300">Distance unknown</span>
                           )}
+                        </div>
+                      </div>
 
-                          {/* Action Buttons */}
-                          <div className="flex gap-2">
-                            <Link href={`/workers/${worker.id}`} className="flex-1">
-                              <Button
-                                variant="outline"
-                                className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                              >
-                                View Profile
-                              </Button>
-                            </Link>
-                            <BookWorkerButton workerId={worker.id} />
+                      {/* Two tiles row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                            <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-900 dark:text-white">Experience</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.yearsExperience ?? 0} years</p>
                           </div>
                         </div>
+
+                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                            <FiMapPin className="w-5 h-5 text-green-600 dark:text-green-300" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-900 dark:text-white">Location</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.city ?? 'Unknown'}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Large info box (skill or rate) */}
+                      <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg mb-4">
+                        <p className="text-xs font-medium text-gray-900 dark:text-white">Top skills</p>
+                        <p className="text-base text-gray-700 dark:text-gray-300 mt-2">
+                          {worker.workerProfile?.skilledIn && worker.workerProfile.skilledIn.length > 0 ? worker.workerProfile.skilledIn.slice(0,3).join(', ') : 'No skills listed'}
+                        </p>
+                      </div>
+
+                      {/* Additional details */}
+                      <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
+                        <p className="text-xs font-medium text-blue-600">Additional Details</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">{worker.workerProfile?.bio ?? '—'}</p>
+                      </div>
+
+                      {/* Primary action */}
+                      <div>
+                        <BookWorkerButton workerId={worker.id} />
                       </div>
                     </Card>
                   )}
@@ -453,7 +457,7 @@ export default function CustomerSearchPage() {
               ) : (
                 <div className={`grid gap-6 ${
                   viewMode === "grid" 
-                    ? "sm:grid-cols-2 lg:grid-cols-3" 
+                    ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
                     : "grid-cols-1"
                 }`}>
                   {workers.map((worker: Worker, index: number) => (
@@ -463,87 +467,55 @@ export default function CustomerSearchPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:shadow-lg transition-all duration-200 group">
-                        <div className="flex items-start gap-4">
-                          {/* Profile Picture */}
-                          <div className="relative">
-                            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
-                              {worker.workerProfile?.profilePic ? (
-                                <img
-                                  src={worker.workerProfile.profilePic}
-                                  alt={worker.name || "Worker"}
-                                  className="h-full w-full object-cover"
-                                />
-                              ) : (
-                                <FiUser className="h-8 w-8 text-white" />
-                              )}
-                            </div>
-                            <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" />
+                      <Card className="p-4 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg h-full flex flex-col justify-between">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white truncate">{worker.name ?? 'Professional Worker'}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Worker: {worker.workerProfile?.qualification ?? 'Worker'}</p>
                           </div>
-
-                          {/* Worker Info */}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate">
-                              {worker.name ?? "Professional Worker"}
-                            </h3>
-                            
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                                {worker.workerProfile?.qualification || "Skilled Professional"}
-                              </span>
-                              <span className="text-gray-400">•</span>
-                              <div className="flex items-center gap-1">
-                                <FiClock className="h-3 w-3 text-gray-400" />
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
-                                  {worker.workerProfile?.yearsExperience ?? 0} years
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-1 mb-3">
-                              <FiMapPin className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm text-gray-600 dark:text-gray-400">
-                                {worker.workerProfile?.city || "Location"} 
-                                {worker.workerProfile?.availableAreas?.length && (
-                                  <span className="ml-1">
-                                    +{worker.workerProfile.availableAreas.length} areas
-                                  </span>
-                                )}
-                              </span>
-                            </div>
-
-                            {/* Skills */}
-                            {worker.workerProfile?.skilledIn && (
-                              <div className="flex flex-wrap gap-1 mb-4">
-                                {worker.workerProfile.skilledIn.slice(0, 3).map((skill: string, i: number) => (
-                                  <span
-                                    key={i}
-                                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg"
-                                  >
-                                    {skill}
-                                  </span>
-                                ))}
-                                {worker.workerProfile.skilledIn.length > 3 && (
-                                  <span className="px-2 py-1 text-xs text-gray-500">
-                                    +{worker.workerProfile.skilledIn.length - 3} more
-                                  </span>
-                                )}
-                              </div>
+                          <div>
+                            {typeof worker.distanceKm === 'number' ? (
+                              <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300">{worker.distanceKm < 1 ? `${Math.round(worker.distanceKm * 1000)} m` : `${worker.distanceKm.toFixed(1)} km`}</span>
+                            ) : (
+                              <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300">Distance unknown</span>
                             )}
+                          </div>
+                        </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex gap-2">
-                              <Link href={`/workers/${worker.id}`} className="flex-1">
-                                <Button
-                                  variant="outline"
-                                  className="w-full border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                >
-                                  View Profile
-                                </Button>
-                              </Link>
-                              <BookWorkerButton workerId={worker.id} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                              <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-900 dark:text-white">Experience</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.yearsExperience ?? 0} years</p>
                             </div>
                           </div>
+
+                          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                              <FiMapPin className="w-5 h-5 text-green-600 dark:text-green-300" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-gray-900 dark:text-white">Location</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">{worker.workerProfile?.city ?? 'Unknown'}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg mb-4">
+                          <p className="text-xs font-medium text-gray-900 dark:text-white">Top skills</p>
+                          <p className="text-base text-gray-700 dark:text-gray-300 mt-2">{worker.workerProfile?.skilledIn && worker.workerProfile.skilledIn.length > 0 ? worker.workerProfile.skilledIn.slice(0,3).join(', ') : 'No skills listed'}</p>
+                        </div>
+
+                        <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
+                          <p className="text-xs font-medium text-blue-600">Additional Details</p>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">{worker.workerProfile?.bio ?? '—'}</p>
+                        </div>
+
+                        <div>
+                          <BookWorkerButton workerId={worker.id} />
                         </div>
                       </Card>
                     </motion.div>
