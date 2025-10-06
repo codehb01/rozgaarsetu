@@ -4,19 +4,10 @@ import { ArrowRight } from 'lucide-react'
 export default function StickyFooterContent() {
   return (
     <div className='bg-slate-900 py-8 px-12 h-full w-full flex flex-col justify-between text-white'>
-        <div></div> {/* Empty spacer to push content down */}
-        <Section1 />
+        <Nav />
         <Section2 />
     </div>
   )
-}
-
-const Section1 = () => {
-    return (
-        <div className='mb-8'>
-            <Nav />
-        </div>
-    )
 }
 
 const Section2 = () => {

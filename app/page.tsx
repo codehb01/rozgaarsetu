@@ -51,9 +51,10 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-background text-foreground">
-      {/* Hero Section with ShapeHero */}
-      <ShapeHero 
+    <div className="relative bg-slate-900">
+      <div className="bg-white dark:bg-slate-950 text-foreground pb-20 rounded-b-[3rem] relative z-10">
+        {/* Hero Section with ShapeHero */}
+        <ShapeHero 
         title1="Connect. Work."
         title2="Grow."
         subtitle="The modern platform connecting blue-collar workers with opportunities."
@@ -493,8 +494,8 @@ export default function Home() {
 
       {/* CTA Section - Apple Design System */}
       <section className="relative overflow-hidden">
-        {/* Background with Apple-style gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-black dark:to-gray-900"></div>
+        {/* Background - solid color matching the rounded corner background */}
+        <div className="absolute inset-0 bg-white dark:bg-slate-950"></div>
         
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f1f1_1px,transparent_1px),linear-gradient(to_bottom,#f1f1f1_1px,transparent_1px)] bg-[size:6rem_4rem] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] opacity-20"></div>
@@ -571,6 +572,7 @@ export default function Home() {
         </motion.button>
       )}
       
+      </div>
     </div>
   );
 }
