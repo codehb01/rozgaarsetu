@@ -422,7 +422,11 @@ export default function CustomerSearchPage() {
                             <div className="flex-shrink-0 ml-4">
                               <div className="flex items-center gap-3 h-full">
                                 <Link href={`/worker/${w.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
-                                <BookWorkerButton workerId={w.id} className="px-3 py-1"/>
+                                {w.role === 'WORKER' ? (
+                                  <BookWorkerButton workerId={w.id} className="px-3 py-1"/>
+                                ) : (
+                                  <span className="text-xs text-red-500 px-3 py-1">Invalid role: {w.role}</span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -457,7 +461,11 @@ export default function CustomerSearchPage() {
                                 <div className="flex-shrink-0 ml-4">
                                   <div className="flex items-center gap-3 h-full">
                                     <Link href={`/worker/${worker.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
-                                    <BookWorkerButton workerId={worker.id} className="px-3 py-1"/>
+                                    {worker.role === 'WORKER' ? (
+                                      <BookWorkerButton workerId={worker.id} className="px-3 py-1"/>
+                                    ) : (
+                                      <span className="text-xs text-red-500 px-3 py-1">Invalid role: {worker.role}</span>
+                                    )}
                                   </div>
                                 </div>
                               </div>

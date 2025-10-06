@@ -9,6 +9,7 @@ import BookWorkerButton from "@/components/book-worker-button";
 type WorkerLite = {
   id: string;
   name?: string | null;
+  role?: string;
   workerProfile?: {
     skilledIn?: string[] | null;
     city?: string | null;
@@ -78,7 +79,11 @@ export default function ExpandableCardsWorkers({ workers }: { workers: WorkerLit
                     <div className="text-sm text-gray-700 dark:text-gray-300 mb-3">{w.workerProfile?.bio ?? 'No additional details.'}</div>
                     <div className="flex items-center gap-3">
                       <Link href={`/worker/${w.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
-                      <BookWorkerButton workerId={w.id} className="px-3 py-1" />
+                      {w.role === 'WORKER' ? (
+                        <BookWorkerButton workerId={w.id} className="px-3 py-1" />
+                      ) : (
+                        <span className="text-xs text-red-500 px-3 py-1">Invalid role: {w.role}</span>
+                      )}
                     </div>
                   </motion.div>
                 )}
