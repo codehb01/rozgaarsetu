@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <div className="relative bg-slate-900">
-      <div className="bg-white dark:bg-slate-950 text-foreground pb-20 rounded-b-[3rem] relative z-10">
+      <div className="bg-white dark:bg-black text-foreground pb-20 rounded-b-[3rem] relative z-10">
         {/* Hero Section with ShapeHero */}
         <ShapeHero 
         title1="Connect. Work."
@@ -495,7 +495,7 @@ export default function Home() {
       {/* CTA Section - Apple Design System */}
       <section className="relative overflow-hidden">
         {/* Background - solid color matching the rounded corner background */}
-        <div className="absolute inset-0 bg-white dark:bg-slate-950"></div>
+        <div className="absolute inset-0 bg-white dark:bg-black"></div>
         
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f1f1_1px,transparent_1px),linear-gradient(to_bottom,#f1f1f1_1px,transparent_1px)] bg-[size:6rem_4rem] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] opacity-20"></div>
@@ -557,18 +557,18 @@ export default function Home() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0 }}
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 group inline-flex items-center justify-center w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 ease-out hover:scale-110"
+          className="fixed bottom-8 right-8 z-50 group inline-flex items-center justify-center w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 ease-out hover:scale-110 hover:-translate-y-1"
           aria-label="Scroll to top"
         >
           <svg 
-            className="w-5 h-5 transform group-hover:-translate-y-0.5 transition-transform duration-200" 
+            className="w-6 h-6 relative z-10 transition-transform duration-300 group-hover:-translate-y-0.5" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
+            strokeWidth={2.5}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
         </motion.button>
       )}
       
