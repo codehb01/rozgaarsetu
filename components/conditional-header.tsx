@@ -6,10 +6,9 @@ import Header from "./header"
 export default function ConditionalHeader() {
   const pathname = usePathname()
   
-  // Hide header on customer dashboard pages and onboarding
+  // Hide header on customer and worker dashboard pages
   const hideHeader = pathname?.startsWith('/customer') || 
-                    pathname?.startsWith('/worker') ||
-                    pathname?.startsWith('/onboarding')
+                    pathname?.startsWith('/worker')
   
   if (hideHeader) {
     return null
