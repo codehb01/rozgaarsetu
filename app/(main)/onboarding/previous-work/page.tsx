@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import { 
   ArrowLeft, 
   Plus, 
@@ -401,13 +401,15 @@ export default function PreviousWorkPage() {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Project Images *
+                            Project Image *
                           </label>
-                          <FileUpload
-                            onChange={(files) => setNewWork({ ...newWork, images: files })}
+                          <FileDropzone
+                            accept="image/*"
+                            maxSize={5 * 1024 * 1024}
+                            onChange={(file) => setNewWork({ ...newWork, images: file ? [file] : [] })}
                           />
                           <p className="text-xs text-gray-500 mt-1">
-                            Upload multiple images to showcase your work
+                            Upload an image to showcase your work
                           </p>
                         </div>
 

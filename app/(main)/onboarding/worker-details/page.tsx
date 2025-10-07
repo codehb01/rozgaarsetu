@@ -8,14 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { FileUpload } from "@/components/ui/file-upload";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import { 
   Loader2, 
   ArrowLeft, 
@@ -29,7 +22,8 @@ import {
   Plus,
   X,
   LocateFixed,
-  Sparkles
+  Sparkles,
+  ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
@@ -133,6 +127,7 @@ export default function WorkerDetailsPage() {
   const [selectedQualification, setSelectedQualification] = useState("");
   const [customQualification, setCustomQualification] = useState("");
   const [selectedExperience, setSelectedExperience] = useState<number | null>(null);
+  const [qualificationDropdownOpen, setQualificationDropdownOpen] = useState(false);
 
   const {
     register,
@@ -149,8 +144,8 @@ export default function WorkerDetailsPage() {
       certificates: [],
       aadharNumber: "",
       yearsExperience: 0,
-      hourlyRate: 0,
-      minimumFee: 0,
+      hourlyRate: undefined,
+      minimumFee: undefined,
       profilePic: [],
       bio: "",
       address: "",
@@ -483,32 +478,68 @@ export default function WorkerDetailsPage() {
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                               Education
                             </label>
-                            <Select 
-                              value={selectedQualification} 
-                              onValueChange={handleQualificationChange}
+                            
+                            {/* Animated Dropdown */}
+                            <motion.div 
+                              animate={qualificationDropdownOpen ? "open" : "closed"} 
+                              className="relative"
                             >
-                              <SelectTrigger className="w-full h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all">
-                                <SelectValue placeholder="Select your education level" />
-                              </SelectTrigger>
-                              <SelectContent>
+                              <button
+                                type="button"
+                                onClick={() => setQualificationDropdownOpen((pv) => !pv)}
+                                className="w-full h-11 md:h-12 flex items-center justify-between px-4 border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-600 focus:border-blue-500 dark:focus:border-blue-500 rounded-lg transition-all"
+                              >
+                                <span className={`text-sm ${selectedQualification ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+                                  {selectedQualification 
+                                    ? qualificationOptions.find(q => q.value === selectedQualification)?.label 
+                                    : "Select your education level"}
+                                </span>
+                                <motion.span variants={dropdownIconVariants}>
+                                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                                </motion.span>
+                              </button>
+
+                              <motion.ul
+                                initial={dropdownWrapperVariants.closed}
+                                variants={dropdownWrapperVariants}
+                                style={{ originY: "top" }}
+                                className="flex flex-col gap-1 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 absolute top-[110%] left-0 right-0 w-full overflow-hidden z-50"
+                              >
                                 {qualificationOptions.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
+                                  <motion.li
+                                    key={option.value}
+                                    variants={dropdownItemVariants}
+                                    onClick={() => {
+                                      handleQualificationChange(option.value);
+                                      setQualificationDropdownOpen(false);
+                                    }}
+                                    className="flex items-center gap-2 w-full p-2 text-sm font-medium rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/30 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
+                                  >
+                                    <span>{option.label}</span>
+                                    {selectedQualification === option.value && (
+                                      <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 ml-auto" />
+                                    )}
+                                  </motion.li>
                                 ))}
-                              </SelectContent>
-                            </Select>
+                              </motion.ul>
+                            </motion.div>
                             
                             {selectedQualification === "other" && (
-                              <Input
-                                placeholder="Enter your qualification"
-                                value={customQualification}
-                                onChange={(e) => {
-                                  setCustomQualification(e.target.value);
-                                  setValue("qualification", e.target.value);
-                                }}
-                                className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
-                              />
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                              >
+                                <Input
+                                  placeholder="Enter your qualification"
+                                  value={customQualification}
+                                  onChange={(e) => {
+                                    setCustomQualification(e.target.value);
+                                    setValue("qualification", e.target.value);
+                                  }}
+                                  className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                />
+                              </motion.div>
                             )}
                             
                             {errors.qualification && (
@@ -770,17 +801,29 @@ export default function WorkerDetailsPage() {
                               Hourly Rate (₹)
                             </label>
                             <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 z-10">₹</span>
                               <Input
-                                placeholder="e.g., 500"
+                                placeholder="500"
                                 type="number"
-                                className="h-11 md:h-12 pl-8 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                step="50"
+                                min="100"
+                                className="h-11 md:h-12 pl-8 pr-3 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 {...register("hourlyRate", {
                                   required: "Hourly rate is required",
                                   min: { value: 100, message: "Minimum rate is ₹100/hour" },
                                   valueAsNumber: true
                                 })}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                                    e.preventDefault();
+                                    const currentValue = parseInt(watch("hourlyRate")?.toString() || "0");
+                                    const newValue = e.key === 'ArrowUp' 
+                                      ? Math.ceil((currentValue + 50) / 50) * 50
+                                      : Math.max(100, Math.floor((currentValue - 50) / 50) * 50);
+                                    setValue("hourlyRate", newValue);
+                                  }
+                                }}
                               />
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
                             </div>
                             {errors.hourlyRate && (
                               <p className="text-red-500 text-xs md:text-sm">
@@ -788,7 +831,7 @@ export default function WorkerDetailsPage() {
                               </p>
                             )}
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Competitive rates: ₹300-800/hour
+                              💡 Competitive rates: ₹300-800/hour
                             </p>
                           </motion.div>
 
@@ -802,17 +845,29 @@ export default function WorkerDetailsPage() {
                               Minimum Job Fee (₹)
                             </label>
                             <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 z-10">₹</span>
                               <Input
-                                placeholder="e.g., 1000"
+                                placeholder="1000"
                                 type="number"
-                                className="h-11 md:h-12 pl-8 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                step="50"
+                                min="200"
+                                className="h-11 md:h-12 pl-8 pr-3 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 {...register("minimumFee", {
                                   required: "Minimum fee is required",
                                   min: { value: 200, message: "Minimum fee should be at least ₹200" },
                                   valueAsNumber: true
                                 })}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                                    e.preventDefault();
+                                    const currentValue = parseInt(watch("minimumFee")?.toString() || "0");
+                                    const newValue = e.key === 'ArrowUp' 
+                                      ? Math.ceil((currentValue + 50) / 50) * 50
+                                      : Math.max(200, Math.floor((currentValue - 50) / 50) * 50);
+                                    setValue("minimumFee", newValue);
+                                  }
+                                }}
                               />
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₹</span>
                             </div>
                             {errors.minimumFee && (
                               <p className="text-red-500 text-xs md:text-sm">
@@ -820,7 +875,7 @@ export default function WorkerDetailsPage() {
                               </p>
                             )}
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              For small jobs regardless of time spent
+                              💡 For small jobs regardless of time spent
                             </p>
                           </motion.div>
                         </div>
@@ -1033,8 +1088,10 @@ export default function WorkerDetailsPage() {
                             name="profilePic"
                             control={control}
                             render={({ field }) => (
-                              <FileUpload
-                                onChange={(files) => field.onChange(files)}
+                              <FileDropzone
+                                accept="image/*"
+                                maxSize={5 * 1024 * 1024}
+                                onChange={(file) => field.onChange(file ? [file] : [])}
                               />
                             )}
                           />
@@ -1126,3 +1183,43 @@ export default function WorkerDetailsPage() {
     </div>
   );
 }
+
+// Dropdown animation variants
+const dropdownWrapperVariants = {
+  open: {
+    scaleY: 1,
+    transition: {
+      when: "beforeChildren",
+      staggerChildren: 0.05,
+    },
+  },
+  closed: {
+    scaleY: 0,
+    transition: {
+      when: "afterChildren",
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const dropdownIconVariants = {
+  open: { rotate: 180 },
+  closed: { rotate: 0 },
+};
+
+const dropdownItemVariants = {
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      when: "beforeChildren",
+    },
+  },
+  closed: {
+    opacity: 0,
+    y: -10,
+    transition: {
+      when: "afterChildren",
+    },
+  },
+};
