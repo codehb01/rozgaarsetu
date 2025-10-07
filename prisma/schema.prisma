@@ -8,116 +8,160 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  clerkUserId       String    @unique // Clerk's user ID
-  email     String   @unique
-  phone     String   @unique
-  name      String
-  role      UserRole @default(UNASSIGNED) // CUSTOMER | WORKER | ADMIN
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  workerProfile   WorkerProfile?
+  id              String           @id @default(uuid())
+  email           String           @unique
+  phone           String           @unique
+  name            String
+  role            UserRole         @default(UNASSIGNED)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  clerkUserId     String           @unique
   customerProfile CustomerProfile?
   jobsCreated     Job[]            @relation("CustomerJobs")
   jobsAssigned    Job[]            @relation("WorkerJobs")
-  transactions    Transaction[]
+  JobOffer        JobOffer[]
   reviewsGiven    Review[]         @relation("ReviewsByCustomer")
   reviewsReceived Review[]         @relation("ReviewsForWorker")
+  transactions    Transaction[]
+  workerProfile   WorkerProfile?
+}
+
+model WorkerProfile {
+  id              String         @id @default(uuid())
+  userId          String         @unique
+  skilledIn       String[]
+  qualification   String?
+  certificates    String[]
+  aadharNumber    String         @unique
+  yearsExperience Int?
+  profilePic      String?
+  bio             String?
+  address         String
+  city            String
+  state           String
+  country         String
+  postalCode      String
+  availableAreas  String[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  hourlyRate      Float?
+  minimumFee      Float?
+  latitude        Float?
+  longitude       Float?
+  previousWorks   PreviousWork[]
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PreviousWork {
+  id          String        @id @default(uuid())
+  workerId    String
+  title       String?
+  description String?
+  images      String[]
+  location    String?
+  createdAt   DateTime      @default(now())
+  worker      WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
+}
+
+model CustomerProfile {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  address    String
+  city       String
+  state      String
+  country    String
+  postalCode String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Job {
+  id              String        @id @default(uuid())
+  description     String
+  details         String?
+  date            DateTime
+  time            DateTime
+  location        String
+  charge          Float
+  status          JobStatus     @default(PENDING)
+  customerId      String
+  workerId        String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  agreedCharge    Float?
+  depositAmount   Float?
+  depositHeld     Boolean       @default(false)
+  estimatedHours  Float?
+  paymentIntentId String?
+  customer        User          @relation("CustomerJobs", fields: [customerId], references: [id])
+  worker          User?         @relation("WorkerJobs", fields: [workerId], references: [id])
+  JobOffer        JobOffer[]
+  review          Review?
+  Transaction     Transaction[]
+
+  @@index([customerId, status])
+  @@index([workerId, status])
+}
+
+model Transaction {
+  id        String          @id @default(uuid())
+  userId    String
+  jobId     String?
+  amount    Float
+  type      TransactionType
+  createdAt DateTime        @default(now())
+  job       Job?            @relation(fields: [jobId], references: [id])
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  jobId      String   @unique
+  customerId String
+  workerId   String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  customer   User     @relation("ReviewsByCustomer", fields: [customerId], references: [id])
+  job        Job      @relation(fields: [jobId], references: [id])
+  worker     User     @relation("ReviewsForWorker", fields: [workerId], references: [id])
+}
+
+model JobOffer {
+  id         String   @id
+  jobId      String
+  fromUserId String
+  price      Float
+  note       String?
+  accepted   Boolean  @default(false)
+  rejected   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  User       User     @relation(fields: [fromUserId], references: [id])
+  Job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+}
+
+model TranslationCache {
+  id             String   @id
+  hashKey        String   @unique
+  originalText   String
+  translatedText String
+  sourceLanguage String
+  targetLanguage String
+  context        String?
+  createdAt      DateTime @default(now())
+  lastAccessedAt DateTime @default(now())
+
+  @@index([hashKey])
+  @@index([sourceLanguage, targetLanguage])
 }
 
 enum UserRole {
   CUSTOMER
   WORKER
   UNASSIGNED
-}
-
-model WorkerProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  skilledIn       String[] // plumber, electrician, etc.
-  qualification   String?
-  certificates    String[] // file URLs
-  aadharNumber    String   @unique
-  yearsExperience Int?
-  profilePic      String?
-  bio             String?
-
-  address        String
-  city           String
-  state          String
-  country        String
-  postalCode     String
-  availableAreas String[] // list of areas where worker can work
-
-   hourlyRate   Float?   // Optional, in your preferred currency
-  minimumFee   Float?   // Optional, base fee after booking acceptance
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-
-  // New relation
-  previousWorks PreviousWork[]
-}
-
-model PreviousWork {
-  id          String   @id @default(uuid())
-  workerId    String
-  worker      WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
-
-  title       String?   // Optional title for the work (e.g., "Pipe Repair Project")
-  description String?   // Optional description
-  images      String[]  // Array of image URLs
-  location    String?   // Optional location name
-
-  createdAt   DateTime @default(now())
-}
-
-
-model CustomerProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  address    String
-  city       String
-  state      String
-  country    String
-  postalCode String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Job {
-  id          String    @id @default(uuid())
-  description String
-  details     String?
-  date        DateTime
-  time        DateTime
-  location    String
-  charge      Float
-  status      JobStatus @default(PENDING)
-
-  // Relations
-  customerId String
-  customer   User   @relation("CustomerJobs", fields: [customerId], references: [id])
-
-  workerId String?
-  worker   User?   @relation("WorkerJobs", fields: [workerId], references: [id])
-
-  review Review?
-
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  Transaction Transaction[]
-
-  @@index([customerId, status])
-  @@index([workerId, status])
 }
 
 enum JobStatus {
@@ -128,36 +172,8 @@ enum JobStatus {
   CANCELLED
 }
 
-model Transaction {
-  id        String          @id @default(uuid())
-  userId    String
-  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobId     String?
-  job       Job?            @relation(fields: [jobId], references: [id])
-  amount    Float
-  type      TransactionType
-  createdAt DateTime        @default(now())
-}
-
 enum TransactionType {
-  PAYMENT // customer payment for job
-  PAYOUT // worker withdrawal
-  REFUND // refund to customer
-}
-
-model Review {
-  id    String @id @default(uuid())
-  jobId String @unique
-  job   Job    @relation(fields: [jobId], references: [id])
-
-  customerId String
-  customer   User   @relation("ReviewsByCustomer", fields: [customerId], references: [id])
-
-  workerId String
-  worker   User   @relation("ReviewsForWorker", fields: [workerId], references: [id])
-
-  rating  Int // 1–5 stars
-  comment String?
-
-  createdAt DateTime @default(now())
+  PAYMENT
+  PAYOUT
+  REFUND
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { contentScanner } from "@/lib/content-scanner";
 
 type SearchParams = {
   q?: string | null;
@@ -107,6 +108,31 @@ export async function GET(req: NextRequest) {
     });
 
     const result = filtered.slice(0, limit);
+    
+    // Check if client requested translation
+    const targetLanguage = req.headers.get('x-translate-to');
+    
+    if (targetLanguage && targetLanguage !== 'en' && result.length > 0) {
+      try {
+        // Auto-translate worker data
+        const translatedWorkers = await Promise.all(
+          result.map(worker => 
+            contentScanner.autoTranslateComponentData(worker, targetLanguage, 'workers')
+          )
+        );
+        
+        return NextResponse.json({ 
+          count: translatedWorkers.length, 
+          workers: translatedWorkers,
+          translated: true,
+          targetLanguage
+        });
+      } catch (translationError) {
+        console.error('Translation error:', translationError);
+        // Fall back to original data if translation fails
+      }
+    }
+    
     return NextResponse.json({ count: result.length, workers: result });
   } catch (err) {
     console.error("/api/workers error", err);

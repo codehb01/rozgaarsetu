@@ -1,6 +1,7 @@
 "use client"
 
 import { CustomerSidebar } from "@/components/customer/sidebar-nav";
+import { LanguageSwitcher } from "@/components/translation/language-switcher";
 import { useState } from "react";
 
 // Force dynamic rendering for this route group
@@ -30,8 +31,8 @@ export default function CustomerLayout({ children }) {
         </div>
       )}
 
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-30">
+      {/* Mobile controls */}
+      <div className="lg:hidden fixed top-4 left-4 right-4 z-30 flex justify-between items-center">
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700"
@@ -40,6 +41,12 @@ export default function CustomerLayout({ children }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
+        <LanguageSwitcher variant="select" />
+      </div>
+
+      {/* Desktop language switcher */}
+      <div className="hidden lg:block fixed top-4 right-4 z-30">
+        <LanguageSwitcher variant="select" />
       </div>
 
       {/* Main content with conditional margin based on sidebar state */}

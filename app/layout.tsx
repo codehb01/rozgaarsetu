@@ -16,6 +16,8 @@ import {
 } from "@clerk/nextjs";
 import { Toaster } from "sonner";
 import ConditionalFooter from "@/components/conditional-footer";
+import { TranslationProvider } from "@/hooks/use-translation";
+import { BatchTranslationProvider } from "@/hooks/use-batch-translation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -89,12 +91,16 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {/* Header on all pages for UI consistency */}
-            <ConditionalHeader />
-            <main className="min-h-screen">{children}</main>
-            <Toaster richColors />
-            {/* Conditional footer - hidden on customer/worker dashboards */}
-            <ConditionalFooter />
+            <TranslationProvider>
+              <BatchTranslationProvider>
+                {/* Header on all pages for UI consistency */}
+                <ConditionalHeader />
+                <main className="min-h-screen">{children}</main>
+                <Toaster richColors />
+                {/* Conditional footer - hidden on customer/worker dashboards */}
+                <ConditionalFooter />
+              </BatchTranslationProvider>
+            </TranslationProvider>
           </ThemeProvider>
         </body>
       </html>

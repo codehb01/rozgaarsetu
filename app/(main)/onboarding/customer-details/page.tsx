@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { customerFormSchema, type CustomerFormData } from "@/lib/schema";
+import { TranslatedText } from "@/hooks/use-batch-translation";
 
 export default function CustomerDetailsPage() {
   const router = useRouter();
@@ -51,16 +52,16 @@ export default function CustomerDetailsPage() {
             className="text-gray-400 hover:text-white"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Role Selection
+            <TranslatedText context="onboarding">Back to Role Selection</TranslatedText>
           </Button>
         </div>
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Customer Profile Details
+            <TranslatedText context="onboarding">Customer Profile Details</TranslatedText>
           </h1>
           <p className="text-muted-foreground text-lg">
-            Tell us where you&apos;re located
+            <TranslatedText context="onboarding">Tell us where you're located</TranslatedText>
           </p>
         </div>
 
@@ -69,7 +70,7 @@ export default function CustomerDetailsPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mb-4">
-                  Address Information
+                  <TranslatedText context="onboarding">Address Information</TranslatedText>
                 </h3>
 
                 <div>
@@ -150,7 +151,7 @@ export default function CustomerDetailsPage() {
                 {isLoading ? (
                   <Loader2 className="animate-spin h-4 w-4 mr-2" />
                 ) : null}
-                Continue to Preview
+                <TranslatedText context="onboarding">Continue to Preview</TranslatedText>
               </Button>
             </form>
           </CardContent>

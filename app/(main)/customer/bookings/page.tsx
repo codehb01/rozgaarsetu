@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ReviewDialog } from "@/components/review-dialog";
 import ScrollList from "@/components/ui/scroll-list";
 import { motion, AnimatePresence } from "framer-motion";
+import { TranslatedText } from "@/hooks/use-batch-translation";
 import {
   FiCalendar,
   FiMapPin,
@@ -112,7 +113,7 @@ export default function CustomerBookingsPage() {
     switch (status) {
       case "PENDING":
         return {
-          label: "Pending",
+          label: <TranslatedText context="customer-bookings">Pending</TranslatedText>,
           color: "bg-orange-500",
           bgColor: "bg-orange-50 dark:bg-orange-900/20",
           textColor: "text-orange-700 dark:text-orange-300",
@@ -120,7 +121,7 @@ export default function CustomerBookingsPage() {
         };
       case "ACCEPTED":
         return {
-          label: "Accepted",
+          label: <TranslatedText context="customer-bookings">Accepted</TranslatedText>,
           color: "bg-blue-500",
           bgColor: "bg-blue-50 dark:bg-blue-900/20",
           textColor: "text-blue-700 dark:text-blue-300",
@@ -128,7 +129,7 @@ export default function CustomerBookingsPage() {
         };
       case "IN_PROGRESS":
         return {
-          label: "In Progress",
+          label: <TranslatedText context="customer-bookings">In Progress</TranslatedText>,
           color: "bg-purple-500",
           bgColor: "bg-purple-50 dark:bg-purple-900/20",
           textColor: "text-purple-700 dark:text-purple-300",
@@ -136,7 +137,7 @@ export default function CustomerBookingsPage() {
         };
       case "COMPLETED":
         return {
-          label: "Completed",
+          label: <TranslatedText context="customer-bookings">Completed</TranslatedText>,
           color: "bg-green-500",
           bgColor: "bg-green-50 dark:bg-green-900/20",
           textColor: "text-green-700 dark:text-green-300",
@@ -144,7 +145,7 @@ export default function CustomerBookingsPage() {
         };
       case "CANCELLED":
         return {
-          label: "Cancelled",
+          label: <TranslatedText context="customer-bookings">Cancelled</TranslatedText>,
           color: "bg-red-500",
           bgColor: "bg-red-50 dark:bg-red-900/20",
           textColor: "text-red-700 dark:text-red-300",
@@ -182,16 +183,16 @@ export default function CustomerBookingsPage() {
         <FiCalendar className="h-16 w-16 text-gray-400" />
       </div>
       <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-        No {type} bookings
+        <TranslatedText context="customer-bookings">No {type} bookings</TranslatedText>
       </h3>
       <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
         {type === "ongoing"
-          ? "You don't have any active bookings at the moment. Find skilled workers to get started."
-          : "Your completed and cancelled bookings will appear here."}
+          ? <TranslatedText context="customer-bookings">You don't have any active bookings at the moment. Find skilled workers to get started.</TranslatedText>
+          : <TranslatedText context="customer-bookings">Your completed and cancelled bookings will appear here.</TranslatedText>}
       </p>
       {type === "ongoing" && (
         <Button className="bg-blue-600 hover:bg-blue-700">
-          Find Workers
+          <TranslatedText context="customer-bookings">Find Workers</TranslatedText>
         </Button>
       )}
     </motion.div>
@@ -205,10 +206,10 @@ export default function CustomerBookingsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
-            My Bookings
+            <TranslatedText context="customer-bookings">My Bookings</TranslatedText>
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage and track your service bookings
+            <TranslatedText context="customer-bookings">Manage and track your service bookings</TranslatedText>
           </p>
         </div>
 
@@ -226,7 +227,7 @@ export default function CustomerBookingsPage() {
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
-                {tabOption === "ONGOING" ? "Ongoing" : "Previous"}
+                <TranslatedText context="customer-bookings">{tabOption === "ONGOING" ? "Ongoing" : "Previous"}</TranslatedText>
                 <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
                   {tabOption === "ONGOING" ? ongoing.length : previous.length}
                 </span>
@@ -309,10 +310,10 @@ export default function CustomerBookingsPage() {
                 <div className="text-center py-16">
                   <FiSearch className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    No results found
+                    <TranslatedText context="customer-bookings">No results found</TranslatedText>
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Try adjusting your search terms
+                    <TranslatedText context="customer-bookings">Try adjusting your search terms</TranslatedText>
                   </p>
                 </div>
               ) : (
@@ -336,7 +337,7 @@ export default function CustomerBookingsPage() {
                         {j.description}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Worker: {j.worker?.name || "Worker"}
+                        <TranslatedText context="customer-bookings">Worker</TranslatedText>: {j.worker?.name || "Worker"}
                       </p>
                     </div>
                     <span

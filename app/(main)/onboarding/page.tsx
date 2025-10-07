@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { User, Wrench, CheckCircle, ArrowRight, Users, Star, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { TranslatedText } from "@/components/translation/auto-translate";
 
 const customerFeatures = [
   "Instant booking with verified workers",
@@ -59,7 +60,7 @@ export default function OnboardingPage() {
               {stat.value}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              {stat.label}
+              <TranslatedText context="onboarding">{stat.label}</TranslatedText>
             </div>
           </motion.div>
         ))}
@@ -88,10 +89,10 @@ export default function OnboardingPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-                      Join as a Customer
+                      <TranslatedText context="onboarding">Join as a Customer</TranslatedText>
                     </CardTitle>
                     <CardDescription className="text-gray-600 dark:text-gray-400">
-                      Find and hire skilled professionals
+                      <TranslatedText context="onboarding">Find and hire skilled professionals</TranslatedText>
                     </CardDescription>
                   </div>
                 </div>
@@ -112,7 +113,7 @@ export default function OnboardingPage() {
                   >
                     <CheckCircle className="h-4 w-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {feature}
+                      <TranslatedText context="onboarding">{feature}</TranslatedText>
                     </span>
                   </motion.div>
                 ))}
@@ -126,7 +127,7 @@ export default function OnboardingPage() {
                   router.push("/onboarding/customer-details");
                 }}
               >
-                Get Started as Customer
+                <TranslatedText context="onboarding">Get Started as Customer</TranslatedText>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
@@ -154,10 +155,10 @@ export default function OnboardingPage() {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-                      Join as a Worker
+                      <TranslatedText context="onboarding">Join as a Worker</TranslatedText>
                     </CardTitle>
                     <CardDescription className="text-gray-600 dark:text-gray-400">
-                      Offer your services and grow your business
+                      <TranslatedText context="onboarding">Offer your services and grow your business</TranslatedText>
                     </CardDescription>
                   </div>
                 </div>
@@ -178,7 +179,7 @@ export default function OnboardingPage() {
                   >
                     <CheckCircle className="h-4 w-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {feature}
+                      <TranslatedText context="onboarding">{feature}</TranslatedText>
                     </span>
                   </motion.div>
                 ))}
@@ -192,7 +193,7 @@ export default function OnboardingPage() {
                   router.push("/onboarding/worker-details");
                 }}
               >
-                Get Started as Worker
+                <TranslatedText context="onboarding">Get Started as Worker</TranslatedText>
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>

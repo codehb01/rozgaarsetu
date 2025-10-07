@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BookWorkerButton from "@/components/book-worker-button";
 import prisma from "@/lib/prisma";
+import { TranslatedText } from "@/components/translation/auto-translate";
 import {
   Wrench,
   Plug,
@@ -107,15 +108,15 @@ export default async function CustomerDashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
-              Welcome back
+              <TranslatedText context="customer-dashboard">Welcome back</TranslatedText>
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
-              Find skilled professionals for your next project
+              <TranslatedText context="customer-dashboard">Find skilled professionals for your next project</TranslatedText>
             </p>
           </div>
           <Link href="/customer/search">
             <Button className="bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white shadow-sm">
-              Browse All Workers
+              <TranslatedText context="customer-dashboard">Browse All Workers</TranslatedText>
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
@@ -130,7 +131,7 @@ export default async function CustomerDashboardPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Active Bookings
+                  <TranslatedText context="customer-dashboard">Active Bookings</TranslatedText>
                 </p>
                 <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                   2
@@ -146,7 +147,7 @@ export default async function CustomerDashboardPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Completed Jobs
+                  <TranslatedText context="customer-dashboard">Completed Jobs</TranslatedText>
                 </p>
                 <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                   8
@@ -162,7 +163,7 @@ export default async function CustomerDashboardPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Avg Rating Given
+                  <TranslatedText context="customer-dashboard">Avg Rating Given</TranslatedText>
                 </p>
                 <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                   4.8
@@ -178,10 +179,10 @@ export default async function CustomerDashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Browse by Category
+              <TranslatedText context="customer-dashboard">Browse by Category</TranslatedText>
             </h2>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Find professionals by their expertise
+              <TranslatedText context="customer-dashboard">Find professionals by their expertise</TranslatedText>
             </p>
           </div>
         </div>
@@ -201,10 +202,10 @@ export default async function CustomerDashboardPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {label}
+                      <TranslatedText context="customer-dashboard">{label}</TranslatedText>
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      Available now
+                      <TranslatedText context="customer-dashboard">Available now</TranslatedText>
                     </p>
                   </div>
                 </div>
@@ -219,22 +220,26 @@ export default async function CustomerDashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Recently Joined
+              <TranslatedText context="customer-dashboard">Recently Joined</TranslatedText>
             </h2>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              New professionals on the platform
+              <TranslatedText context="customer-dashboard">New professionals on the platform</TranslatedText>
             </p>
           </div>
           <Link href="/customer/search" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium">
-            View all
+            <TranslatedText context="customer-dashboard">View all</TranslatedText>
           </Link>
         </div>
 
         {workers.length === 0 ? (
           <Card className="p-8 text-center border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="text-gray-500 dark:text-gray-400">
-              <p className="text-lg font-medium">No workers available</p>
-              <p className="text-sm mt-1">Check back later for new professionals</p>
+              <p className="text-lg font-medium">
+                <TranslatedText context="customer-dashboard">No workers available</TranslatedText>
+              </p>
+              <p className="text-sm mt-1">
+                <TranslatedText context="customer-dashboard">Check back later for new professionals</TranslatedText>
+              </p>
             </div>
           </Card>
         ) : (
@@ -265,10 +270,10 @@ export default async function CustomerDashboardPage() {
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-2">
                       <MapPin className="h-4 w-4 mr-1" />
                       <span className="truncate">
-                        {worker.workerProfile?.city || "Location not specified"}
+                        {worker.workerProfile?.city || <TranslatedText context="customer-dashboard">Location not specified</TranslatedText>}
                       </span>
                       <span className="mx-2">•</span>
-                      <span>{worker.workerProfile?.yearsExperience ?? 0}+ years</span>
+                      <span>{worker.workerProfile?.yearsExperience ?? 0}+ <TranslatedText context="customer-dashboard">years</TranslatedText></span>
                     </div>
                     
                     {worker.workerProfile?.skilledIn && worker.workerProfile.skilledIn.length > 0 && (
@@ -296,7 +301,7 @@ export default async function CustomerDashboardPage() {
                           size="sm"
                           className="w-full border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                         >
-                          View Profile
+                          <TranslatedText context="customer-dashboard">View Profile</TranslatedText>
                         </Button>
                       </Link>
                       <BookWorkerButton workerId={worker.id} />

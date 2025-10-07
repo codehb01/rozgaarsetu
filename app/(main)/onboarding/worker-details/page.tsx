@@ -23,6 +23,7 @@ import {
   X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { TranslatedText } from "@/hooks/use-batch-translation";
 
 interface WorkerFormData {
   aadharNumber: string;
@@ -219,15 +220,15 @@ export default function WorkerDetailsPage() {
               className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Role Selection
+              <TranslatedText context="onboarding">Back to Role Selection</TranslatedText>
             </Button>
 
             <div className="text-center">
               <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
-                Worker Profile Setup
+                <TranslatedText context="onboarding">Worker Profile Setup</TranslatedText>
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
-                Let's create your professional profile
+                <TranslatedText context="onboarding">Let's create your professional profile</TranslatedText>
               </p>
             </div>
           </motion.div>
@@ -822,11 +823,11 @@ export default function WorkerDetailsPage() {
                     className="border-gray-200 dark:border-gray-700"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Previous
+                    <TranslatedText context="onboarding">Previous</TranslatedText>
                   </Button>
 
                   <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Step {currentStep} of {steps.length}
+                    <TranslatedText context="onboarding">Step</TranslatedText> {currentStep} <TranslatedText context="onboarding">of</TranslatedText> {steps.length}
                   </div>
 
                   {isLastStep ? (
@@ -839,7 +840,7 @@ export default function WorkerDetailsPage() {
                       {isLoading ? (
                         <Loader2 className="animate-spin h-4 w-4 mr-2" />
                       ) : null}
-                      Complete Setup
+                      <TranslatedText context="onboarding">Complete Setup</TranslatedText>
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   ) : (
@@ -848,7 +849,7 @@ export default function WorkerDetailsPage() {
                       onClick={nextStep}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      Next
+                      <TranslatedText context="onboarding">Next</TranslatedText>
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   )}

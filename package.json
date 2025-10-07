@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:translation": "node test-translation.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.6",

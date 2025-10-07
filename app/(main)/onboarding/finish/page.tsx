@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight, User, Briefcase } from "lucide-react";
 import { getCurrentUser } from "@/app/api/actions/onboarding";
+import { TranslatedText } from "@/hooks/use-batch-translation";
 
 export default function FinishPage() {
   const router = useRouter();
@@ -41,7 +42,9 @@ export default function FinishPage() {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="text-gray-400">Loading...</div>
+          <div className="text-gray-400">
+            <TranslatedText context="onboarding">Loading...</TranslatedText>
+          </div>
         </div>
       </div>
     );
@@ -56,17 +59,17 @@ export default function FinishPage() {
           </div>
 
           <h1 className="text-4xl font-bold text-white mb-4">
-            Welcome to RozgaarSetu! 🎉
+            <TranslatedText context="onboarding">Welcome to RozgaarSetu! 🎉</TranslatedText>
           </h1>
 
           <p className="text-xl text-gray-300 mb-2">
-            Your profile has been created successfully
+            <TranslatedText context="onboarding">Your profile has been created successfully</TranslatedText>
           </p>
 
           <p className="text-gray-400">
             {userRole === "WORKER"
-              ? "You're now ready to receive job requests from customers"
-              : "You can now start browsing and booking services from skilled workers"}
+              ? <TranslatedText context="onboarding">You're now ready to receive job requests from customers</TranslatedText>
+              : <TranslatedText context="onboarding">You can now start browsing and booking services from skilled workers</TranslatedText>}
           </p>
         </div>
 
@@ -83,10 +86,12 @@ export default function FinishPage() {
               <div>
                 <h3 className="text-xl font-semibold text-white">
                   {userRole === "WORKER"
-                    ? "Worker Profile"
-                    : "Customer Profile"}
+                    ? <TranslatedText context="onboarding">Worker Profile</TranslatedText>
+                    : <TranslatedText context="onboarding">Customer Profile</TranslatedText>}
                 </h3>
-                <p className="text-gray-400">Profile setup completed</p>
+                <p className="text-gray-400">
+                  <TranslatedText context="onboarding">Profile setup completed</TranslatedText>
+                </p>
               </div>
               <div className="ml-auto">
                 <CheckCircle className="h-6 w-6 text-emerald-400" />
@@ -97,35 +102,49 @@ export default function FinishPage() {
               {userRole === "WORKER" ? (
                 <>
                   <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Skills & Experience</span>
-                    <span className="text-emerald-400">✓ Added</span>
+                    <span className="text-gray-400">
+                      <TranslatedText context="onboarding">Skills & Experience</TranslatedText>
+                    </span>
+                    <span className="text-emerald-400">✓ <TranslatedText context="onboarding">Added</TranslatedText></span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Pricing Information</span>
-                    <span className="text-emerald-400">✓ Set</span>
+                    <span className="text-gray-400">
+                      <TranslatedText context="onboarding">Pricing Information</TranslatedText>
+                    </span>
+                    <span className="text-emerald-400">✓ <TranslatedText context="onboarding">Set</TranslatedText></span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Service Areas</span>
-                    <span className="text-emerald-400">✓ Configured</span>
+                    <span className="text-gray-400">
+                      <TranslatedText context="onboarding">Service Areas</TranslatedText>
+                    </span>
+                    <span className="text-emerald-400">✓ <TranslatedText context="onboarding">Configured</TranslatedText></span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-400">Profile Visibility</span>
-                    <span className="text-emerald-400">✓ Public</span>
+                    <span className="text-gray-400">
+                      <TranslatedText context="onboarding">Profile Visibility</TranslatedText>
+                    </span>
+                    <span className="text-emerald-400">✓ <TranslatedText context="onboarding">Public</TranslatedText></span>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Address Information</span>
-                    <span className="text-emerald-400">✓ Added</span>
+                    <span className="text-gray-400">
+                      <TranslatedText context="onboarding">Address Information</TranslatedText>
+                    </span>
+                    <span className="text-emerald-400">✓ <TranslatedText context="onboarding">Added</TranslatedText></span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Account Settings</span>
-                    <span className="text-emerald-400">✓ Configured</span>
+                    <span className="text-gray-400">
+                      <TranslatedText context="onboarding">Account Settings</TranslatedText>
+                    </span>
+                    <span className="text-emerald-400">✓ <TranslatedText context="onboarding">Configured</TranslatedText></span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-400">Ready to Book</span>
-                    <span className="text-emerald-400">✓ Yes</span>
+                    <span className="text-gray-400">
+                      <TranslatedText context="onboarding">Ready to Book</TranslatedText>
+                    </span>
+                    <span className="text-emerald-400">✓ <TranslatedText context="onboarding">Yes</TranslatedText></span>
                   </div>
                 </>
               )}
@@ -133,12 +152,12 @@ export default function FinishPage() {
 
             <div className="bg-emerald-900/10 border border-emerald-900/20 rounded-lg p-4">
               <h4 className="font-semibold text-emerald-400 mb-2">
-                What&apos;s Next?
+                <TranslatedText context="onboarding">What's Next?</TranslatedText>
               </h4>
               <p className="text-gray-300 text-sm">
                 {userRole === "WORKER"
-                  ? "Complete your profile by adding a professional photo and start receiving job requests. You can update your pricing and availability anytime from your dashboard."
-                  : "Browse our skilled professionals by category or search for specific services. You can book services, track job progress, and leave reviews for completed work."}
+                  ? <TranslatedText context="onboarding">Complete your profile by adding a professional photo and start receiving job requests. You can update your pricing and availability anytime from your dashboard.</TranslatedText>
+                  : <TranslatedText context="onboarding">Browse our skilled professionals by category or search for specific services. You can book services, track job progress, and leave reviews for completed work.</TranslatedText>}
               </p>
             </div>
           </CardContent>
@@ -150,7 +169,7 @@ export default function FinishPage() {
             size="lg"
             className="bg-emerald-600 hover:bg-emerald-700 px-8"
           >
-            Go to Dashboard
+            <TranslatedText context="onboarding">Go to Dashboard</TranslatedText>
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </div>

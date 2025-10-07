@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import { TranslatedText } from "@/components/translation/auto-translate";
 
 type EarningsData = {
   total: number;
@@ -44,7 +45,7 @@ export default function WorkerEarningsPage() {
     return (
       <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
         <section className="mx-auto max-w-6xl px-6 py-10">
-          <div className="text-gray-400">Loading earnings...</div>
+          <div className="text-gray-400"><TranslatedText context="worker-earnings">Loading earnings...</TranslatedText></div>
         </section>
       </main>
     );
@@ -54,7 +55,7 @@ export default function WorkerEarningsPage() {
     return (
       <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
         <section className="mx-auto max-w-6xl px-6 py-10">
-          <div className="text-gray-400">Failed to load earnings data.</div>
+          <div className="text-gray-400"><TranslatedText context="worker-earnings">Failed to load earnings data.</TranslatedText></div>
         </section>
       </main>
     );
@@ -68,31 +69,31 @@ export default function WorkerEarningsPage() {
     <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
       <section className="mx-auto max-w-6xl px-6 py-10">
         <h1 className="text-3xl font-light text-white mb-8">
-          Earnings Analytics
+          <TranslatedText context="worker-earnings">Earnings Analytics</TranslatedText>
         </h1>
 
         {/* Overview Cards */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           <Card className="border-gray-800 bg-gray-800/50 p-6">
-            <div className="text-gray-400 text-sm mb-1">Total Earnings</div>
+            <div className="text-gray-400 text-sm mb-1"><TranslatedText context="worker-earnings">Total Earnings</TranslatedText></div>
             <div className="text-3xl font-bold text-white">
               ₹{data.total.toFixed(2)}
             </div>
-            <div className="text-xs text-gray-500 mt-1">All completed jobs</div>
+            <div className="text-xs text-gray-500 mt-1"><TranslatedText context="worker-earnings">All completed jobs</TranslatedText></div>
           </Card>
 
           <Card className="border-gray-800 bg-gray-800/50 p-6">
-            <div className="text-gray-400 text-sm mb-1">This Month</div>
+            <div className="text-gray-400 text-sm mb-1"><TranslatedText context="worker-earnings">This Month</TranslatedText></div>
             <div className="text-3xl font-bold text-white">
               ₹{data.thisMonth.toFixed(2)}
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              Current month earnings
+              <TranslatedText context="worker-earnings">Current month earnings</TranslatedText>
             </div>
           </Card>
 
           <Card className="border-gray-800 bg-gray-800/50 p-6">
-            <div className="text-gray-400 text-sm mb-1">Monthly Change</div>
+            <div className="text-gray-400 text-sm mb-1"><TranslatedText context="worker-earnings">Monthly Change</TranslatedText></div>
             <div
               className={`text-3xl font-bold ${changeColor} flex items-center gap-1`}
             >
@@ -100,7 +101,7 @@ export default function WorkerEarningsPage() {
               <span>{Math.abs(data.monthlyChange).toFixed(1)}%</span>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              vs last month (₹{data.lastMonth.toFixed(2)})
+              <TranslatedText context="worker-earnings">vs last month</TranslatedText> (₹{data.lastMonth.toFixed(2)})
             </div>
           </Card>
         </div>
@@ -108,10 +109,10 @@ export default function WorkerEarningsPage() {
         {/* Job Breakdown */}
         <Card className="border-gray-800 bg-gray-800/50 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">
-            Job-by-Job Breakdown
+            <TranslatedText context="worker-earnings">Job-by-Job Breakdown</TranslatedText>
           </h2>
           {data.jobs.length === 0 ? (
-            <div className="text-gray-400">No completed jobs yet.</div>
+            <div className="text-gray-400"><TranslatedText context="worker-earnings">No completed jobs yet.</TranslatedText></div>
           ) : (
             <div className="space-y-3">
               {data.jobs.map((job) => (
@@ -124,7 +125,7 @@ export default function WorkerEarningsPage() {
                       {job.description}
                     </div>
                     <div className="text-sm text-gray-400">
-                      Customer: {job.customer} •{" "}
+                      <TranslatedText context="worker-earnings">Customer</TranslatedText>: {job.customer} •{" "}
                       {new Date(job.date).toLocaleDateString()}
                     </div>
                   </div>

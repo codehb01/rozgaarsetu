@@ -3,6 +3,8 @@
 import { ReactNode, useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { WorkerSidebar } from "@/components/worker/sidebar-nav";
+import { LanguageSwitcher } from "@/components/translation/language-switcher";
+import { TranslatedText } from "@/components/translation/auto-translate";
 
 // Force dynamic rendering for this route group
 export const dynamic = "force-dynamic";
@@ -20,7 +22,7 @@ export default function WorkerLayout({
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+        <div className="text-gray-500 dark:text-gray-400"><TranslatedText context="worker-layout">Loading...</TranslatedText></div>
       </div>
     );
   }
@@ -29,7 +31,7 @@ export default function WorkerLayout({
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400">Please sign in to access worker dashboard.</div>
+        <div className="text-gray-500 dark:text-gray-400"><TranslatedText context="worker-layout">Please sign in to access worker dashboard.</TranslatedText></div>
       </div>
     );
   }
@@ -54,8 +56,8 @@ export default function WorkerLayout({
         </div>
       )}
 
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-20 left-4 z-30">
+      {/* Mobile menu button and language switcher */}
+      <div className="lg:hidden fixed top-20 left-4 z-30 flex items-center gap-2">
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700"
@@ -64,6 +66,11 @@ export default function WorkerLayout({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
+      </div>
+
+      {/* Language switcher for worker pages */}
+      <div className="fixed top-20 right-4 z-30">
+        <LanguageSwitcher variant="select" />
       </div>
 
       {/* Main content with conditional margin based on sidebar state */}

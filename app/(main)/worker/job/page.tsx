@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { TranslatedText } from "@/components/translation/auto-translate";
 
 type Job = {
   id: string;
@@ -66,7 +67,7 @@ export default function WorkerJobsPage() {
     <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-          <h1 className="text-3xl font-light text-white">Jobs</h1>
+          <h1 className="text-3xl font-light text-white"><TranslatedText context="worker-jobs">Jobs</TranslatedText></h1>
           <div
             className="flex gap-2"
             role="tablist"
@@ -89,7 +90,7 @@ export default function WorkerJobsPage() {
                   : "bg-gray-700 text-gray-200 hover:bg-gray-600"
               }`}
             >
-              New ({newJobs.length})
+              <TranslatedText context="worker-jobs">New</TranslatedText> ({newJobs.length})
             </Badge>
             <Badge
               role="tab"
@@ -108,15 +109,15 @@ export default function WorkerJobsPage() {
                   : "bg-gray-700 text-gray-200 hover:bg-gray-600"
               }`}
             >
-              Previous ({previousJobs.length})
+              <TranslatedText context="worker-jobs">Previous</TranslatedText> ({previousJobs.length})
             </Badge>
           </div>
         </div>
         {loading ? (
-          <div className="text-gray-400">Loading…</div>
+          <div className="text-gray-400"><TranslatedText context="worker-jobs">Loading…</TranslatedText></div>
         ) : list.length === 0 ? (
           <div className="text-gray-400">
-            No {tab === "NEW" ? "new" : "previous"} jobs.
+            <TranslatedText context="worker-jobs">No</TranslatedText> {tab === "NEW" ? <TranslatedText context="worker-jobs">new</TranslatedText> : <TranslatedText context="worker-jobs">previous</TranslatedText>} <TranslatedText context="worker-jobs">jobs.</TranslatedText>
           </div>
         ) : (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -147,16 +148,16 @@ export default function WorkerJobsPage() {
                     </span>
                   </div>
                   <div className="text-sm text-gray-400 mt-1">
-                    Customer: {j.customer?.name || "Customer"}
+                    <TranslatedText context="worker-jobs">Customer</TranslatedText>: {j.customer?.name || "Customer"}
                   </div>
                   <div className="text-sm text-gray-400">
-                    At: {new Date(j.time).toLocaleString()}
+                    <TranslatedText context="worker-jobs">At</TranslatedText>: {new Date(j.time).toLocaleString()}
                   </div>
                   <div className="text-sm text-gray-400">
-                    Location: {j.location}
+                    <TranslatedText context="worker-jobs">Location</TranslatedText>: {j.location}
                   </div>
                   <div className="text-sm text-gray-400">
-                    Charge: ₹{j.charge.toFixed(2)}
+                    <TranslatedText context="worker-jobs">Charge</TranslatedText>: ₹{j.charge.toFixed(2)}
                   </div>
                   {j.details && (
                     <div className="text-sm text-gray-300 mt-2 line-clamp-3">
@@ -168,7 +169,7 @@ export default function WorkerJobsPage() {
                     j.review && (
                       <div className="mt-3 text-xs text-gray-300 flex flex-col gap-1">
                         <span className="inline-flex items-center gap-1">
-                          Rating: {"★".repeat(j.review.rating)}
+                          <TranslatedText context="worker-jobs">Rating</TranslatedText>: {"★".repeat(j.review.rating)}
                           {"☆".repeat(5 - j.review.rating)}
                         </span>
                         {j.review.comment && (
@@ -185,13 +186,13 @@ export default function WorkerJobsPage() {
                       onClick={() => act(j.id, "ACCEPT")}
                       className="bg-emerald-600 hover:bg-emerald-500 text-white flex-1"
                     >
-                      Accept
+                      <TranslatedText context="worker-jobs">Accept</TranslatedText>
                     </Button>
                     <Button
                       onClick={() => act(j.id, "REJECT")}
                       className="bg-red-600 hover:bg-red-500 text-white flex-1"
                     >
-                      Reject
+                      <TranslatedText context="worker-jobs">Reject</TranslatedText>
                     </Button>
                   </div>
                 )}

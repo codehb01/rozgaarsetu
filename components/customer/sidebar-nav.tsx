@@ -98,6 +98,7 @@ const Option = ({
             ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100" 
             : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
+        suppressHydrationWarning
       >
         <motion.div
           layout
@@ -133,6 +134,7 @@ const ToggleClose = ({
       layout
       onClick={() => setOpen((pv) => !pv)}
       className="w-full border-t border-gray-200 dark:border-gray-700 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+      suppressHydrationWarning
     >
       <div className="flex items-center p-3">
         <motion.div

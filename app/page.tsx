@@ -12,6 +12,8 @@ import TypewriterTitle from "@/components/kokonutui/type-writer";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { TranslatedText } from "@/components/translation/auto-translate";
+import { TranslatedShapeHero } from "@/components/translation/translated-shape-hero";
 
 export default function Home() {
   const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
@@ -53,21 +55,19 @@ export default function Home() {
   return (
     <div className="bg-background text-foreground">
       {/* Hero Section with ShapeHero */}
-      <ShapeHero 
+      <TranslatedShapeHero
         title1="Connect. Work."
         title2="Grow."
         subtitle="The modern platform connecting blue-collar workers with opportunities."
-      />
-
-      {/* Platform Demo Section */}
+      />      {/* Platform Demo Section */}
       <div className="flex flex-col overflow-hidden">
         <ContainerScroll
           titleComponent={
             <>
               <h1 className="text-4xl font-semibold text-black dark:text-white">
-                Experience RozgaarSetu in Action <br />
+                <TranslatedText context="homepage">Experience RozgaarSetu in Action</TranslatedText> <br />
                 <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
-                  Your Success Platform
+                  <TranslatedText context="homepage">Your Success Platform</TranslatedText>
                 </span>
               </h1>
             </>
@@ -83,8 +83,8 @@ export default function Home() {
                       <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
                     </div>
                     <div className="ml-3">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Worker Dashboard</h3>
-                      <p className="text-sm text-gray-500">Live job opportunities</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-white"><TranslatedText context="homepage">Worker Dashboard</TranslatedText></h3>
+                      <p className="text-sm text-gray-500"><TranslatedText context="homepage">Live job opportunities</TranslatedText></p>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -94,7 +94,7 @@ export default function Home() {
                   </div>
                   <div className="mt-4 flex justify-between items-center">
                     <span className="text-2xl font-bold text-green-600">₹2,500</span>
-                    <span className="text-sm text-gray-500">Today's earnings</span>
+                    <span className="text-sm text-gray-500"><TranslatedText context="homepage">Today's earnings</TranslatedText></span>
                   </div>
                 </div>
 
@@ -105,8 +105,8 @@ export default function Home() {
                       <div className="w-6 h-6 bg-green-600 rounded-full"></div>
                     </div>
                     <div className="ml-3">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Customer Portal</h3>
-                      <p className="text-sm text-gray-500">Find skilled workers</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-white"><TranslatedText context="homepage">Customer Portal</TranslatedText></h3>
+                      <p className="text-sm text-gray-500"><TranslatedText context="homepage">Find skilled workers</TranslatedText></p>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -116,7 +116,7 @@ export default function Home() {
                   </div>
                   <div className="mt-4 flex justify-between items-center">
                     <span className="text-2xl font-bold text-blue-600">156</span>
-                    <span className="text-sm text-gray-500">Available workers</span>
+                    <span className="text-sm text-gray-500"><TranslatedText context="homepage">Available workers</TranslatedText></span>
                   </div>
                 </div>
 
@@ -127,8 +127,8 @@ export default function Home() {
                       <div className="w-6 h-6 bg-purple-600 rounded-full"></div>
                     </div>
                     <div className="ml-3">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Real-time Analytics</h3>
-                      <p className="text-sm text-gray-500">Track performance</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-white"><TranslatedText context="homepage">Real-time Analytics</TranslatedText></h3>
+                      <p className="text-sm text-gray-500"><TranslatedText context="homepage">Track performance</TranslatedText></p>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -138,7 +138,7 @@ export default function Home() {
                   </div>
                   <div className="mt-4 flex justify-between items-center">
                     <span className="text-2xl font-bold text-purple-600">98%</span>
-                    <span className="text-sm text-gray-500">Success rate</span>
+                    <span className="text-sm text-gray-500"><TranslatedText context="homepage">Success rate</TranslatedText></span>
                   </div>
                 </div>
               </div>
@@ -150,11 +150,11 @@ export default function Home() {
                     <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <div className="w-4 h-4 bg-blue-600 rounded-full animate-pulse"></div>
                     </div>
-                    <span className="font-medium text-gray-900 dark:text-white">Live Job Matching</span>
+                    <span className="font-medium text-gray-900 dark:text-white"><TranslatedText context="homepage">Live Job Matching</TranslatedText></span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-gray-500">Online</span>
+                    <span className="text-sm text-gray-500"><TranslatedText context="homepage">Online</TranslatedText></span>
                   </div>
                 </div>
               </div>
@@ -167,10 +167,10 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
-            Why Choose RozgaarSetu?
+            <TranslatedText context="homepage">Why Choose RozgaarSetu?</TranslatedText>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Empowering connections between skilled workers and opportunities
+            <TranslatedText context="homepage">Empowering connections between skilled workers and opportunities</TranslatedText>
           </p>
         </div>
 
@@ -256,7 +256,7 @@ export default function Home() {
               <div className="flex flex-col items-center justify-center h-full gap-4">
                 <div className="text-5xl">💼</div>
                 <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                  Opportunity Awaits
+                  <TranslatedText context="homepage">Opportunity Awaits</TranslatedText>
                 </div>
               </div>
             </MainMenusGradientCard>
@@ -273,7 +273,7 @@ export default function Home() {
               <div className="flex flex-col items-center justify-center h-full gap-4">
                 <div className="text-5xl">💰</div>
                 <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-                  Instant Payments
+                  <TranslatedText context="homepage">Instant Payments</TranslatedText>
                 </div>
               </div>
             </MainMenusGradientCard>
@@ -290,7 +290,7 @@ export default function Home() {
               <div className="flex flex-col items-center justify-center h-full gap-4">
                 <div className="text-5xl">📍</div>
                 <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">
-                  Local Network
+                  <TranslatedText context="homepage">Local Network</TranslatedText>
                 </div>
               </div>
             </MainMenusGradientCard>
@@ -307,7 +307,7 @@ export default function Home() {
               <div className="flex flex-col items-center justify-center h-full gap-4">
                 <div className="text-4xl">🔍</div>
                 <div className="text-base font-semibold text-orange-600 dark:text-orange-400">
-                  AI-Powered
+                  <TranslatedText context="homepage">AI-Powered</TranslatedText>
                 </div>
               </div>
             </MainMenusGradientCard>
@@ -324,7 +324,7 @@ export default function Home() {
               <div className="flex flex-col items-center justify-center h-full gap-4">
                 <div className="text-4xl">✅</div>
                 <div className="text-base font-semibold text-sky-600 dark:text-sky-400">
-                  Trusted & Verified
+                  <TranslatedText context="homepage">Trusted & Verified</TranslatedText>
                 </div>
               </div>
             </MainMenusGradientCard>
@@ -341,7 +341,7 @@ export default function Home() {
               <div className="flex flex-col items-center justify-center h-full gap-4">
                 <div className="text-5xl">🛡️</div>
                 <div className="text-lg font-semibold text-teal-600 dark:text-teal-400">
-                  Safe & Reliable
+                  <TranslatedText context="homepage">Safe & Reliable</TranslatedText>
                 </div>
               </div>
             </MainMenusGradientCard>
@@ -387,11 +387,10 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Create Your Professional Profile
+                  <TranslatedText context="homepage">Create Your Professional Profile</TranslatedText>
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                  Sign up in minutes and showcase your skills, experience, and availability. 
-                  Add photos, certifications, and set your service rates.
+                  <TranslatedText context="homepage">Sign up in minutes and showcase your skills, experience, and availability. Add photos, certifications, and set your service rates.</TranslatedText>
                 </p>
               </div>
             </div>
@@ -402,11 +401,10 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Connect with Local Opportunities
+                  <TranslatedText context="homepage">Connect with Local Opportunities</TranslatedText>
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                  Our smart matching system finds jobs near you that match your skills. 
-                  Browse, apply, and negotiate terms directly with customers.
+                  <TranslatedText context="homepage">Our smart matching system finds jobs near you that match your skills. Browse, apply, and negotiate terms directly with customers.</TranslatedText>
                 </p>
               </div>
             </div>
@@ -417,11 +415,10 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Work Smart, Get Paid Instantly
+                  <TranslatedText context="homepage">Work Smart, Get Paid Instantly</TranslatedText>
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                  Complete your work with confidence. Our secure payment system 
-                  ensures you get paid immediately after job completion.
+                  <TranslatedText context="homepage">Complete your work with confidence. Our secure payment system ensures you get paid immediately after job completion.</TranslatedText>
                 </p>
               </div>
             </div>
@@ -503,13 +500,13 @@ export default function Home() {
           <div className="text-center">
             {/* Apple-style overline */}
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800/30 mb-8">
-              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Transform Your Future</span>
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300"><TranslatedText context="homepage">Transform Your Future</TranslatedText></span>
             </div>
 
             {/* TypeWriter Enhanced Headline */}
             <div className="mb-8">
               <h2 className="text-6xl md:text-7xl font-thin text-gray-900 dark:text-white mb-2 tracking-tight">
-                Ready to
+                <TranslatedText context="homepage">Ready to</TranslatedText>
               </h2>
               <TypewriterTitle
                 sequences={[
@@ -527,7 +524,7 @@ export default function Home() {
 
             {/* Apple-style subtitle */}
             <p className="text-xl md:text-2xl font-light text-gray-600 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed mb-12">
-              Join over <span className="font-medium text-gray-900 dark:text-white">10,000+ skilled workers</span> who have already discovered better opportunities and secured their financial future with RozgaarSetu.
+              <TranslatedText context="homepage">Join over</TranslatedText> <span className="font-medium text-gray-900 dark:text-white"><TranslatedText context="homepage">10,000+ skilled workers</TranslatedText></span> <TranslatedText context="homepage">who have already discovered better opportunities and secured their financial future with RozgaarSetu.</TranslatedText>
             </p>
 
             {/* Apple-style CTA buttons */}
@@ -536,12 +533,12 @@ export default function Home() {
                 href="/onboarding"
                 className="group relative inline-flex items-center justify-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 no-underline border-none cursor-pointer min-w-[200px]"
               >
-                <span className="relative z-10">Start Your Journey</span>
+                <span className="relative z-10"><TranslatedText context="homepage">Start Your Journey</TranslatedText></span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               </a>
               
               <button className="group relative inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-gray-500/10 cursor-pointer min-w-[200px]">
-                <span className="relative z-10">Learn More</span>
+                <span className="relative z-10"><TranslatedText context="homepage">Learn More</TranslatedText></span>
                 <div className="absolute inset-0 bg-gray-50 dark:bg-gray-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               </button>
             </div>

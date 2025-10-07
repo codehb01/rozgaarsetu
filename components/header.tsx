@@ -23,6 +23,7 @@ import { usePathname } from "next/navigation";
 import { Sun, Moon, Circle } from "lucide-react";
 import { Button } from "./ui/button";
 import { useUserProfile } from "@/hooks/use-user-profile";
+import LanguageSwitcher from "./translation/language-switcher";
 
 // Dynamic import for ProfileButton
 import dynamic from "next/dynamic";
@@ -157,6 +158,13 @@ export function Header() {
               </div>
             </button>
           )}
+
+          {/* Language Switcher */}
+          <LanguageSwitcher 
+            variant="buttons" 
+            className="hidden sm:flex"
+            showFlags={false}
+          />
 
           <SignedIn>
             <ProfileButton />

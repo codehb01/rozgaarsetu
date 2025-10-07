@@ -9,6 +9,9 @@ import ScrollList from "@/components/ui/scroll-list";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
 import { motion, AnimatePresence } from "framer-motion";
+import { TranslatedText } from "@/components/translation/auto-translate";
+import { AutoTranslateList } from "@/components/translation/auto-translate-data";
+import { useTranslatedFetch } from "@/hooks/use-translated-fetch";
 import { 
   FiSearch, 
   FiMapPin, 
@@ -76,6 +79,7 @@ export default function CustomerSearchPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [workers, setWorkers] = useState<Worker[]>([]);
+  const api = useTranslatedFetch();
 
   const fetchWorkers = async (opts?: { q?: string; category?: string; location?: string; sortBy?: string }) => {
     const qs = new URLSearchParams();
@@ -88,9 +92,7 @@ export default function CustomerSearchPage() {
     const url = `/api/workers?${qs.toString()}`;
     setLoading(true);
     try {
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch workers");
-      const data = await res.json();
+      const data = await api.get(url);
       setWorkers(data.workers || []);
     } catch (e) {
       console.error(e);
@@ -142,10 +144,10 @@ export default function CustomerSearchPage() {
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
             <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
-              Find Skilled Workers
+              <TranslatedText context="search-page">Find Skilled Workers</TranslatedText>
             </h1>
             <p className="text-base text-gray-600 dark:text-gray-400">
-              Connect with verified professionals in your area
+              <TranslatedText context="search-page">Connect with verified professionals in your area</TranslatedText>
             </p>
           </div>
 
@@ -160,6 +162,7 @@ export default function CustomerSearchPage() {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   className="pl-12 h-12 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  suppressHydrationWarning
                 />
               </div>
 
@@ -171,6 +174,7 @@ export default function CustomerSearchPage() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="pl-12 h-12 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  suppressHydrationWarning
                 />
               </div>
 
@@ -178,9 +182,10 @@ export default function CustomerSearchPage() {
               <Button
                 type="submit"
                 className="h-12 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-sm transition-all duration-200 hover:shadow-md"
+                suppressHydrationWarning
               >
                 <FiSearch className="h-5 w-5 mr-2" />
-                Search
+                <TranslatedText context="search-page">Search</TranslatedText>
               </Button>
             </div>
 
@@ -199,8 +204,9 @@ export default function CustomerSearchPage() {
                         ? "bg-blue-600 text-white shadow-md"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
+                    suppressHydrationWarning
                   >
-                    {cat}
+                    <TranslatedText context="categories">{cat}</TranslatedText>
                   </motion.button>
                 );
               })}
@@ -218,6 +224,7 @@ export default function CustomerSearchPage() {
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center gap-2 h-9"
+              suppressHydrationWarning
             >
               <FiFilter className="h-4 w-4" />
               Filters
@@ -228,6 +235,7 @@ export default function CustomerSearchPage() {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-2 h-9 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+              suppressHydrationWarning
             >
               {SORT_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -246,6 +254,7 @@ export default function CustomerSearchPage() {
                   ? "bg-white dark:bg-gray-700 shadow-sm"
                   : "hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
+              suppressHydrationWarning
             >
               <FiGrid className="h-4 w-4" />
             </button>
@@ -256,6 +265,7 @@ export default function CustomerSearchPage() {
                   ? "bg-white dark:bg-gray-700 shadow-sm"
                   : "hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
+              suppressHydrationWarning
             >
               <FiList className="h-4 w-4" />
             </button>
@@ -267,6 +277,7 @@ export default function CustomerSearchPage() {
                   : "hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
               title="Scroll View"
+              suppressHydrationWarning
             >
               <FiTrendingUp className="h-4 w-4" />
             </button>
@@ -305,7 +316,7 @@ export default function CustomerSearchPage() {
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Try adjusting your search criteria or explore different categories
               </p>
-              <Button onClick={() => { setQ(""); setLocation(""); setCategory("All"); }}>
+              <Button onClick={() => { setQ(""); setLocation(""); setCategory("All"); }} suppressHydrationWarning>
                 Clear Filters
               </Button>
             </motion.div>
