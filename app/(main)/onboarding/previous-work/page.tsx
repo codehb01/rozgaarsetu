@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { FileUpload } from "@/components/ui/file-upload";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import { 
   ArrowLeft, 
   Plus, 
@@ -26,8 +26,8 @@ import {
   List
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ClickSpark from "@/components/ClickSpark";
 import { TranslatedText } from "@/hooks/use-batch-translation";
-
 // Work Categories
 const workCategories = [
   "Plumbing", "Electrical", "Carpentry", "Painting", "Cleaning",
@@ -172,7 +172,7 @@ export default function PreviousWorkPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-black">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -404,11 +404,13 @@ export default function PreviousWorkPage() {
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             <TranslatedText context="onboarding">Project Images</TranslatedText> *
                           </label>
-                          <FileUpload
-                            onChange={(files) => setNewWork({ ...newWork, images: files })}
+                          <FileDropzone
+                            accept="image/*"
+                            maxSize={5 * 1024 * 1024}
+                            onChange={(file) => setNewWork({ ...newWork, images: file ? [file] : [] })}
                           />
                           <p className="text-xs text-gray-500 mt-1">
-                            <TranslatedText context="onboarding">Upload multiple images to showcase your work</TranslatedText>
+                             <TranslatedText context="onboarding">Upload images to showcase your work</TranslatedText>
                           </p>
                         </div>
 
@@ -657,17 +659,19 @@ export default function PreviousWorkPage() {
               <TranslatedText context="onboarding">Skip for Now</TranslatedText>
             </Button>
 
-            <Button
-              onClick={handleContinue}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <TranslatedText context="onboarding">Continue to Preview</TranslatedText>
-              {previousWorks.length > 0 && (
-                <span className="ml-2 bg-blue-700 text-white px-2 py-0.5 rounded-full text-xs">
-                  {previousWorks.length}
-                </span>
-              )}
-            </Button>
+            <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+              <Button
+                onClick={handleContinue}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <TranslatedText context="onboarding">Continue to Preview</TranslatedText>
+                {previousWorks.length > 0 && (
+                  <span className="ml-2 bg-blue-700 text-white px-2 py-0.5 rounded-full text-xs">
+                    {previousWorks.length}
+                  </span>
+                )}
+              </Button>
+            </ClickSpark>
           </motion.div>
         </div>
       </div>

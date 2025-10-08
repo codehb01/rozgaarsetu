@@ -7,8 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { ArrowLeft, LocateFixed, Loader2 } from "lucide-react";
 import { customerFormSchema, type CustomerFormData } from "@/lib/schema";
+import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
+import { useLocation } from "@/hooks/use-location";
+import { Button as UIButton } from "@/components/ui/button";
+import { formatDisplayAddress } from "@/lib/location";
+import ClickSpark from "@/components/ClickSpark";
 import { TranslatedText } from "@/hooks/use-batch-translation";
 
 export default function CustomerDetailsPage() {
@@ -19,6 +24,8 @@ export default function CustomerDetailsPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
     defaultValues: {
@@ -29,6 +36,8 @@ export default function CustomerDetailsPage() {
       postalCode: "",
     },
   });
+
+  const { getCurrentPosition, status: geoStatus, place } = useLocation();
 
   const onSubmit = async (data: CustomerFormData) => {
     setIsLoading(true);
@@ -41,6 +50,39 @@ export default function CustomerDetailsPage() {
 
     setIsLoading(false);
   };
+
+  // When geocode or browser location is available, set latitude/longitude into form data
+  // Note: CustomerFormData already allows latitude/longitude (schema updated)
+  const applyGeocode = (res: {
+    address?: {
+      city?: string;
+      state?: string;
+      country?: string;
+      postalCode?: string;
+    };
+    coords?: {
+      lat?: number;
+      lng?: number;
+    };
+  }) => {
+    const addr = res?.address || {};
+    if (addr.city) setValue("city", addr.city);
+    if (addr.state) setValue("state", addr.state);
+    if (addr.country) setValue("country", addr.country);
+    if (addr.postalCode) setValue("postalCode", addr.postalCode);
+    if (res?.coords?.lat) setValue("latitude", res.coords.lat);
+    if (res?.coords?.lng) setValue("longitude", res.coords.lng);
+  };
+
+  if (typeof window !== "undefined" && place && geoStatus === "success") {
+    if (!watch("address")) {
+      setValue(
+        "address",
+        formatDisplayAddress(place.address) || place.displayName || ""
+      );
+      applyGeocode(place);
+    }
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -75,13 +117,33 @@ export default function CustomerDetailsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    <TranslatedText context="onboarding">Address</TranslatedText>
+                    Full Address
                   </label>
-                  <Input
-                    placeholder="Enter your full address"
-                    {...register("address")}
-                    className="bg-gray-800 border-gray-700"
-                  />
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <OpenStreetMapInput
+                        value={watch("address")}
+                        onChange={(v) => setValue("address", v)}
+                        onSelect={applyGeocode}
+                        placeholder="Search your address"
+                        inputClassName="bg-gray-800 border-gray-700"
+                      />
+                    </div>
+                    <UIButton
+                      type="button"
+                      variant="outline"
+                      onClick={getCurrentPosition}
+                      className="whitespace-nowrap"
+                      disabled={geoStatus === "locating"}
+                    >
+                      {geoStatus === "locating" ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <LocateFixed className="h-4 w-4 mr-2" />
+                      )}
+                      Use my location
+                    </UIButton>
+                  </div>
                   {errors.address && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.address.message}
@@ -158,16 +220,18 @@ export default function CustomerDetailsPage() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
-              >
-                {isLoading ? (
-                  <Loader2 className="animate-spin h-4 w-4 mr-2" />
-                ) : null}
-                <TranslatedText context="onboarding">Continue to Preview</TranslatedText>
-              </Button>
+              <ClickSpark sparkColor="#22c55e" sparkCount={12} sparkRadius={25}>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {isLoading ? (
+                    <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                  ) : null}
+                  <TranslatedText context="onboarding">Continue to Preview</TranslatedText>
+                </Button>
+              </ClickSpark>
             </form>
           </CardContent>
         </Card>

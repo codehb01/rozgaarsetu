@@ -23,8 +23,8 @@ import { usePathname } from "next/navigation";
 import { Sun, Moon, Circle } from "lucide-react";
 import { Button } from "./ui/button";
 import { useUserProfile } from "@/hooks/use-user-profile";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import LanguageSwitcher from "./translation/language-switcher";
-
 // Dynamic import for ProfileButton
 import dynamic from "next/dynamic";
 
@@ -133,31 +133,8 @@ export function Header() {
 
         {/* Apple-style Action Buttons */}
         <div className="flex items-center space-x-3">
-          {/* Refined Theme Toggle */}
-          {mounted && (
-            <button
-              aria-label="Toggle theme"
-              className="relative h-9 w-9 rounded-full bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 backdrop-blur transition-all duration-200 flex items-center justify-center group"
-              onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
-            >
-              <div className="relative h-4 w-4">
-                <Sun
-                  className={`absolute top-0 left-0 h-4 w-4 text-amber-500 transition-all duration-300 ease-out ${
-                    currentTheme === "dark" 
-                      ? "opacity-0 scale-75 rotate-90" 
-                      : "opacity-100 scale-100 rotate-0"
-                  }`}
-                />
-                <Moon
-                  className={`absolute top-0 left-0 h-4 w-4 text-blue-500 transition-all duration-300 ease-out ${
-                    currentTheme === "dark" 
-                      ? "opacity-100 scale-100 rotate-0" 
-                      : "opacity-0 scale-75 -rotate-90"
-                  }`}
-                />
-              </div>
-            </button>
-          )}
+          {/* Animated Theme Toggler */}
+          <AnimatedThemeToggler />
 
           {/* Language Switcher */}
           <LanguageSwitcher 
@@ -254,20 +231,10 @@ export function Header() {
             )}
             
             <div className="border-t border-gray-200/50 dark:border-gray-800/50 pt-4 mt-4 space-y-1">
-              {/* Mobile Theme Toggle */}
-              {mounted && (
-                <button
-                  className="flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 font-medium"
-                  onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
-                >
-                  {currentTheme === "dark" ? (
-                    <Sun className="h-5 w-5 text-amber-500" />
-                  ) : (
-                    <Moon className="h-5 w-5 text-blue-500" />
-                  )}
-                  <span>Switch to {currentTheme === "dark" ? "Light" : "Dark"} Mode</span>
-                </button>
-              )}
+              {/* Mobile Theme Toggler */}
+              <div className="px-4 py-3">
+                <AnimatedThemeToggler />
+              </div>
               
               <SignedOut>
                 <SignInButton>

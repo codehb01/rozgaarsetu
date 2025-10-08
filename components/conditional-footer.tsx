@@ -6,10 +6,12 @@ import Footer from "./footer"
 export default function ConditionalFooter() {
   const pathname = usePathname()
   
-  // Hide footer on customer dashboard pages and onboarding
+  // Hide footer on auth pages, customer/worker dashboards, and onboarding
   const hideFooter = pathname?.startsWith('/customer') || 
                     pathname?.startsWith('/worker') ||
-                    pathname?.startsWith('/onboarding')
+                    pathname?.startsWith('/onboarding') ||
+                    pathname?.startsWith('/sign-in') ||
+                    pathname?.startsWith('/sign-up')
   
   if (hideFooter) {
     return null

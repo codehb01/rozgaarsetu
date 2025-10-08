@@ -15,7 +15,7 @@ export function CustomerHeader({ onMenuClick, showMenuButton = false }: Customer
   const [searchQuery, setSearchQuery] = useState("")
 
   return (
-    <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+    <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Left Section */}

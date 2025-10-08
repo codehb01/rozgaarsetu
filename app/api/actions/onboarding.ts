@@ -191,6 +191,37 @@ export async function setUserRole(
         };
       }
 
+      // Parse optional latitude/longitude from the form (strings -> numbers)
+      const latRaw = formData.get("latitude")?.toString();
+      const lngRaw = formData.get("longitude")?.toString();
+      const latitude = latRaw ? parseFloat(latRaw) : undefined;
+      const longitude = lngRaw ? parseFloat(lngRaw) : undefined;
+
+      // Build profile payload and include lat/lng when present
+      const profileData = {
+        skilledIn,
+        qualification,
+        certificates,
+        aadharNumber,
+        yearsExperience,
+        hourlyRate,
+        minimumFee,
+        profilePic,
+        bio,
+        address,
+        city,
+        state,
+        country,
+        postalCode,
+        availableAreas,
+        ...(typeof latitude === "number" && !Number.isNaN(latitude)
+          ? { latitude }
+          : {}),
+        ...(typeof longitude === "number" && !Number.isNaN(longitude)
+          ? { longitude }
+          : {}),
+      };
+
       await prisma.$transaction([
         prisma.user.update({
           where: { clerkUserId: userId },
@@ -198,41 +229,8 @@ export async function setUserRole(
         }),
         prisma.workerProfile.upsert({
           where: { userId: user.id },
-          update: {
-            skilledIn,
-            qualification,
-            certificates,
-            aadharNumber,
-            yearsExperience,
-            hourlyRate,
-            minimumFee,
-            profilePic,
-            bio,
-            address,
-            city,
-            state,
-            country,
-            postalCode,
-            availableAreas,
-          },
-          create: {
-            userId: user.id,
-            skilledIn,
-            qualification,
-            certificates,
-            aadharNumber,
-            yearsExperience,
-            hourlyRate,
-            minimumFee,
-            profilePic,
-            bio,
-            address,
-            city,
-            state,
-            country,
-            postalCode,
-            availableAreas,
-          },
+          update: profileData,
+          create: { userId: user.id, ...profileData },
         }),
       ]);
 
@@ -291,7 +289,11 @@ export async function getCurrentUser() {
     const user = await prisma.user.findUnique({
       where: { clerkUserId: userId },
       include: {
-        workerProfile: true,
+        workerProfile: {
+          include: {
+            previousWorks: true,
+          },
+        },
         customerProfile: true,
       },
     });

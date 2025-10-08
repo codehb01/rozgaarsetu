@@ -39,8 +39,18 @@ export async function POST(req: NextRequest) {
 
     // Validate worker exists and is role WORKER
     const worker = await prisma.user.findUnique({ where: { id: workerId } });
-    if (!worker || worker.role !== "WORKER") {
-      return NextResponse.json({ error: "Invalid worker" }, { status: 400 });
+    
+    console.log('Worker lookup:', { workerId, found: !!worker, role: worker?.role });
+    
+    if (!worker) {
+      return NextResponse.json({ error: "Worker not found" }, { status: 404 });
+    }
+    
+    if (worker.role !== "WORKER") {
+      return NextResponse.json({ 
+        error: "Invalid worker", 
+        details: `User exists but has role '${worker.role}' instead of 'WORKER'` 
+      }, { status: 400 });
     }
 
     const job = await prisma.job.create({

@@ -21,7 +21,7 @@ export default function WorkerLayout({
   // Show loading state while auth is loading
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
         <div className="text-gray-500 dark:text-gray-400"><TranslatedText context="worker-layout">Loading...</TranslatedText></div>
       </div>
     );
@@ -30,14 +30,14 @@ export default function WorkerLayout({
   // Redirect if not authenticated (this will be handled by Clerk middleware)
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
         <div className="text-gray-500 dark:text-gray-400"><TranslatedText context="worker-layout">Please sign in to access worker dashboard.</TranslatedText></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
       {/* Fixed Sidebar for desktop */}
       <div className="hidden lg:block">
         <WorkerSidebar 
@@ -50,14 +50,14 @@ export default function WorkerLayout({
       {sidebarOpen && (
         <div className="relative z-50 lg:hidden">
           <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <div className="fixed inset-y-0 left-0 z-50 mt-16">
+          <div className="fixed inset-y-0 left-0 z-50">
             <WorkerSidebar onMobileClose={() => setSidebarOpen(false)} />
           </div>
         </div>
       )}
 
-      {/* Mobile menu button and language switcher */}
-      <div className="lg:hidden fixed top-20 left-4 z-30 flex items-center gap-2">
+      {/* Mobile menu button */}
+      <div className="lg:hidden fixed top-4 left-4 z-30">
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700"
@@ -74,10 +74,10 @@ export default function WorkerLayout({
       </div>
 
       {/* Main content with conditional margin based on sidebar state */}
-      <main className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-300 ${
+      <main className={`min-h-screen bg-gray-50 dark:bg-black transition-all duration-300 ${
         desktopSidebarOpen ? "lg:ml-64" : "lg:ml-16"
       }`}>
-        <div className="px-4 py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-6 lg:px-8 pt-16 lg:pt-6">
           {children}
         </div>
       </main>

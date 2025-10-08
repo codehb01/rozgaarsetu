@@ -3,20 +3,11 @@ import { ArrowRight } from 'lucide-react'
 
 export default function StickyFooterContent() {
   return (
-    <div className='bg-slate-900 py-8 px-12 h-full w-full flex flex-col justify-between text-white'>
-        <div></div> {/* Empty spacer to push content down */}
-        <Section1 />
+    <div className='bg-slate-900 py-8 px-12 h-full w-full flex flex-col justify-end text-white'>
+        <Nav />
         <Section2 />
     </div>
   )
-}
-
-const Section1 = () => {
-    return (
-        <div className='mb-8'>
-            <Nav />
-        </div>
-    )
 }
 
 const Section2 = () => {
@@ -30,7 +21,7 @@ const Section2 = () => {
 
 const Nav = () => {
     return (
-        <div className='flex flex-wrap gap-12 md:gap-20'>
+        <div className='flex flex-wrap gap-12 md:gap-20 mb-8'>
             <div className='flex flex-col gap-2'>
                 <h3 className='mb-2 uppercase text-slate-400 font-semibold'>Platform</h3>
                 <MenuAnimationItem text="Find Workers" />
