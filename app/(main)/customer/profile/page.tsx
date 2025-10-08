@@ -55,8 +55,12 @@ export default function CustomerProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [editedProfile, setEditedProfile] = useState<Partial<CustomerProfile>>({});
-  const [activeTab, setActiveTab] = useState<"overview" | "bookings">("overview");
+  const [editedProfile, setEditedProfile] = useState<Partial<CustomerProfile>>(
+    {}
+  );
+  const [activeTab, setActiveTab] = useState<"overview" | "bookings">(
+    "overview"
+  );
   const [fetchingLocation, setFetchingLocation] = useState(false);
 
   const handleGetCurrentLocation = async () => {
@@ -69,9 +73,11 @@ export default function CustomerProfilePage() {
       }
 
       // Get current position
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        }
+      );
 
       const { latitude, longitude } = position.coords;
 
@@ -105,7 +111,9 @@ export default function CustomerProfilePage() {
       if (error instanceof GeolocationPositionError) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            alert("Location permission denied. Please enable location access in your browser settings.");
+            alert(
+              "Location permission denied. Please enable location access in your browser settings."
+            );
             break;
           case error.POSITION_UNAVAILABLE:
             alert("Location information unavailable.");
@@ -168,7 +176,7 @@ export default function CustomerProfilePage() {
       }
 
       const result = await response.json();
-      
+
       // Update the profile data with the saved data
       if (data) {
         setData({
@@ -217,7 +225,10 @@ export default function CustomerProfilePage() {
             <p className="text-gray-600 dark:text-gray-400">
               Please complete your onboarding to view your profile.
             </p>
-            <Button onClick={() => router.push("/onboarding")} className="bg-blue-600 hover:bg-blue-700 mt-4">
+            <Button
+              onClick={() => router.push("/onboarding")}
+              className="bg-blue-600 hover:bg-blue-700 mt-4"
+            >
               Complete Onboarding
             </Button>
           </div>
@@ -296,19 +307,33 @@ export default function CustomerProfilePage() {
                         onError={(e) => {
                           // Show initials avatar on error
                           const target = e.currentTarget;
-                          target.style.display = 'none';
+                          target.style.display = "none";
                           const parent = target.parentElement;
-                          if (parent && !parent.querySelector('.initials-avatar')) {
-                            const initialsDiv = document.createElement('div');
-                            initialsDiv.className = 'initials-avatar text-blue-500 dark:text-blue-400 text-4xl font-bold flex items-center justify-center w-full h-full';
-                            initialsDiv.textContent = data.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+                          if (
+                            parent &&
+                            !parent.querySelector(".initials-avatar")
+                          ) {
+                            const initialsDiv = document.createElement("div");
+                            initialsDiv.className =
+                              "initials-avatar text-blue-500 dark:text-blue-400 text-4xl font-bold flex items-center justify-center w-full h-full";
+                            initialsDiv.textContent = data.name
+                              .split(" ")
+                              .map((n: string) => n[0])
+                              .join("")
+                              .toUpperCase()
+                              .slice(0, 2);
                             parent.appendChild(initialsDiv);
                           }
                         }}
                       />
                     ) : (
                       <div className="text-blue-500 dark:text-blue-400 text-4xl font-bold">
-                        {data.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+                        {data.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)}
                       </div>
                     )}
                   </div>
@@ -335,7 +360,7 @@ export default function CustomerProfilePage() {
                     </span>
                   </div>
 
-                  {data.phone && !data.phone.startsWith('no-phone-') && (
+                  {data.phone && !data.phone.startsWith("no-phone-") && (
                     <div className="flex items-center gap-3 text-sm">
                       <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                         <FiPhone className="h-4 w-4 text-gray-600 dark:text-gray-400" />
@@ -358,8 +383,12 @@ export default function CustomerProfilePage() {
 
                 {/* Quick Actions */}
                 <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-2">
-                  <ClickSpark sparkColor="#60a5fa" sparkCount={10} sparkRadius={20}>
-                    <Button 
+                  <ClickSpark
+                    sparkColor="#60a5fa"
+                    sparkCount={10}
+                    sparkRadius={20}
+                  >
+                    <Button
                       onClick={() => router.push("/customer/search")}
                       className="w-full bg-blue-600 hover:bg-blue-700"
                     >
@@ -367,7 +396,7 @@ export default function CustomerProfilePage() {
                       Find Workers
                     </Button>
                   </ClickSpark>
-                  <Button 
+                  <Button
                     onClick={() => router.push("/customer/bookings")}
                     variant="outline"
                     className="w-full border-gray-300 dark:border-gray-600"
@@ -435,7 +464,7 @@ export default function CustomerProfilePage() {
                           </p>
                         </div>
                       </div>
-                      {data.phone && !data.phone.startsWith('no-phone-') && (
+                      {data.phone && !data.phone.startsWith("no-phone-") && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Phone Number
@@ -465,8 +494,14 @@ export default function CustomerProfilePage() {
                           size="sm"
                           className="flex items-center gap-2"
                         >
-                          <FiNavigation className={`h-4 w-4 ${fetchingLocation ? 'animate-spin' : ''}`} />
-                          {fetchingLocation ? "Getting location..." : "Use Current Location"}
+                          <FiNavigation
+                            className={`h-4 w-4 ${
+                              fetchingLocation ? "animate-spin" : ""
+                            }`}
+                          />
+                          {fetchingLocation
+                            ? "Getting location..."
+                            : "Use Current Location"}
                         </Button>
                       )}
                     </div>
@@ -489,7 +524,7 @@ export default function CustomerProfilePage() {
                             rows={2}
                           />
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -507,7 +542,7 @@ export default function CustomerProfilePage() {
                               className="bg-white dark:bg-black"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               State
@@ -525,7 +560,7 @@ export default function CustomerProfilePage() {
                             />
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -543,7 +578,7 @@ export default function CustomerProfilePage() {
                               className="bg-white dark:bg-black"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Country
@@ -583,19 +618,25 @@ export default function CustomerProfilePage() {
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between py-2">
-                        <span className="text-gray-700 dark:text-gray-300">Account Type</span>
+                        <span className="text-gray-700 dark:text-gray-300">
+                          Account Type
+                        </span>
                         <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
                           Customer
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between py-2">
-                        <span className="text-gray-700 dark:text-gray-300">Profile Status</span>
+                        <span className="text-gray-700 dark:text-gray-300">
+                          Profile Status
+                        </span>
                         <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                           Active
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between py-2">
-                        <span className="text-gray-700 dark:text-gray-300">Location</span>
+                        <span className="text-gray-700 dark:text-gray-300">
+                          Location
+                        </span>
                         <span className="text-gray-900 dark:text-white font-medium">
                           {profile.city}, {profile.state}
                         </span>
@@ -619,10 +660,15 @@ export default function CustomerProfilePage() {
                       No Bookings Yet
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
-                      You haven't made any bookings yet. Start by finding skilled workers.
+                      You haven&apos;t made any bookings yet. Start by finding
+                      skilled workers.
                     </p>
-                    <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
-                      <Button 
+                    <ClickSpark
+                      sparkColor="#60a5fa"
+                      sparkCount={12}
+                      sparkRadius={25}
+                    >
+                      <Button
                         onClick={() => router.push("/customer/search")}
                         className="bg-blue-600 hover:bg-blue-700"
                       >

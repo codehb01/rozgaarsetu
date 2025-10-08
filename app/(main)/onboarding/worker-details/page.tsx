@@ -374,7 +374,7 @@ export default function WorkerDetailsPage() {
                 />
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Let's create your professional profile in just a few steps
+                Let&apos;s create your professional profile in just a few steps
               </p>
             </div>
           </motion.div>
@@ -1202,13 +1202,13 @@ export default function WorkerDetailsPage() {
                           className="bg-green-50/50 dark:bg-green-950/20 p-5 md:p-6 rounded-xl border border-green-200/50 dark:border-green-400/20"
                         >
                           <h3 className="font-semibold text-green-900 dark:text-green-100 mb-3 flex items-center gap-2">
-                            <span className="text-xl">🎉</span> You're almost
-                            done!
+                            <span className="text-xl">🎉</span> You&apos;re
+                            almost done!
                           </h3>
                           <p className="text-sm text-green-800 dark:text-green-200 mb-4">
-                            Your profile is looking great. Next, you'll be able
-                            to showcase your previous work and start receiving
-                            job requests.
+                            Your profile is looking great. Next, you&apos;ll be
+                            able to showcase your previous work and start
+                            receiving job requests.
                           </p>
                           <ul className="text-sm text-green-700 dark:text-green-300 space-y-2">
                             <li className="flex items-center gap-2">

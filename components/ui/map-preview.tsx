@@ -236,57 +236,62 @@ export default function MapPreview({
             try {
               router.push(`/worker/${mk.id}`);
             } catch (err) {
-              window.location.href = `/worker/${mk.id}`;
+              if (typeof window !== "undefined") {
+                window.location.href = `/worker/${mk.id}`;
+              }
             }
           };
           const onBook = (ev: MouseEvent) => {
             ev.preventDefault();
-            try {
-              const hasListeners =
-                (window as any).__rozgaar_book_listeners_count > 0;
-              if (hasListeners) {
-                // dispatch open request
-                const custom = new CustomEvent("rozgaar:openBook", {
-                  detail: { workerId: mk.id },
-                });
-                console.debug("[map-preview] dispatch openBook for", mk.id);
-                window.dispatchEvent(custom);
-                // wait for confirmation that the dialog opened
-                let handled = false;
-                const onOpened = (e: Event) => {
-                  try {
-                    const detail = (e as CustomEvent).detail || {};
-                    if (detail.workerId === mk.id) handled = true;
-                  } catch (err) {}
-                };
-                window.addEventListener(
-                  "rozgaar:bookOpened",
-                  onOpened as EventListener
-                );
-                // short timeout to fallback to navigation if not handled
-                setTimeout(() => {
-                  try {
-                    window.removeEventListener(
-                      "rozgaar:bookOpened",
-                      onOpened as EventListener
-                    );
-                  } catch (e) {}
-                  if (!handled) {
-                    console.debug(
-                      "[map-preview] bookOpened not received for",
-                      mk.id,
-                      "falling back to navigation"
-                    );
+            if (typeof window !== "undefined") {
+              try {
+                const hasListeners =
+                  (window as { __rozgaar_book_listeners_count?: number })
+                    .__rozgaar_book_listeners_count || 0 > 0;
+                if (hasListeners) {
+                  // dispatch open request
+                  const custom = new CustomEvent("rozgaar:openBook", {
+                    detail: { workerId: mk.id },
+                  });
+                  console.debug("[map-preview] dispatch openBook for", mk.id);
+                  window.dispatchEvent(custom);
+                  // wait for confirmation that the dialog opened
+                  let handled = false;
+                  const onOpened = (e: Event) => {
                     try {
-                      router.push(`/worker/${mk.id}?action=book`);
-                    } catch (err) {
-                      window.location.href = `/worker/${mk.id}?action=book`;
+                      const detail = (e as CustomEvent).detail || {};
+                      if (detail.workerId === mk.id) handled = true;
+                    } catch (err) {}
+                  };
+                  window.addEventListener(
+                    "rozgaar:bookOpened",
+                    onOpened as EventListener
+                  );
+                  // short timeout to fallback to navigation if not handled
+                  setTimeout(() => {
+                    try {
+                      window.removeEventListener(
+                        "rozgaar:bookOpened",
+                        onOpened as EventListener
+                      );
+                    } catch (e) {}
+                    if (!handled) {
+                      console.debug(
+                        "[map-preview] bookOpened not received for",
+                        mk.id,
+                        "falling back to navigation"
+                      );
+                      try {
+                        router.push(`/worker/${mk.id}?action=book`);
+                      } catch (err) {
+                        window.location.href = `/worker/${mk.id}?action=book`;
+                      }
                     }
-                  }
-                }, 350);
-                return;
-              }
-            } catch (err) {}
+                  }, 350);
+                  return;
+                }
+              } catch (err) {}
+            }
             // fallback to navigation
             console.debug(
               "[map-preview] no listeners, navigating to worker page for",
@@ -295,7 +300,9 @@ export default function MapPreview({
             try {
               router.push(`/worker/${mk.id}?action=book`);
             } catch (err) {
-              window.location.href = `/worker/${mk.id}?action=book`;
+              if (typeof window !== "undefined") {
+                window.location.href = `/worker/${mk.id}?action=book`;
+              }
             }
           };
           if (link) link.addEventListener("click", onClick);

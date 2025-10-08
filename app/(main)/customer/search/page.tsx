@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState, useRef, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
@@ -13,7 +14,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
 import SkillBadge from "@/components/ui/skill-badge";
-import MapPreview from "@/components/ui/map-preview";
+
+const MapPreview = dynamic(() => import("@/components/ui/map-preview"), {
+  ssr: false,
+});
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiSearch,
@@ -43,6 +47,8 @@ type Worker = {
     qualification: string | null;
     profilePic: string | null;
     bio: string | null;
+    category?: string | null;
+    jobCategory?: string | null;
   } | null;
 };
 
@@ -74,7 +80,7 @@ const SORT_OPTIONS = [
   { value: "nearest", label: "Nearest" },
 ];
 
-export default function CustomerSearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialCategory = useMemo(() => {
@@ -119,19 +125,7 @@ export default function CustomerSearchPage() {
     for (const w of workers) {
       // infer normalized category strings from common worker fields
       const wCatRaw =
-        (
-          w as Worker & {
-            category?: string;
-            workerProfile?: {
-              category?: string;
-              jobCategory?: string;
-            } & Worker["workerProfile"];
-          }
-        )?.category ??
-        w.workerProfile?.category ??
-        (w.workerProfile as Worker["workerProfile"] & { jobCategory?: string })
-          ?.jobCategory ??
-        null;
+        w.workerProfile?.category ?? w.workerProfile?.jobCategory ?? null;
       const skills: string[] = w.workerProfile?.skilledIn ?? [];
 
       // count 'All'
@@ -271,10 +265,12 @@ export default function CustomerSearchPage() {
 
   const onCategoryClick = (cat: string) => {
     setCategory(cat);
-    const qs = new URLSearchParams(window.location.search);
-    if (cat === "All") qs.delete("category");
-    else qs.set("category", cat.toLowerCase().replace(/\s+/g, "-"));
-    router.push(`/customer/search?${qs.toString()}`);
+    if (typeof window !== "undefined") {
+      const qs = new URLSearchParams(window.location.search);
+      if (cat === "All") qs.delete("category");
+      else qs.set("category", cat.toLowerCase().replace(/\s+/g, "-"));
+      router.push(`/customer/search?${qs.toString()}`);
+    }
   };
 
   // Skeleton Loader Component
@@ -333,7 +329,7 @@ export default function CustomerSearchPage() {
                           if (!locMenuOpen) {
                             const rect =
                               locButtonRef.current?.getBoundingClientRect();
-                            if (rect)
+                            if (rect && typeof window !== "undefined")
                               setMenuPos({
                                 left: rect.left + window.scrollX,
                                 top: rect.bottom + window.scrollY,
@@ -771,5 +767,13 @@ export default function CustomerSearchPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function CustomerSearchPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchPageContent />
+    </Suspense>
   );
 }

@@ -8,7 +8,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Wrench, CheckCircle, ArrowRight, Users, Star, Shield, Sparkles } from "lucide-react";
+import {
+  User,
+  Wrench,
+  CheckCircle,
+  ArrowRight,
+  Users,
+  Star,
+  Shield,
+  Sparkles,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
@@ -19,7 +28,7 @@ const customerFeatures = [
   "Real-time job progress tracking",
   "Secure payment processing",
   "24/7 customer support",
-  "Quality guarantee on all services"
+  "Quality guarantee on all services",
 ];
 
 const workerFeatures = [
@@ -27,7 +36,7 @@ const workerFeatures = [
   "Flexible work schedule",
   "Fair and transparent pricing",
   "Build your professional reputation",
-  "Secure and timely payments"
+  "Secure and timely payments",
 ];
 
 const stats = [
@@ -70,12 +79,14 @@ export default function OnboardingPage() {
           <ShimmerText
             text="Welcome to RozgaarSetu"
             className="text-gray-900 dark:text-white"
-            shimmerWidth={200}
           />
         </h1>
 
         <div className="text-base md:text-lg text-gray-600 dark:text-gray-400">
-          <TypewriterEffect words={typewriterWords} className="justify-center" />
+          <TypewriterEffect
+            words={typewriterWords}
+            className="justify-center"
+          />
         </div>
       </motion.div>
 
@@ -86,7 +97,7 @@ export default function OnboardingPage() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          onHoverStart={() => setHoveredCard('customer')}
+          onHoverStart={() => setHoveredCard("customer")}
           onHoverEnd={() => setHoveredCard(null)}
         >
           <Card
@@ -109,9 +120,13 @@ export default function OnboardingPage() {
                     </CardDescription>
                   </div>
                 </div>
-                <ArrowRight className={`h-6 w-6 text-blue-400/60 dark:text-blue-400/50 transition-all duration-300 flex-shrink-0 mt-1 ${
-                  hoveredCard === 'customer' ? 'translate-x-2 text-blue-600 dark:text-blue-400' : ''
-                }`} />
+                <ArrowRight
+                  className={`h-6 w-6 text-blue-400/60 dark:text-blue-400/50 transition-all duration-300 flex-shrink-0 mt-1 ${
+                    hoveredCard === "customer"
+                      ? "translate-x-2 text-blue-600 dark:text-blue-400"
+                      : ""
+                  }`}
+                />
               </div>
 
               {/* Features List */}
@@ -135,7 +150,7 @@ export default function OnboardingPage() {
               </div>
 
               {/* CTA Button */}
-              <Button 
+              <Button
                 className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white transition-all duration-300 group-hover:scale-[1.02] shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20 h-12 text-base font-semibold rounded-xl"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -154,7 +169,7 @@ export default function OnboardingPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          onHoverStart={() => setHoveredCard('worker')}
+          onHoverStart={() => setHoveredCard("worker")}
           onHoverEnd={() => setHoveredCard(null)}
         >
           <Card
@@ -177,9 +192,13 @@ export default function OnboardingPage() {
                     </CardDescription>
                   </div>
                 </div>
-                <ArrowRight className={`h-6 w-6 text-purple-400/60 dark:text-purple-400/50 transition-all duration-300 flex-shrink-0 mt-1 ${
-                  hoveredCard === 'worker' ? 'translate-x-2 text-purple-600 dark:text-purple-400' : ''
-                }`} />
+                <ArrowRight
+                  className={`h-6 w-6 text-purple-400/60 dark:text-purple-400/50 transition-all duration-300 flex-shrink-0 mt-1 ${
+                    hoveredCard === "worker"
+                      ? "translate-x-2 text-purple-600 dark:text-purple-400"
+                      : ""
+                  }`}
+                />
               </div>
 
               {/* Features List */}
@@ -203,7 +222,7 @@ export default function OnboardingPage() {
               </div>
 
               {/* CTA Button */}
-              <Button 
+              <Button
                 className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-500 text-white transition-all duration-300 group-hover:scale-[1.02] shadow-lg shadow-purple-500/30 dark:shadow-purple-500/20 h-12 text-base font-semibold rounded-xl"
                 onClick={(e) => {
                   e.stopPropagation();

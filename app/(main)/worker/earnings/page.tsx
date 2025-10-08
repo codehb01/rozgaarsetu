@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import AnimatedCircularProgressBar from "@/components/ui/animated-circular-progress-bar";
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 import {
   FiDollarSign,
   FiTrendingUp,
@@ -86,7 +86,7 @@ export default function WorkerEarningsPage() {
     data?.monthlyChange && data.monthlyChange >= 0
       ? "text-green-600 dark:text-green-400"
       : "text-red-600 dark:text-red-400";
-  
+
   const changeBgColor =
     data?.monthlyChange && data.monthlyChange >= 0
       ? "bg-green-50 dark:bg-green-900/20"
@@ -119,13 +119,16 @@ export default function WorkerEarningsPage() {
                 <SkeletonCard />
                 <SkeletonCard />
               </div>
-              
+
               {/* Job Breakdown Skeleton */}
               <Card className="p-6">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6"></div>
                 <div className="space-y-4">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="animate-pulse flex items-center justify-between p-4 rounded-lg bg-gray-100 dark:bg-gray-800">
+                    <div
+                      key={i}
+                      className="animate-pulse flex items-center justify-between p-4 rounded-lg bg-gray-100 dark:bg-gray-800"
+                    >
                       <div className="flex-1 space-y-2">
                         <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
                         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
@@ -235,20 +238,28 @@ export default function WorkerEarningsPage() {
                         </p>
                         <div className="flex items-center gap-2">
                           {data.monthlyChange >= 0 ? (
-                            <FiTrendingUp className={`h-6 w-6 ${changeColor}`} />
+                            <FiTrendingUp
+                              className={`h-6 w-6 ${changeColor}`}
+                            />
                           ) : (
-                            <FiTrendingDown className={`h-6 w-6 ${changeColor}`} />
+                            <FiTrendingDown
+                              className={`h-6 w-6 ${changeColor}`}
+                            />
                           )}
                           <h3 className={`text-3xl font-bold ${changeColor}`}>
                             {Math.abs(data.monthlyChange).toFixed(1)}%
                           </h3>
                         </div>
                       </div>
-                      <div className={`w-12 h-12 rounded-xl ${changeBgColor} flex items-center justify-center`}>
+                      <div
+                        className={`w-12 h-12 rounded-xl ${changeBgColor} flex items-center justify-center`}
+                      >
                         {data.monthlyChange >= 0 ? (
                           <FiTrendingUp className={`h-6 w-6 ${changeColor}`} />
                         ) : (
-                          <FiTrendingDown className={`h-6 w-6 ${changeColor}`} />
+                          <FiTrendingDown
+                            className={`h-6 w-6 ${changeColor}`}
+                          />
                         )}
                       </div>
                     </div>
@@ -272,7 +283,8 @@ export default function WorkerEarningsPage() {
                         Job-by-Job Breakdown
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {data.jobs.length} completed {data.jobs.length === 1 ? 'job' : 'jobs'}
+                        {data.jobs.length} completed{" "}
+                        {data.jobs.length === 1 ? "job" : "jobs"}
                       </p>
                     </div>
                     <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
@@ -311,11 +323,16 @@ export default function WorkerEarningsPage() {
                                   <span>•</span>
                                   <div className="flex items-center gap-1">
                                     <FiClock className="h-3 w-3" />
-                                    <span>{new Date(job.date).toLocaleDateString('en-IN', { 
-                                      day: 'numeric', 
-                                      month: 'short', 
-                                      year: 'numeric' 
-                                    })}</span>
+                                    <span>
+                                      {new Date(job.date).toLocaleDateString(
+                                        "en-IN",
+                                        {
+                                          day: "numeric",
+                                          month: "short",
+                                          year: "numeric",
+                                        }
+                                      )}
+                                    </span>
                                   </div>
                                 </div>
                               </div>

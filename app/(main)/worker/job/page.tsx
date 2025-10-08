@@ -47,7 +47,9 @@ export default function WorkerJobsPage() {
   const [tab, setTab] = useState<Tab>("NEW");
   const [acting, setActing] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list" | "scroll">("scroll");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "scroll">(
+    "scroll"
+  );
 
   const load = async () => {
     setLoading(true);
@@ -353,25 +355,56 @@ export default function WorkerJobsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                         <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
-                          <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <svg
+                            className="w-4 h-4 text-blue-600 dark:text-blue-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">Date & Time</p>
-                          <p className="text-xs">{new Date(j.time).toLocaleString()}</p>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">
+                            Date & Time
+                          </p>
+                          <p className="text-xs">
+                            {new Date(j.time).toLocaleString()}
+                          </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                         <div className="w-7 h-7 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
-                          <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <svg
+                            className="w-4 h-4 text-green-600 dark:text-green-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">Location</p>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">
+                            Location
+                          </p>
                           <p className="text-xs">{j.location}</p>
                         </div>
                       </div>
@@ -380,20 +413,36 @@ export default function WorkerJobsPage() {
                     {/* Charge Section */}
                     <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <div className="w-7 h-7 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        <svg
+                          className="w-4 h-4 text-yellow-600 dark:text-yellow-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                          />
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Charge</p>
-                        <p className="text-base font-bold text-gray-900 dark:text-white">₹{j.charge.toFixed(2)}</p>
+                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Charge
+                        </p>
+                        <p className="text-base font-bold text-gray-900 dark:text-white">
+                          ₹{j.charge.toFixed(2)}
+                        </p>
                       </div>
                     </div>
 
                     {/* Details Description */}
                     {j.details && (
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
-                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Additional Details</p>
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
+                          Additional Details
+                        </p>
                         <p className="text-xs text-gray-700 dark:text-gray-200 line-clamp-2">
                           {j.details}
                         </p>
@@ -401,37 +450,45 @@ export default function WorkerJobsPage() {
                     )}
 
                     {/* Review Section */}
-                    {tab === "PREVIOUS" && j.status === "COMPLETED" && j.review && (
-                      <div className="p-2 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
-                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">Customer Review</p>
-                        <div className="flex items-center gap-1 mb-1">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <FiStar
-                              key={i}
-                              className={`h-3 w-3 ${
-                                i < j.review!.rating
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300 dark:text-gray-600"
-                              }`}
-                            />
-                          ))}
-                          <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">
-                            {j.review.rating}/5
-                          </span>
-                        </div>
-                        {j.review.comment && (
-                          <p className="text-xs text-gray-700 dark:text-gray-200 italic line-clamp-2">
-                            "{j.review.comment}"
+                    {tab === "PREVIOUS" &&
+                      j.status === "COMPLETED" &&
+                      j.review && (
+                        <div className="p-2 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+                          <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">
+                            Customer Review
                           </p>
-                        )}
-                      </div>
-                    )}
+                          <div className="flex items-center gap-1 mb-1">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <FiStar
+                                key={i}
+                                className={`h-3 w-3 ${
+                                  i < j.review!.rating
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-gray-300 dark:text-gray-600"
+                                }`}
+                              />
+                            ))}
+                            <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">
+                              {j.review.rating}/5
+                            </span>
+                          </div>
+                          {j.review.comment && (
+                            <p className="text-xs text-gray-700 dark:text-gray-200 italic line-clamp-2">
+                              &quot;{j.review.comment}&quot;
+                            </p>
+                          )}
+                        </div>
+                      )}
                   </div>
 
                   {/* Action Buttons Section */}
                   {tab === "NEW" && j.status === "PENDING" && (
                     <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 flex gap-2">
-                      <ClickSpark sparkColor="#22c55e" sparkCount={10} sparkRadius={20}>
+                      <ClickSpark
+                        sparkColor="#22c55e"
+                        sparkCount={10}
+                        sparkRadius={20}
+                      >
                         <Button
                           disabled={acting === j.id}
                           onClick={() => act(j.id, "ACCEPT")}
@@ -453,7 +510,13 @@ export default function WorkerJobsPage() {
               )}
             />
           ) : (
-            <div className={viewMode === "grid" ? "grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" : "space-y-4"}>
+            <div
+              className={
+                viewMode === "grid"
+                  ? "grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+                  : "space-y-4"
+              }
+            >
               {list.map((j) => (
                 <Card
                   key={j.id}
@@ -494,25 +557,56 @@ export default function WorkerJobsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                         <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                          <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <svg
+                            className="w-4 h-4 text-blue-600 dark:text-blue-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">Date & Time</p>
-                          <p className="text-xs">{new Date(j.time).toLocaleString()}</p>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">
+                            Date & Time
+                          </p>
+                          <p className="text-xs">
+                            {new Date(j.time).toLocaleString()}
+                          </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                         <div className="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
-                          <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <svg
+                            className="w-4 h-4 text-green-600 dark:text-green-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">Location</p>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">
+                            Location
+                          </p>
                           <p className="text-xs">{j.location}</p>
                         </div>
                       </div>
@@ -521,20 +615,36 @@ export default function WorkerJobsPage() {
                     {/* Charge Section */}
                     <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <div className="w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        <svg
+                          className="w-4 h-4 text-yellow-600 dark:text-yellow-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                          />
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Charge</p>
-                        <p className="text-lg font-bold text-gray-900 dark:text-white">₹{j.charge.toFixed(2)}</p>
+                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Charge
+                        </p>
+                        <p className="text-lg font-bold text-gray-900 dark:text-white">
+                          ₹{j.charge.toFixed(2)}
+                        </p>
                       </div>
                     </div>
 
                     {/* Details Description */}
                     {j.details && (
                       <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
-                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Additional Details</p>
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
+                          Additional Details
+                        </p>
                         <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2">
                           {j.details}
                         </p>
@@ -542,31 +652,35 @@ export default function WorkerJobsPage() {
                     )}
 
                     {/* Review Section */}
-                    {tab === "PREVIOUS" && j.status === "COMPLETED" && j.review && (
-                      <div className="p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
-                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">Customer Review</p>
-                        <div className="flex items-center gap-1 mb-1">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <FiStar
-                              key={i}
-                              className={`h-3 w-3 ${
-                                i < j.review!.rating
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300 dark:text-gray-600"
-                              }`}
-                            />
-                          ))}
-                          <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">
-                            {j.review.rating}/5
-                          </span>
-                        </div>
-                        {j.review.comment && (
-                          <p className="text-xs text-gray-700 dark:text-gray-200 italic line-clamp-2">
-                            "{j.review.comment}"
+                    {tab === "PREVIOUS" &&
+                      j.status === "COMPLETED" &&
+                      j.review && (
+                        <div className="p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+                          <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">
+                            Customer Review
                           </p>
-                        )}
-                      </div>
-                    )}
+                          <div className="flex items-center gap-1 mb-1">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <FiStar
+                                key={i}
+                                className={`h-3 w-3 ${
+                                  i < j.review!.rating
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "text-gray-300 dark:text-gray-600"
+                                }`}
+                              />
+                            ))}
+                            <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">
+                              {j.review.rating}/5
+                            </span>
+                          </div>
+                          {j.review.comment && (
+                            <p className="text-xs text-gray-700 dark:text-gray-200 italic line-clamp-2">
+                              &quot;{j.review.comment}&quot;
+                            </p>
+                          )}
+                        </div>
+                      )}
                   </div>
 
                   {/* Action Buttons Section */}
