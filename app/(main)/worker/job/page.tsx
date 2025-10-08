@@ -3,7 +3,27 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import ScrollList from "@/components/ui/scroll-list";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FiCalendar,
+  FiMapPin,
+  FiUser,
+  FiDollarSign,
+  FiClock,
+  FiStar,
+  FiSearch,
+  FiFilter,
+  FiCheck,
+  FiX,
+  FiAlertCircle,
+  FiPlay,
+  FiGrid,
+  FiList,
+  FiTrendingUp,
+  FiBriefcase,
+} from "react-icons/fi";
 
 type Job = {
   id: string;
@@ -18,10 +38,15 @@ type Job = {
   review?: { rating: number; comment: string | null } | null;
 };
 
+type Tab = "NEW" | "PREVIOUS";
+
 export default function WorkerJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"NEW" | "PREVIOUS">("NEW");
+  const [tab, setTab] = useState<Tab>("NEW");
+  const [acting, setActing] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "scroll">("scroll");
 
   const load = async () => {
     setLoading(true);
@@ -43,14 +68,20 @@ export default function WorkerJobsPage() {
   }, []);
 
   const act = async (id: string, action: "ACCEPT" | "REJECT") => {
-    const res = await fetch(`/api/jobs/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
-    });
-    if (res.ok) load();
+    setActing(id);
+    try {
+      const res = await fetch(`/api/jobs/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      if (res.ok) await load();
+    } finally {
+      setActing(null);
+    }
   };
 
+  // Filter and search logic
   const newJobs = jobs.filter(
     (j) =>
       j.status === "PENDING" ||
@@ -60,146 +91,506 @@ export default function WorkerJobsPage() {
   const previousJobs = jobs.filter(
     (j) => j.status === "COMPLETED" || j.status === "CANCELLED"
   );
-  const list = tab === "NEW" ? newJobs : previousJobs;
+
+  const currentList = tab === "NEW" ? newJobs : previousJobs;
+  const filteredList = currentList.filter(
+    (job) =>
+      job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Status configuration
+  const getStatusConfig = (status: Job["status"]) => {
+    switch (status) {
+      case "PENDING":
+        return {
+          label: "Pending",
+          color: "bg-orange-500",
+          bgColor: "bg-orange-50 dark:bg-orange-900/20",
+          textColor: "text-orange-700 dark:text-orange-300",
+          icon: FiAlertCircle,
+        };
+      case "ACCEPTED":
+        return {
+          label: "Accepted",
+          color: "bg-blue-500",
+          bgColor: "bg-blue-50 dark:bg-blue-900/20",
+          textColor: "text-blue-700 dark:text-blue-300",
+          icon: FiCheck,
+        };
+      case "IN_PROGRESS":
+        return {
+          label: "In Progress",
+          color: "bg-purple-500",
+          bgColor: "bg-purple-50 dark:bg-purple-900/20",
+          textColor: "text-purple-700 dark:text-purple-300",
+          icon: FiPlay,
+        };
+      case "COMPLETED":
+        return {
+          label: "Completed",
+          color: "bg-green-500",
+          bgColor: "bg-green-50 dark:bg-green-900/20",
+          textColor: "text-green-700 dark:text-green-300",
+          icon: FiCheck,
+        };
+      case "CANCELLED":
+        return {
+          label: "Cancelled",
+          color: "bg-red-500",
+          bgColor: "bg-red-50 dark:bg-red-900/20",
+          textColor: "text-red-700 dark:text-red-300",
+          icon: FiX,
+        };
+    }
+  };
+
+  // Skeleton loader component
+  const SkeletonCard = () => (
+    <Card className="p-6 animate-pulse">
+      <div className="flex items-start justify-between mb-4">
+        <div className="space-y-2">
+          <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+        </div>
+        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+      </div>
+      <div className="space-y-3">
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+      </div>
+    </Card>
+  );
+
+  // Empty state component
+  const EmptyState = ({ type }: { type: "new" | "previous" }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="text-center py-16"
+    >
+      <div className="h-32 w-32 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
+        <FiBriefcase className="h-16 w-16 text-gray-400" />
+      </div>
+      <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+        No {type} jobs
+      </h3>
+      <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+        {type === "new"
+          ? "You don't have any active job requests at the moment. New opportunities will appear here."
+          : "Your completed and cancelled jobs will appear here."}
+      </p>
+    </motion.div>
+  );
+
+  const list = filteredList;
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
-      <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-          <h1 className="text-3xl font-light text-white">Jobs</h1>
-          <div
-            className="flex gap-2"
-            role="tablist"
-            aria-label="Worker Job Tabs"
-          >
-            <Badge
-              role="tab"
-              aria-selected={tab === "NEW"}
-              tabIndex={0}
-              onClick={() => setTab("NEW")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setTab("NEW");
-                }
-              }}
-              className={`cursor-pointer px-4 py-2 text-sm ${
-                tab === "NEW"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-700 text-gray-200 hover:bg-gray-600"
-              }`}
-            >
-              New ({newJobs.length})
-            </Badge>
-            <Badge
-              role="tab"
-              aria-selected={tab === "PREVIOUS"}
-              tabIndex={0}
-              onClick={() => setTab("PREVIOUS")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setTab("PREVIOUS");
-                }
-              }}
-              className={`cursor-pointer px-4 py-2 text-sm ${
-                tab === "PREVIOUS"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-700 text-gray-200 hover:bg-gray-600"
-              }`}
-            >
-              Previous ({previousJobs.length})
-            </Badge>
+    <main className="min-h-screen bg-gray-50 dark:bg-black">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
+            My Jobs
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Manage and track your job requests
+          </p>
+        </div>
+
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          {/* Segmented Control Tabs */}
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1 flex">
+            {(["NEW", "PREVIOUS"] as Tab[]).map((tabOption) => (
+              <button
+                key={tabOption}
+                onClick={() => setTab(tabOption)}
+                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  tab === tabOption
+                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                {tabOption === "NEW" ? "New" : "Previous"}
+                <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+                  {tabOption === "NEW" ? newJobs.length : previousJobs.length}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full sm:w-80">
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search jobs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+            />
           </div>
         </div>
-        {loading ? (
-          <div className="text-gray-400">Loading…</div>
-        ) : list.length === 0 ? (
-          <div className="text-gray-400">
-            No {tab === "NEW" ? "new" : "previous"} jobs.
+
+        {/* View Mode Toggle */}
+        <div className="flex justify-end mb-6">
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "grid"
+                  ? "bg-white dark:bg-gray-700 shadow-sm"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+              title="Grid View"
+            >
+              <FiGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "list"
+                  ? "bg-white dark:bg-gray-700 shadow-sm"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+              title="List View"
+            >
+              <FiList className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("scroll")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "scroll"
+                  ? "bg-white dark:bg-gray-700 shadow-sm"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+              title="Scroll View"
+            >
+              <FiTrendingUp className="h-4 w-4" />
+            </button>
           </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {list.map((j) => (
-              <Card
-                key={j.id}
-                className="border-gray-800 bg-gray-800/50 p-5 flex flex-col"
-              >
-                <div className="flex-1">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="text-white font-medium">
-                      {j.description}
+        </div>
+
+        {/* Content */}
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </motion.div>
+          ) : list.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {searchQuery ? (
+                <div className="text-center py-16">
+                  <FiSearch className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    No results found
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Try adjusting your search terms
+                  </p>
+                </div>
+              ) : (
+                <EmptyState type={tab === "NEW" ? "new" : "previous"} />
+              )}
+            </motion.div>
+          ) : viewMode === "scroll" ? (
+            <ScrollList
+              data={list || []}
+              itemHeight={320}
+              renderItem={(j, index) => (
+                <Card
+                  key={j.id}
+                  className="p-4 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 w-full max-w-4xl mx-auto flex flex-col overflow-hidden"
+                >
+                  {/* Header Section */}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+                        {j.description}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Customer: {j.customer?.name || "Customer"}
+                      </p>
                     </div>
                     <span
-                      className={`text-xs px-2 py-1 rounded border ${
+                      className={`text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap ${
                         j.status === "ACCEPTED"
-                          ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                          ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
                           : j.status === "PENDING"
-                          ? "bg-yellow-500/10 text-yellow-300 border-yellow-500/30"
+                          ? "bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300"
+                          : j.status === "IN_PROGRESS"
+                          ? "bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300"
                           : j.status === "COMPLETED"
-                          ? "bg-blue-500/10 text-blue-300 border-blue-500/30"
+                          ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
                           : j.status === "CANCELLED"
-                          ? "bg-red-500/10 text-red-300 border-red-500/30"
-                          : "bg-gray-600/20 text-gray-300 border-gray-600/40"
+                          ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                          : "bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                       }`}
                     >
                       {j.status}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-400 mt-1">
-                    Customer: {j.customer?.name || "Customer"}
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    At: {new Date(j.time).toLocaleString()}
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    Location: {j.location}
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    Charge: ₹{j.charge.toFixed(2)}
-                  </div>
-                  {j.details && (
-                    <div className="text-sm text-gray-300 mt-2 line-clamp-3">
-                      {j.details}
+
+                  {/* Details Section */}
+                  <div className="flex-1 space-y-2">
+                    {/* Time and Location Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">Date & Time</p>
+                          <p className="text-xs">{new Date(j.time).toLocaleString()}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        <div className="w-7 h-7 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">Location</p>
+                          <p className="text-xs">{j.location}</p>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  {tab === "PREVIOUS" &&
-                    j.status === "COMPLETED" &&
-                    j.review && (
-                      <div className="mt-3 text-xs text-gray-300 flex flex-col gap-1">
-                        <span className="inline-flex items-center gap-1">
-                          Rating: {"★".repeat(j.review.rating)}
-                          {"☆".repeat(5 - j.review.rating)}
-                        </span>
-                        {j.review.comment && (
-                          <span className="line-clamp-2 italic text-gray-400">
-                            “{j.review.comment}”
+
+                    {/* Charge Section */}
+                    <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div className="w-7 h-7 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Charge</p>
+                        <p className="text-base font-bold text-gray-900 dark:text-white">₹{j.charge.toFixed(2)}</p>
+                      </div>
+                    </div>
+
+                    {/* Details Description */}
+                    {j.details && (
+                      <div className="p-2 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Additional Details</p>
+                        <p className="text-xs text-gray-700 dark:text-gray-200 line-clamp-2">
+                          {j.details}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Review Section */}
+                    {tab === "PREVIOUS" && j.status === "COMPLETED" && j.review && (
+                      <div className="p-2 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">Customer Review</p>
+                        <div className="flex items-center gap-1 mb-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <FiStar
+                              key={i}
+                              className={`h-3 w-3 ${
+                                i < j.review!.rating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300 dark:text-gray-600"
+                              }`}
+                            />
+                          ))}
+                          <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">
+                            {j.review.rating}/5
                           </span>
+                        </div>
+                        {j.review.comment && (
+                          <p className="text-xs text-gray-700 dark:text-gray-200 italic line-clamp-2">
+                            "{j.review.comment}"
+                          </p>
                         )}
                       </div>
                     )}
-                </div>
-                {tab === "NEW" && j.status === "PENDING" && (
-                  <div className="mt-4 flex gap-2">
-                    <Button
-                      onClick={() => act(j.id, "ACCEPT")}
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white flex-1"
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      onClick={() => act(j.id, "REJECT")}
-                      className="bg-red-600 hover:bg-red-500 text-white flex-1"
-                    >
-                      Reject
-                    </Button>
                   </div>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
+
+                  {/* Action Buttons Section */}
+                  {tab === "NEW" && j.status === "PENDING" && (
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 flex gap-2">
+                      <Button
+                        disabled={acting === j.id}
+                        onClick={() => act(j.id, "ACCEPT")}
+                        className="bg-green-600 hover:bg-green-500 text-white flex-1"
+                      >
+                        {acting === j.id ? "Processing..." : "Accept"}
+                      </Button>
+                      <Button
+                        disabled={acting === j.id}
+                        onClick={() => act(j.id, "REJECT")}
+                        className="bg-red-600 hover:bg-red-500 text-white flex-1"
+                      >
+                        {acting === j.id ? "Processing..." : "Reject"}
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              )}
+            />
+          ) : (
+            <div className={viewMode === "grid" ? "grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" : "space-y-4"}>
+              {list.map((j) => (
+                <Card
+                  key={j.id}
+                  className="p-5 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex flex-col h-full min-h-[300px]"
+                >
+                  {/* Header Section */}
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+                        {j.description}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Customer: {j.customer?.name || "Customer"}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap ${
+                        j.status === "ACCEPTED"
+                          ? "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
+                          : j.status === "PENDING"
+                          ? "bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300"
+                          : j.status === "IN_PROGRESS"
+                          ? "bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300"
+                          : j.status === "COMPLETED"
+                          ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                          : j.status === "CANCELLED"
+                          ? "bg-red-50 text-red-700 dark:text-red-300"
+                          : "bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      {j.status}
+                    </span>
+                  </div>
+
+                  {/* Details Section */}
+                  <div className="flex-1 space-y-3">
+                    {/* Time and Location Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+                          <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">Date & Time</p>
+                          <p className="text-xs">{new Date(j.time).toLocaleString()}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        <div className="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
+                          <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs">Location</p>
+                          <p className="text-xs">{j.location}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Charge Section */}
+                    <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div className="w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center">
+                        <svg className="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Charge</p>
+                        <p className="text-lg font-bold text-gray-900 dark:text-white">₹{j.charge.toFixed(2)}</p>
+                      </div>
+                    </div>
+
+                    {/* Details Description */}
+                    {j.details && (
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Additional Details</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2">
+                          {j.details}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Review Section */}
+                    {tab === "PREVIOUS" && j.status === "COMPLETED" && j.review && (
+                      <div className="p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">Customer Review</p>
+                        <div className="flex items-center gap-1 mb-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <FiStar
+                              key={i}
+                              className={`h-3 w-3 ${
+                                i < j.review!.rating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300 dark:text-gray-600"
+                              }`}
+                            />
+                          ))}
+                          <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">
+                            {j.review.rating}/5
+                          </span>
+                        </div>
+                        {j.review.comment && (
+                          <p className="text-xs text-gray-700 dark:text-gray-200 italic line-clamp-2">
+                            "{j.review.comment}"
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons Section */}
+                  {tab === "NEW" && j.status === "PENDING" && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 flex gap-2">
+                      <Button
+                        disabled={acting === j.id}
+                        onClick={() => act(j.id, "ACCEPT")}
+                        className="bg-green-600 hover:bg-green-500 text-white flex-1"
+                      >
+                        {acting === j.id ? "Processing..." : "Accept"}
+                      </Button>
+                      <Button
+                        disabled={acting === j.id}
+                        onClick={() => act(j.id, "REJECT")}
+                        className="bg-red-600 hover:bg-red-500 text-white flex-1"
+                      >
+                        {acting === j.id ? "Processing..." : "Reject"}
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
     </main>
   );
 }
