@@ -13,6 +13,7 @@ import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
 import { useLocation } from "@/hooks/use-location";
 import { Button as UIButton } from "@/components/ui/button";
 import { formatDisplayAddress } from "@/lib/location";
+import ClickSpark from "@/components/ClickSpark";
 
 export default function CustomerDetailsPage() {
   const router = useRouter();
@@ -191,16 +192,18 @@ export default function CustomerDetailsPage() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
-              >
-                {isLoading ? (
-                  <Loader2 className="animate-spin h-4 w-4 mr-2" />
-                ) : null}
-                Continue to Preview
-              </Button>
+              <ClickSpark sparkColor="#22c55e" sparkCount={12} sparkRadius={25}>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {isLoading ? (
+                    <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                  ) : null}
+                  Continue to Preview
+                </Button>
+              </ClickSpark>
             </form>
           </CardContent>
         </Card>

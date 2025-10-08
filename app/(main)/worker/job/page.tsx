@@ -24,6 +24,7 @@ import {
   FiTrendingUp,
   FiBriefcase,
 } from "react-icons/fi";
+import ClickSpark from "@/components/ClickSpark";
 
 type Job = {
   id: string;
@@ -430,13 +431,15 @@ export default function WorkerJobsPage() {
                   {/* Action Buttons Section */}
                   {tab === "NEW" && j.status === "PENDING" && (
                     <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 flex gap-2">
-                      <Button
-                        disabled={acting === j.id}
-                        onClick={() => act(j.id, "ACCEPT")}
-                        className="bg-green-600 hover:bg-green-500 text-white flex-1"
-                      >
-                        {acting === j.id ? "Processing..." : "Accept"}
-                      </Button>
+                      <ClickSpark sparkColor="#22c55e" sparkCount={10} sparkRadius={20}>
+                        <Button
+                          disabled={acting === j.id}
+                          onClick={() => act(j.id, "ACCEPT")}
+                          className="bg-green-600 hover:bg-green-500 text-white flex-1"
+                        >
+                          {acting === j.id ? "Processing..." : "Accept"}
+                        </Button>
+                      </ClickSpark>
                       <Button
                         disabled={acting === j.id}
                         onClick={() => act(j.id, "REJECT")}

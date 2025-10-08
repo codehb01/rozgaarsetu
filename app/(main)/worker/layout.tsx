@@ -19,7 +19,7 @@ export default function WorkerLayout({
   // Show loading state while auth is loading
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
         <div className="text-gray-500 dark:text-gray-400">Loading...</div>
       </div>
     );
@@ -28,14 +28,14 @@ export default function WorkerLayout({
   // Redirect if not authenticated (this will be handled by Clerk middleware)
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
         <div className="text-gray-500 dark:text-gray-400">Please sign in to access worker dashboard.</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
       {/* Fixed Sidebar for desktop */}
       <div className="hidden lg:block">
         <WorkerSidebar 
@@ -67,10 +67,10 @@ export default function WorkerLayout({
       </div>
 
       {/* Main content with conditional margin based on sidebar state */}
-      <main className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-all duration-300 ${
+      <main className={`min-h-screen bg-gray-50 dark:bg-black transition-all duration-300 ${
         desktopSidebarOpen ? "lg:ml-64" : "lg:ml-16"
       }`}>
-        <div className="px-4 py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-6 lg:px-8 pt-16 lg:pt-6">
           {children}
         </div>
       </main>

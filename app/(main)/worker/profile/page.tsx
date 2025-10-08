@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "@/components/ui/file-dropzone";
+import StaggeredDropDown from "@/components/ui/staggered-dropdown";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiUser,
@@ -30,8 +31,10 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiPlus,
+  FiNavigation,
 } from "react-icons/fi";
 import { getCurrentUser } from "@/app/api/actions/onboarding";
+import ClickSpark from "@/components/ClickSpark";
 
 // Qualification options from onboarding
 const qualificationOptions = [
@@ -112,8 +115,8 @@ export default function WorkerProfilePage() {
   });
   const [uploadingProject, setUploadingProject] = useState(false);
   const [customSkill, setCustomSkill] = useState("");
-  const [qualificationDropdownOpen, setQualificationDropdownOpen] = useState(false);
   const [customQualification, setCustomQualification] = useState("");
+  const [fetchingLocation, setFetchingLocation] = useState(false);
 
   // Helper function to safely get image URL from potentially stringified JSON
   const parseImageUrl = (imageField: string | null | undefined): string | null => {
@@ -169,12 +172,75 @@ export default function WorkerProfilePage() {
 
   const handleQualificationChange = (value: string) => {
     if (value === "other") {
-      setQualificationDropdownOpen(false);
       // User will enter custom qualification
     } else {
       const option = qualificationOptions.find(opt => opt.value === value);
       setEditedProfile({ ...editedProfile, qualification: option?.label || value });
-      setQualificationDropdownOpen(false);
+    }
+  };
+
+  const handleGetCurrentLocation = async () => {
+    setFetchingLocation(true);
+    try {
+      // Check if geolocation is supported
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+      }
+
+      // Get current position
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+
+      const { latitude, longitude } = position.coords;
+
+      // Reverse geocode to get address
+      const response = await fetch(
+        `/api/reverse-geocode?lat=${latitude}&lng=${longitude}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to get address from coordinates");
+      }
+
+      const data = await response.json();
+      const result = data.result;
+
+      if (!result) {
+        throw new Error("No address found for this location");
+      }
+
+      // Update address fields from the geocoded result
+      setEditedProfile({
+        ...editedProfile,
+        address: result.address?.line1 || result.displayName || "",
+        city: result.address?.city || "",
+        state: result.address?.state || "",
+        postalCode: result.address?.postalCode || "",
+        country: result.address?.country || "India",
+        latitude,
+        longitude,
+      });
+    } catch (error) {
+      console.error("Error getting location:", error);
+      if (error instanceof GeolocationPositionError) {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert("Location permission denied. Please enable location access in your browser settings.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert("Location information unavailable.");
+            break;
+          case error.TIMEOUT:
+            alert("Location request timed out.");
+            break;
+        }
+      } else {
+        alert("Failed to get current location. Please try again.");
+      }
+    } finally {
+      setFetchingLocation(false);
     }
   };
 
@@ -368,14 +434,16 @@ export default function WorkerProfilePage() {
             </Button>
           ) : (
             <div className="flex gap-2">
-              <Button
-                onClick={handleSave}
-                disabled={saving}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <FiSave className="mr-2 h-4 w-4" />
-                {saving ? "Saving..." : "Save"}
-              </Button>
+              <ClickSpark sparkColor="#22c55e" sparkCount={10} sparkRadius={20}>
+                <Button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <FiSave className="mr-2 h-4 w-4" />
+                  {saving ? "Saving..." : "Save"}
+                </Button>
+              </ClickSpark>
               <Button
                 onClick={handleCancel}
                 variant="outline"
@@ -400,7 +468,7 @@ export default function WorkerProfilePage() {
               >
                 {/* Profile Picture */}
                 <div className="relative inline-block mb-4">
-                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-blue-100 dark:border-blue-900">
+                  <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center border-4 border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-gray-900">
                     {parseImageUrl(profile.profilePic) || user?.imageUrl ? (
                       <Image
                         src={parseImageUrl(profile.profilePic) || user?.imageUrl || ""}
@@ -409,12 +477,22 @@ export default function WorkerProfilePage() {
                         height={128}
                         className="object-cover w-full h-full"
                         onError={(e) => {
-                          // Hide broken image and show fallback
-                          e.currentTarget.style.display = 'none';
+                          // Show initials avatar on error
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent && !parent.querySelector('.initials-avatar')) {
+                            const initialsDiv = document.createElement('div');
+                            initialsDiv.className = 'initials-avatar text-blue-500 dark:text-blue-400 text-4xl font-bold flex items-center justify-center w-full h-full';
+                            initialsDiv.textContent = data.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+                            parent.appendChild(initialsDiv);
+                          }
                         }}
                       />
                     ) : (
-                      <FiUser className="h-16 w-16 text-gray-400" />
+                      <div className="text-blue-500 dark:text-blue-400 text-4xl font-bold">
+                        {data.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+                      </div>
                     )}
                   </div>
                   {isEditing && (
@@ -534,7 +612,7 @@ export default function WorkerProfilePage() {
                           setEditedProfile({ ...editedProfile, bio: e.target.value })
                         }
                         placeholder="Tell customers about yourself and your work..."
-                        className="min-h-32 bg-gray-50 dark:bg-gray-900"
+                        className="min-h-32 bg-gray-50 dark:bg-black"
                         rows={4}
                       />
                     ) : (
@@ -586,7 +664,7 @@ export default function WorkerProfilePage() {
                             value={customSkill}
                             onChange={(e) => setCustomSkill(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addCustomSkill()}
-                            className="bg-gray-50 dark:bg-gray-900"
+                            className="bg-gray-50 dark:bg-black"
                           />
                           <Button
                             type="button"
@@ -657,7 +735,7 @@ export default function WorkerProfilePage() {
                             })
                           }
                           placeholder="Enter hourly rate"
-                          className="bg-gray-50 dark:bg-gray-900"
+                          className="bg-gray-50 dark:bg-black"
                         />
                       ) : (
                         <div className="text-3xl font-bold text-green-600 dark:text-green-400">
@@ -673,7 +751,7 @@ export default function WorkerProfilePage() {
 
                     <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                       <div className="flex items-center gap-2 mb-4">
-                        <FiDollarSign className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                        <FiDollarSign className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           Minimum Fee
                         </h3>
@@ -689,10 +767,10 @@ export default function WorkerProfilePage() {
                             })
                           }
                           placeholder="Enter minimum fee"
-                          className="bg-gray-50 dark:bg-gray-900"
+                          className="bg-gray-50 dark:bg-black"
                         />
                       ) : (
-                        <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+                        <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                           ₹{profile.minimumFee?.toFixed(2) || "Not set"}
                         </div>
                       )}
@@ -710,33 +788,12 @@ export default function WorkerProfilePage() {
                       </div>
                       {isEditing ? (
                         <div className="space-y-3">
-                          <div className="relative">
-                            <button
-                              type="button"
-                              onClick={() => setQualificationDropdownOpen(!qualificationDropdownOpen)}
-                              className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-all"
-                            >
-                              <span className="text-gray-900 dark:text-white">
-                                {editedProfile.qualification || "Select qualification"}
-                              </span>
-                              <FiCheckCircle className={`h-4 w-4 transition-transform ${qualificationDropdownOpen ? 'rotate-180' : ''}`} />
-                            </button>
-                            
-                            {qualificationDropdownOpen && (
-                              <div className="absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                {qualificationOptions.map((option) => (
-                                  <button
-                                    key={option.value}
-                                    type="button"
-                                    onClick={() => handleQualificationChange(option.value)}
-                                    className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors"
-                                  >
-                                    {option.label}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                          <StaggeredDropDown
+                            items={qualificationOptions}
+                            selected={editedProfile.qualification || ""}
+                            onSelect={handleQualificationChange}
+                            label={editedProfile.qualification || "Select qualification"}
+                          />
                           
                           {editedProfile.qualification === "Other (Enter Manually)" && (
                             <Input
@@ -746,7 +803,7 @@ export default function WorkerProfilePage() {
                                 setEditedProfile({ ...editedProfile, qualification: e.target.value });
                               }}
                               placeholder="Enter your qualification"
-                              className="bg-gray-50 dark:bg-gray-900"
+                              className="bg-gray-50 dark:bg-black"
                             />
                           )}
                         </div>
@@ -775,7 +832,7 @@ export default function WorkerProfilePage() {
                             })
                           }
                           placeholder="Years of experience"
-                          className="bg-gray-50 dark:bg-gray-900"
+                          className="bg-gray-50 dark:bg-black"
                         />
                       ) : (
                         <p className="text-gray-700 dark:text-gray-300">
@@ -789,11 +846,25 @@ export default function WorkerProfilePage() {
 
                   {/* Address */}
                   <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-2 mb-4">
-                      <FiMapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        Address
-                      </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <FiMapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          Address
+                        </h3>
+                      </div>
+                      {isEditing && (
+                        <Button
+                          onClick={handleGetCurrentLocation}
+                          disabled={fetchingLocation}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <FiNavigation className={`h-4 w-4 ${fetchingLocation ? 'animate-spin' : ''}`} />
+                          {fetchingLocation ? "Getting location..." : "Use Current Location"}
+                        </Button>
+                      )}
                     </div>
                     {isEditing ? (
                       <div className="space-y-4">
@@ -810,7 +881,7 @@ export default function WorkerProfilePage() {
                               })
                             }
                             placeholder="Enter street address"
-                            className="bg-gray-50 dark:bg-gray-900"
+                            className="bg-gray-50 dark:bg-black"
                             rows={2}
                           />
                         </div>
@@ -829,7 +900,7 @@ export default function WorkerProfilePage() {
                                 })
                               }
                               placeholder="City"
-                              className="bg-gray-50 dark:bg-gray-900"
+                              className="bg-gray-50 dark:bg-black"
                             />
                           </div>
                           
@@ -846,7 +917,7 @@ export default function WorkerProfilePage() {
                                 })
                               }
                               placeholder="State"
-                              className="bg-gray-50 dark:bg-gray-900"
+                              className="bg-gray-50 dark:bg-black"
                             />
                           </div>
                         </div>
@@ -865,7 +936,7 @@ export default function WorkerProfilePage() {
                                 })
                               }
                               placeholder="Postal Code"
-                              className="bg-gray-50 dark:bg-gray-900"
+                              className="bg-gray-50 dark:bg-black"
                             />
                           </div>
                           
@@ -882,7 +953,7 @@ export default function WorkerProfilePage() {
                                 })
                               }
                               placeholder="Country"
-                              className="bg-gray-50 dark:bg-gray-900"
+                              className="bg-gray-50 dark:bg-black"
                             />
                           </div>
                         </div>
@@ -919,13 +990,15 @@ export default function WorkerProfilePage() {
                           {profile.previousWorks?.length || 0} projects completed
                         </p>
                       </div>
-                      <Button 
-                        onClick={() => setShowAddForm(true)}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        <FiPlus className="mr-2 h-4 w-4" />
-                        Add Project
-                      </Button>
+                      <ClickSpark sparkColor="#60a5fa" sparkCount={10} sparkRadius={20}>
+                        <Button 
+                          onClick={() => setShowAddForm(true)}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          <FiPlus className="mr-2 h-4 w-4" />
+                          Add Project
+                        </Button>
+                      </ClickSpark>
                     </div>
                   )}
 
@@ -1033,23 +1106,25 @@ export default function WorkerProfilePage() {
                               >
                                 Cancel
                               </Button>
-                              <Button
-                                onClick={handleAddProject}
-                                disabled={uploadingProject || !newWork.title.trim() || newWork.images.length === 0}
-                                className="bg-blue-600 hover:bg-blue-700"
-                              >
-                                {uploadingProject ? (
-                                  <>
-                                    <FiImage className="mr-2 h-4 w-4 animate-spin" />
-                                    Adding...
-                                  </>
-                                ) : (
-                                  <>
-                                    <FiCheckCircle className="mr-2 h-4 w-4" />
-                                    Add Project
-                                  </>
-                                )}
-                              </Button>
+                              <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+                                <Button
+                                  onClick={handleAddProject}
+                                  disabled={uploadingProject || !newWork.title.trim() || newWork.images.length === 0}
+                                  className="bg-blue-600 hover:bg-blue-700"
+                                >
+                                  {uploadingProject ? (
+                                    <>
+                                      <FiImage className="mr-2 h-4 w-4 animate-spin" />
+                                      Adding...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <FiCheckCircle className="mr-2 h-4 w-4" />
+                                      Add Project
+                                    </>
+                                  )}
+                                </Button>
+                              </ClickSpark>
                             </div>
                           </div>
                         </Card>

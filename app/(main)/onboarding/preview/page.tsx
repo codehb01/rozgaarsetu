@@ -24,6 +24,7 @@ import useFetch from "@/hooks/use-fetch";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { useUser } from "@clerk/nextjs";
+import ClickSpark from "@/components/ClickSpark";
 
 // Profile Image Component with fallback
 function ProfileImage({
@@ -293,7 +294,7 @@ export default function PreviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
       <div className="container mx-auto px-4 py-6 md:py-10">
         <div className="max-w-5xl mx-auto">
           {/* Header Section */}
@@ -352,7 +353,7 @@ export default function PreviewPage() {
                       transition={{ type: "spring", stiffness: 300 }}
                     >
                       <div className="relative">
-                        <div className="w-28 h-28 md:w-32 md:h-32 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center overflow-hidden shadow-lg ring-4 ring-white dark:ring-gray-700">
+                        <div className="w-28 h-28 md:w-32 md:h-32 bg-blue-50 dark:bg-blue-950/20 rounded-full flex items-center justify-center overflow-hidden shadow-lg ring-4 ring-white dark:ring-gray-800">
                           <ProfileImage
                             src={workerDetails.profilePic}
                             alt="Profile"
@@ -449,7 +450,7 @@ export default function PreviewPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.9 }}
                       >
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 rounded-xl p-4 md:p-5 border border-blue-200/50 dark:border-blue-800/30 hover:shadow-lg transition-all">
+                        <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-4 md:p-5 border border-blue-200/50 dark:border-blue-800/30 hover:shadow-lg transition-all">
                           <h4 className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1 flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             Hourly Rate
@@ -459,7 +460,7 @@ export default function PreviewPage() {
                             <span className="text-sm font-normal text-blue-600 dark:text-blue-400">/hr</span>
                           </p>
                         </div>
-                        <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20 rounded-xl p-4 md:p-5 border border-purple-200/50 dark:border-purple-800/30 hover:shadow-lg transition-all">
+                        <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-4 md:p-5 border border-purple-200/50 dark:border-purple-800/30 hover:shadow-lg transition-all">
                           <h4 className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1 flex items-center gap-1">
                             <Award className="h-3 w-3" />
                             Minimum Fee
@@ -503,7 +504,7 @@ export default function PreviewPage() {
                           whileHover={{ scale: 1.03, y: -5 }}
                           className="group"
                         >
-                          <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-gray-700/30 dark:to-gray-800/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-xl transition-all duration-300 h-full">
+                          <div className="bg-gray-50 dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-xl transition-all duration-300 h-full">
                             <div className="relative overflow-hidden rounded-lg mb-4">
                               <WorkImage
                                 src={work.images && work.images.length > 0 ? work.images : (work.imageUrl || "")}
@@ -601,7 +602,7 @@ export default function PreviewPage() {
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
-                      <div className="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg ring-4 ring-white dark:ring-gray-700">
+                      <div className="w-24 h-24 md:w-28 md:h-28 bg-blue-50 dark:bg-blue-950/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg ring-4 ring-white dark:ring-gray-800">
                         <User className="h-12 w-12 md:h-14 md:w-14 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div className="absolute -bottom-2 -right-2 bg-blue-600 rounded-full p-2 shadow-lg">
@@ -639,7 +640,7 @@ export default function PreviewPage() {
                       <MapPin className="h-5 w-5 text-purple-600" />
                       Address Information
                     </h3>
-                    <div className="space-y-3 text-gray-600 dark:text-gray-400 bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-gray-700/30 dark:to-gray-800/30 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="space-y-3 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/30 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                       <p className="leading-relaxed text-sm md:text-base">{customerDetails.address}</p>
                       <p className="text-sm md:text-base">
                         {customerDetails.city}, {customerDetails.state}{" "}
@@ -666,22 +667,24 @@ export default function PreviewPage() {
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <Button
-              onClick={handleSubmit}
-              disabled={loading}
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 md:px-12 py-5 md:py-6 text-white font-semibold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 text-base md:text-lg relative overflow-hidden group"
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                {loading ? (
-                  <Loader2 className="animate-spin h-5 w-5" />
-                ) : (
-                  <Sparkles className="h-5 w-5 group-hover:rotate-12 transition-transform" />
-                )}
-                {isWorker ? "Create Worker Profile" : "Create Customer Profile"}
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity" />
-            </Button>
+            <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+              <Button
+                onClick={handleSubmit}
+                disabled={loading}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 px-8 md:px-12 py-5 md:py-6 text-white font-semibold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 text-base md:text-lg relative overflow-hidden group"
+              >
+                <span className="relative z-10 flex items-center gap-3">
+                  {loading ? (
+                    <Loader2 className="animate-spin h-5 w-5" />
+                  ) : (
+                    <Sparkles className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                  )}
+                  {isWorker ? "Create Worker Profile" : "Create Customer Profile"}
+                </span>
+                <div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-20 transition-opacity" />
+              </Button>
+            </ClickSpark>
           </motion.div>
           
           <motion.p

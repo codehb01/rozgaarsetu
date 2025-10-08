@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { FileDropzone } from "@/components/ui/file-dropzone";
+import StaggeredDropDown from "@/components/ui/staggered-dropdown";
 import { 
   Loader2, 
   ArrowLeft, 
@@ -31,6 +32,7 @@ import { useLocation } from "@/hooks/use-location";
 import { formatDisplayAddress } from "@/lib/location";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
+import ClickSpark from "@/components/ClickSpark";
 
 interface WorkerFormData {
   aadharNumber: string;
@@ -127,7 +129,6 @@ export default function WorkerDetailsPage() {
   const [selectedQualification, setSelectedQualification] = useState("");
   const [customQualification, setCustomQualification] = useState("");
   const [selectedExperience, setSelectedExperience] = useState<number | null>(null);
-  const [qualificationDropdownOpen, setQualificationDropdownOpen] = useState(false);
 
   const {
     register,
@@ -407,7 +408,7 @@ export default function WorkerDetailsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="border-2 border-gray-200/60 dark:border-gray-800/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-xl">
+            <Card className="border-2 border-gray-200/60 dark:border-gray-800/60 bg-white/80 dark:bg-black/80 backdrop-blur-sm shadow-xl">
               <CardContent className="p-6 md:p-8">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -479,51 +480,24 @@ export default function WorkerDetailsPage() {
                               Education
                             </label>
                             
-                            {/* Animated Dropdown */}
-                            <motion.div 
-                              animate={qualificationDropdownOpen ? "open" : "closed"} 
-                              className="relative"
-                            >
-                              <button
-                                type="button"
-                                onClick={() => setQualificationDropdownOpen((pv) => !pv)}
-                                className="w-full h-11 md:h-12 flex items-center justify-between px-4 border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-600 focus:border-blue-500 dark:focus:border-blue-500 rounded-lg transition-all"
-                              >
-                                <span className={`text-sm ${selectedQualification ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-                                  {selectedQualification 
-                                    ? qualificationOptions.find(q => q.value === selectedQualification)?.label 
-                                    : "Select your education level"}
-                                </span>
-                                <motion.span variants={dropdownIconVariants}>
-                                  <ChevronDown className="h-4 w-4 text-gray-500" />
-                                </motion.span>
-                              </button>
+                            {/* Staggered Dropdown */}
+                            <StaggeredDropDown
+                              items={qualificationOptions}
+                              selected={selectedQualification}
+                              onSelect={(value) => {
+                                if (value === "other") {
+                                  setSelectedQualification("");
+                                } else {
+                                  setSelectedQualification(value);
+                                  setCustomQualification("");
+                                  setValue("qualification", qualificationOptions.find(q => q.value === value)?.label || value);
+                                }
+                              }}
+                              label={selectedQualification 
+                                ? qualificationOptions.find(q => q.value === selectedQualification)?.label 
+                                : "Select your education level"}
+                            />
 
-                              <motion.ul
-                                initial={dropdownWrapperVariants.closed}
-                                variants={dropdownWrapperVariants}
-                                style={{ originY: "top" }}
-                                className="flex flex-col gap-1 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 absolute top-[110%] left-0 right-0 w-full overflow-hidden z-50"
-                              >
-                                {qualificationOptions.map((option) => (
-                                  <motion.li
-                                    key={option.value}
-                                    variants={dropdownItemVariants}
-                                    onClick={() => {
-                                      handleQualificationChange(option.value);
-                                      setQualificationDropdownOpen(false);
-                                    }}
-                                    className="flex items-center gap-2 w-full p-2 text-sm font-medium rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/30 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
-                                  >
-                                    <span>{option.label}</span>
-                                    {selectedQualification === option.value && (
-                                      <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 ml-auto" />
-                                    )}
-                                  </motion.li>
-                                ))}
-                              </motion.ul>
-                            </motion.div>
-                            
                             {selectedQualification === "other" && (
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
@@ -1152,18 +1126,20 @@ export default function WorkerDetailsPage() {
                   </Button>
 
                   {isLastStep ? (
-                    <Button
-                      type="button"
-                      onClick={handleSubmit(onSubmit)}
-                      disabled={isLoading}
-                      className="bg-blue-600 hover:bg-blue-700 text-white h-11 md:h-12 px-6 md:px-8 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20"
-                    >
-                      {isLoading ? (
-                        <Loader2 className="animate-spin h-4 w-4 mr-2" />
-                      ) : null}
-                      Complete Setup
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+                    <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+                      <Button
+                        type="button"
+                        onClick={handleSubmit(onSubmit)}
+                        disabled={isLoading}
+                        className="bg-blue-600 hover:bg-blue-700 text-white h-11 md:h-12 px-6 md:px-8 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                        ) : null}
+                        Complete Setup
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </ClickSpark>
                   ) : (
                     <Button
                       type="button"
@@ -1183,43 +1159,3 @@ export default function WorkerDetailsPage() {
     </div>
   );
 }
-
-// Dropdown animation variants
-const dropdownWrapperVariants = {
-  open: {
-    scaleY: 1,
-    transition: {
-      when: "beforeChildren",
-      staggerChildren: 0.05,
-    },
-  },
-  closed: {
-    scaleY: 0,
-    transition: {
-      when: "afterChildren",
-      staggerChildren: 0.05,
-    },
-  },
-};
-
-const dropdownIconVariants = {
-  open: { rotate: 180 },
-  closed: { rotate: 0 },
-};
-
-const dropdownItemVariants = {
-  open: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      when: "beforeChildren",
-    },
-  },
-  closed: {
-    opacity: 0,
-    y: -10,
-    transition: {
-      when: "afterChildren",
-    },
-  },
-};

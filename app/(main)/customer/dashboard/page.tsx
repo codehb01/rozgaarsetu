@@ -123,7 +123,7 @@ export default async function CustomerDashboardPage() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -139,7 +139,7 @@ export default async function CustomerDashboardPage() {
             </div>
           </Card>
           
-          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -155,7 +155,7 @@ export default async function CustomerDashboardPage() {
             </div>
           </Card>
           
-          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Star className="h-6 w-6 text-amber-600 dark:text-amber-400" />
@@ -194,7 +194,7 @@ export default async function CustomerDashboardPage() {
               aria-label={`Browse ${label}s`}
               className="group block"
             >
-              <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200 hover:-translate-y-1">
+              <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200 hover:-translate-y-1">
                 <div className="flex flex-col items-center text-center space-y-3">
                   <div className={`w-12 h-12 rounded-xl ${bgColor} flex items-center justify-center`}>
                     <Icon className={`h-6 w-6 ${color}`} />
@@ -231,7 +231,7 @@ export default async function CustomerDashboardPage() {
         </div>
 
         {workers.length === 0 ? (
-          <Card className="p-8 text-center border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+          <Card className="p-8 text-center border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="text-gray-500 dark:text-gray-400">
               <p className="text-lg font-medium">No workers available</p>
               <p className="text-sm mt-1">Check back later for new professionals</p>
@@ -242,7 +242,7 @@ export default async function CustomerDashboardPage() {
             {workers.map((worker) => (
               <Card
                 key={worker.id}
-                className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200"
+                className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200"
               >
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">

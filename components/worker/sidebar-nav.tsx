@@ -19,7 +19,6 @@ import {
   FiX,
   FiChevronsRight,
   FiChevronDown,
-  FiSearch,
   FiSun,
   FiMoon
 } from "react-icons/fi"
@@ -94,10 +93,10 @@ const Option = ({
     <Link href={href}>
       <motion.button
         layout
-        className={`relative flex h-10 w-full items-center rounded-md transition-colors ${
+        className={`relative flex h-10 w-full items-center rounded-lg transition-all duration-200 ${
           isActive 
-            ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100" 
-            : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            ? "bg-blue-50 dark:bg-gray-800/50 text-blue-600 dark:text-blue-400 shadow-sm" 
+            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/30 hover:text-gray-900 dark:hover:text-gray-200"
         }`}
       >
         <motion.div
@@ -112,7 +111,7 @@ const Option = ({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.125 }}
-            className="text-xs font-medium"
+            className="text-sm font-medium"
           >
             {title}
           </motion.span>
@@ -162,7 +161,6 @@ const ToggleClose = ({
 
 export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSidebarProps) {
   const pathname = usePathname()
-  const [searchQuery, setSearchQuery] = useState("")
   const { theme, setTheme, systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   
@@ -184,7 +182,7 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
   return (
     <motion.nav
       layout
-      className="fixed left-0 top-0 h-full shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col overflow-hidden z-40"
+      className="fixed left-0 top-0 h-full shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-black flex flex-col overflow-hidden z-40"
       style={{
         width: isOpen ? "256px" : "fit-content",
       }}
@@ -229,29 +227,8 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
         </div>
       )}
 
-      {/* Search Bar */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.125 }}
-          className="mb-4 px-4"
-        >
-          <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              type="search"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 transition-colors"
-            />
-          </div>
-        </motion.div>
-      )}
-
       {/* Navigation */}
-      <div className="flex-1 space-y-1 px-2 mb-4 overflow-hidden">
+      <div className="flex-1 space-y-2 px-3 py-4 overflow-hidden">
         {navigation.map((item) => (
           <Option
             key={item.name}
@@ -265,7 +242,7 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
       </div>
 
       {/* Secondary Navigation */}
-      <div className="space-y-1 px-2 border-t border-gray-200 dark:border-gray-700 pt-4 mb-4 overflow-hidden">
+      <div className="space-y-2 px-3 border-t border-gray-200 dark:border-gray-700 pt-4 pb-4 overflow-hidden">
         {secondaryNavigation.map((item) => (
           <Option
             key={item.name}
@@ -320,7 +297,7 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
                   appearance={{
                     elements: {
                       avatarBox: "w-8 h-8 rounded-full ring-1 ring-gray-200 dark:ring-gray-700",
-                      userButtonPopoverCard: "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 border border-gray-200/50 dark:border-gray-800/50",
+                      userButtonPopoverCard: "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-black/95 border border-gray-200/50 dark:border-gray-800/50",
                     },
                   }}
                   afterSignOutUrl="/"
@@ -348,7 +325,7 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
                 appearance={{
                   elements: {
                     avatarBox: "w-10 h-10 rounded-full ring-1 ring-gray-200 dark:ring-gray-700",
-                    userButtonPopoverCard: "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 border border-gray-200/50 dark:border-gray-800/50",
+                    userButtonPopoverCard: "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-black/95 border border-gray-200/50 dark:border-gray-800/50",
                   },
                 }}
                 afterSignOutUrl="/"

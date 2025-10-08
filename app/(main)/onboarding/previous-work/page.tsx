@@ -26,6 +26,7 @@ import {
   List
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ClickSpark from "@/components/ClickSpark";
 
 // Work Categories
 const workCategories = [
@@ -171,7 +172,7 @@ export default function PreviousWorkPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-black">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -658,17 +659,19 @@ export default function PreviousWorkPage() {
               Skip for Now
             </Button>
 
-            <Button
-              onClick={handleContinue}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Continue to Preview
-              {previousWorks.length > 0 && (
-                <span className="ml-2 bg-blue-700 text-white px-2 py-0.5 rounded-full text-xs">
-                  {previousWorks.length}
-                </span>
-              )}
-            </Button>
+            <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+              <Button
+                onClick={handleContinue}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Continue to Preview
+                {previousWorks.length > 0 && (
+                  <span className="ml-2 bg-blue-700 text-white px-2 py-0.5 rounded-full text-xs">
+                    {previousWorks.length}
+                  </span>
+                )}
+              </Button>
+            </ClickSpark>
           </motion.div>
         </div>
       </div>

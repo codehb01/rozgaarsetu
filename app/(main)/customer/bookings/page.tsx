@@ -24,6 +24,7 @@ import {
   FiList,
   FiTrendingUp,
 } from "react-icons/fi";
+import ClickSpark from "@/components/ClickSpark";
 
 type Job = {
   id: string;
@@ -190,9 +191,11 @@ export default function CustomerBookingsPage() {
           : "Your completed and cancelled bookings will appear here."}
       </p>
       {type === "ongoing" && (
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          Find Workers
-        </Button>
+        <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            Find Workers
+          </Button>
+        </ClickSpark>
       )}
     </motion.div>
   );

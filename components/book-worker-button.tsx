@@ -10,6 +10,7 @@ import OpenStreetMapInput from '@/components/ui/openstreetmap-input';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { X as XIcon, AlertCircle as AlertCircleIcon } from 'lucide-react';
 import { useUser } from "@clerk/nextjs";
+import ClickSpark from "@/components/ClickSpark";
 
 type Props = {
   workerId: string;
@@ -247,12 +248,14 @@ export default function BookWorkerButton({ workerId, className }: Props) {
 
   return (
     <>
-      <Button
-        onClick={openDialog}
-        className={`${className ?? ''} bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm transition-all`}
-      >
-        Book
-      </Button>
+      <ClickSpark sparkColor="#60a5fa" sparkCount={10} sparkRadius={20}>
+        <Button
+          onClick={openDialog}
+          className={`${className ?? ''} bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm transition-all`}
+        >
+          Book
+        </Button>
+      </ClickSpark>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent backdrop="blur" className="max-w-5xl lg:max-w-6xl xl:max-w-7xl w-[96vw] max-h-[92vh] overflow-y-auto p-0 bg-white">
@@ -541,14 +544,16 @@ export default function BookWorkerButton({ workerId, className }: Props) {
                   Next
                 </Button>
               ) : (
-                <Button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="px-4 sm:px-6 md:px-8 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md text-xs sm:text-sm"
-                >
-                  {loading ? 'Creating...' : 'Confirm & Book'}
-                </Button>
+                <ClickSpark sparkColor="#22c55e" sparkCount={12} sparkRadius={25}>
+                  <Button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="px-4 sm:px-6 md:px-8 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md text-xs sm:text-sm"
+                  >
+                    {loading ? 'Creating...' : 'Confirm & Book'}
+                  </Button>
+                </ClickSpark>
               )}
             </div>
           </div>

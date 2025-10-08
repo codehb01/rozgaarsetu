@@ -230,7 +230,7 @@ export default function CustomerSearchPage() {
   );
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <main className="min-h-screen bg-gray-50 dark:bg-black">
       {/* Header Section */}
       <div className="bg-transparent border-b border-transparent">
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">

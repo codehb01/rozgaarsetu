@@ -17,11 +17,11 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
+        <div className="bg-white/95 dark:bg-black/95 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
           <div className="grid lg:grid-cols-2">
             {/* Left Side - Form */}
             <motion.div 
-              className="flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-gray-900 min-h-[500px] lg:min-h-[600px]"
+              className="flex items-center justify-center p-6 sm:p-8 md:p-12 lg:p-16 bg-white dark:bg-black min-h-[500px] lg:min-h-[600px]"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}

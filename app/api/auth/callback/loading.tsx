@@ -21,7 +21,7 @@ export default function AuthCallbackLoading() {
         transition={{ duration: 0.3 }}
         className="w-full max-w-md p-8"
       >
-        <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8 space-y-6">
+        <div className="bg-white dark:bg-black rounded-3xl shadow-2xl p-8 space-y-6">
           {/* Logo Skeleton */}
           <div className="flex justify-center">
             <Skeleton className="h-16 w-16 rounded-2xl" />
