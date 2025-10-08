@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiUser,
@@ -28,8 +29,30 @@ import {
   FiCamera,
   FiCheckCircle,
   FiAlertCircle,
+  FiPlus,
 } from "react-icons/fi";
 import { getCurrentUser } from "@/app/api/actions/onboarding";
+
+// Qualification options from onboarding
+const qualificationOptions = [
+  { value: "no_formal", label: "No Formal Education" },
+  { value: "primary", label: "Primary School (1-5th)" },
+  { value: "middle", label: "Middle School (6-8th)" },
+  { value: "high_school", label: "High School (9-10th)" },
+  { value: "senior_secondary", label: "Senior Secondary (11-12th)" },
+  { value: "iti", label: "ITI (Industrial Training)" },
+  { value: "diploma", label: "Diploma" },
+  { value: "graduate", label: "Graduate (Bachelor's)" },
+  { value: "postgraduate", label: "Post Graduate (Master's)" },
+  { value: "other", label: "Other (Enter Manually)" },
+];
+
+// Popular skills from onboarding
+const popularSkills = [
+  "Plumbing", "Electrical", "Carpentry", "Painting", "Cleaning",
+  "Gardening", "AC Repair", "Appliance Repair", "Masonry", "Welding",
+  "Roofing", "Flooring", "Pest Control", "Moving", "Handyman"
+];
 
 type WorkerProfile = {
   id: string;
@@ -80,9 +103,20 @@ export default function WorkerProfilePage() {
   const [saving, setSaving] = useState(false);
   const [editedProfile, setEditedProfile] = useState<Partial<WorkerProfile>>({});
   const [activeTab, setActiveTab] = useState<"overview" | "portfolio" | "reviews">("overview");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newWork, setNewWork] = useState({
+    title: "",
+    description: "",
+    images: [] as File[],
+    location: "",
+  });
+  const [uploadingProject, setUploadingProject] = useState(false);
+  const [customSkill, setCustomSkill] = useState("");
+  const [qualificationDropdownOpen, setQualificationDropdownOpen] = useState(false);
+  const [customQualification, setCustomQualification] = useState("");
 
   // Helper function to safely get image URL from potentially stringified JSON
-  const getImageUrl = (imageField: string | null | undefined): string | null => {
+  const parseImageUrl = (imageField: string | null | undefined): string | null => {
     if (!imageField) return null;
     
     try {
@@ -107,6 +141,40 @@ export default function WorkerProfilePage() {
         return imageField;
       }
       return null;
+    }
+  };
+
+  const getImageUrl = (file: File) => {
+    return URL.createObjectURL(file);
+  };
+
+  const addSkill = (skill: string) => {
+    const currentSkills = editedProfile.skilledIn || [];
+    if (!currentSkills.includes(skill)) {
+      setEditedProfile({ ...editedProfile, skilledIn: [...currentSkills, skill] });
+    }
+  };
+
+  const removeSkill = (skill: string) => {
+    const currentSkills = editedProfile.skilledIn || [];
+    setEditedProfile({ ...editedProfile, skilledIn: currentSkills.filter(s => s !== skill) });
+  };
+
+  const addCustomSkill = () => {
+    if (customSkill.trim()) {
+      addSkill(customSkill.trim());
+      setCustomSkill("");
+    }
+  };
+
+  const handleQualificationChange = (value: string) => {
+    if (value === "other") {
+      setQualificationDropdownOpen(false);
+      // User will enter custom qualification
+    } else {
+      const option = qualificationOptions.find(opt => opt.value === value);
+      setEditedProfile({ ...editedProfile, qualification: option?.label || value });
+      setQualificationDropdownOpen(false);
     }
   };
 
@@ -136,12 +204,43 @@ export default function WorkerProfilePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // TODO: Implement profile update API
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated save
+      const response = await fetch("/api/worker/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bio: editedProfile.bio,
+          skilledIn: editedProfile.skilledIn,
+          qualification: editedProfile.qualification,
+          yearsExperience: editedProfile.yearsExperience,
+          hourlyRate: editedProfile.hourlyRate,
+          minimumFee: editedProfile.minimumFee,
+          address: editedProfile.address,
+          city: editedProfile.city,
+          state: editedProfile.state,
+          postalCode: editedProfile.postalCode,
+          country: editedProfile.country,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to save profile");
+      }
+
+      const result = await response.json();
+      
+      // Update the profile data with the saved data
+      if (data) {
+        data.workerProfile = result.profile;
+      }
+      
       setIsEditing(false);
       await loadProfile();
     } catch (e) {
-      console.error(e);
+      console.error("Failed to save profile:", e);
+      alert(e instanceof Error ? e.message : "Failed to save profile. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -152,6 +251,42 @@ export default function WorkerProfilePage() {
       setEditedProfile(data.workerProfile);
     }
     setIsEditing(false);
+  };
+
+  const handleAddProject = async () => {
+    if (!newWork.title.trim() || newWork.images.length === 0) {
+      alert("Please enter a project title and select an image");
+      return;
+    }
+
+    setUploadingProject(true);
+    try {
+      // TODO: Implement actual file upload and project creation API
+      // For now, just show a message
+      console.log("Adding project:", newWork);
+      
+      // Simulate upload
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Reset form
+      setNewWork({
+        title: "",
+        description: "",
+        images: [],
+        location: "",
+      });
+      setShowAddForm(false);
+      
+      // Reload profile to show new project
+      await loadProfile();
+      
+      alert("Project added successfully! Note: Full implementation requires file upload API.");
+    } catch (error) {
+      console.error("Error adding project:", error);
+      alert("Failed to add project");
+    } finally {
+      setUploadingProject(false);
+    }
   };
 
   // Skeleton loader
@@ -266,9 +401,9 @@ export default function WorkerProfilePage() {
                 {/* Profile Picture */}
                 <div className="relative inline-block mb-4">
                   <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-blue-100 dark:border-blue-900">
-                    {getImageUrl(profile.profilePic) ? (
+                    {parseImageUrl(profile.profilePic) || user?.imageUrl ? (
                       <Image
-                        src={getImageUrl(profile.profilePic)!}
+                        src={parseImageUrl(profile.profilePic) || user?.imageUrl || ""}
                         alt={data.name}
                         width={128}
                         height={128}
@@ -417,17 +552,89 @@ export default function WorkerProfilePage() {
                         Skills & Services
                       </h3>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {profile.skilledIn?.map((skill, index) => (
-                        <Badge
-                          key={index}
-                          className="bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300 border-0 px-4 py-2"
-                        >
-                          <FiCheckCircle className="mr-2 h-3 w-3" />
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
+                    {isEditing ? (
+                      <div className="space-y-4">
+                        {/* Popular Skills Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {popularSkills.map((skill, index) => (
+                            <Badge
+                              key={skill}
+                              variant={(editedProfile.skilledIn || []).includes(skill) ? "default" : "outline"}
+                              className={`cursor-pointer w-full justify-center py-2 px-3 transition-all duration-200 ${
+                                (editedProfile.skilledIn || []).includes(skill)
+                                  ? "bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                              }`}
+                              onClick={() => 
+                                (editedProfile.skilledIn || []).includes(skill)
+                                  ? removeSkill(skill) 
+                                  : addSkill(skill)
+                              }
+                            >
+                              {skill}
+                              {(editedProfile.skilledIn || []).includes(skill) && (
+                                <FiX className="h-3 w-3 ml-1" />
+                              )}
+                            </Badge>
+                          ))}
+                        </div>
+
+                        {/* Custom Skill Input */}
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Add custom skill"
+                            value={customSkill}
+                            onChange={(e) => setCustomSkill(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && addCustomSkill()}
+                            className="bg-gray-50 dark:bg-gray-900"
+                          />
+                          <Button
+                            type="button"
+                            onClick={addCustomSkill}
+                            disabled={!customSkill.trim()}
+                            className="bg-purple-600 hover:bg-purple-700"
+                          >
+                            <FiPlus className="h-4 w-4" />
+                          </Button>
+                        </div>
+
+                        {/* Selected Skills */}
+                        {(editedProfile.skilledIn || []).length > 0 && (
+                          <div className="mt-4 p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/50 dark:border-purple-400/20">
+                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                              Selected skills ({(editedProfile.skilledIn || []).length}):
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {(editedProfile.skilledIn || []).map((skill) => (
+                                <Badge
+                                  key={skill}
+                                  variant="default"
+                                  className="bg-purple-600 text-white hover:bg-purple-700"
+                                >
+                                  {skill}
+                                  <FiX 
+                                    className="h-3 w-3 ml-1 cursor-pointer" 
+                                    onClick={() => removeSkill(skill)}
+                                  />
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {profile.skilledIn?.map((skill, index) => (
+                          <Badge
+                            key={index}
+                            className="bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300 border-0 px-4 py-2"
+                          >
+                            <FiCheckCircle className="mr-2 h-3 w-3" />
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </Card>
 
                   {/* Rates */}
@@ -502,17 +709,47 @@ export default function WorkerProfilePage() {
                         </h3>
                       </div>
                       {isEditing ? (
-                        <Input
-                          value={editedProfile.qualification || ""}
-                          onChange={(e) =>
-                            setEditedProfile({
-                              ...editedProfile,
-                              qualification: e.target.value,
-                            })
-                          }
-                          placeholder="Enter qualification"
-                          className="bg-gray-50 dark:bg-gray-900"
-                        />
+                        <div className="space-y-3">
+                          <div className="relative">
+                            <button
+                              type="button"
+                              onClick={() => setQualificationDropdownOpen(!qualificationDropdownOpen)}
+                              className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-all"
+                            >
+                              <span className="text-gray-900 dark:text-white">
+                                {editedProfile.qualification || "Select qualification"}
+                              </span>
+                              <FiCheckCircle className={`h-4 w-4 transition-transform ${qualificationDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            
+                            {qualificationDropdownOpen && (
+                              <div className="absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                {qualificationOptions.map((option) => (
+                                  <button
+                                    key={option.value}
+                                    type="button"
+                                    onClick={() => handleQualificationChange(option.value)}
+                                    className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                                  >
+                                    {option.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {editedProfile.qualification === "Other (Enter Manually)" && (
+                            <Input
+                              value={customQualification}
+                              onChange={(e) => {
+                                setCustomQualification(e.target.value);
+                                setEditedProfile({ ...editedProfile, qualification: e.target.value });
+                              }}
+                              placeholder="Enter your qualification"
+                              className="bg-gray-50 dark:bg-gray-900"
+                            />
+                          )}
+                        </div>
                       ) : (
                         <p className="text-gray-700 dark:text-gray-300">
                           {profile.qualification || "Not specified"}
@@ -550,27 +787,6 @@ export default function WorkerProfilePage() {
                     </Card>
                   </div>
 
-                  {/* Service Areas */}
-                  <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-2 mb-4">
-                      <FiMapPin className="h-5 w-5 text-red-600 dark:text-red-400" />
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        Service Areas
-                      </h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {profile.availableAreas?.map((area, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="border-gray-300 dark:border-gray-600"
-                        >
-                          {area}
-                        </Badge>
-                      ))}
-                    </div>
-                  </Card>
-
                   {/* Address */}
                   <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2 mb-4">
@@ -579,13 +795,107 @@ export default function WorkerProfilePage() {
                         Address
                       </h3>
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {profile.address}
-                      <br />
-                      {profile.city}, {profile.state} - {profile.postalCode}
-                      <br />
-                      {profile.country}
-                    </p>
+                    {isEditing ? (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Street Address
+                          </label>
+                          <Textarea
+                            value={editedProfile.address || ""}
+                            onChange={(e) =>
+                              setEditedProfile({
+                                ...editedProfile,
+                                address: e.target.value,
+                              })
+                            }
+                            placeholder="Enter street address"
+                            className="bg-gray-50 dark:bg-gray-900"
+                            rows={2}
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              City
+                            </label>
+                            <Input
+                              value={editedProfile.city || ""}
+                              onChange={(e) =>
+                                setEditedProfile({
+                                  ...editedProfile,
+                                  city: e.target.value,
+                                })
+                              }
+                              placeholder="City"
+                              className="bg-gray-50 dark:bg-gray-900"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              State
+                            </label>
+                            <Input
+                              value={editedProfile.state || ""}
+                              onChange={(e) =>
+                                setEditedProfile({
+                                  ...editedProfile,
+                                  state: e.target.value,
+                                })
+                              }
+                              placeholder="State"
+                              className="bg-gray-50 dark:bg-gray-900"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              Postal Code
+                            </label>
+                            <Input
+                              value={editedProfile.postalCode || ""}
+                              onChange={(e) =>
+                                setEditedProfile({
+                                  ...editedProfile,
+                                  postalCode: e.target.value,
+                                })
+                              }
+                              placeholder="Postal Code"
+                              className="bg-gray-50 dark:bg-gray-900"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              Country
+                            </label>
+                            <Input
+                              value={editedProfile.country || ""}
+                              onChange={(e) =>
+                                setEditedProfile({
+                                  ...editedProfile,
+                                  country: e.target.value,
+                                })
+                              }
+                              placeholder="Country"
+                              className="bg-gray-50 dark:bg-gray-900"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-gray-700 dark:text-gray-300">
+                        {profile.address}
+                        <br />
+                        {profile.city}, {profile.state} - {profile.postalCode}
+                        <br />
+                        {profile.country}
+                      </p>
+                    )}
                   </Card>
                 </motion.div>
               )}
@@ -596,9 +906,11 @@ export default function WorkerProfilePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
+                  className="space-y-6"
                 >
-                  <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between mb-6">
+                  {/* Add Project Button */}
+                  {!showAddForm && (
+                    <div className="flex justify-between items-center">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           Previous Work
@@ -607,18 +919,158 @@ export default function WorkerProfilePage() {
                           {profile.previousWorks?.length || 0} projects completed
                         </p>
                       </div>
-                      <Button className="bg-blue-600 hover:bg-blue-700">
-                        <FiImage className="mr-2 h-4 w-4" />
+                      <Button 
+                        onClick={() => setShowAddForm(true)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        <FiPlus className="mr-2 h-4 w-4" />
                         Add Project
                       </Button>
                     </div>
+                  )}
 
+                  {/* Add Project Form */}
+                  <AnimatePresence>
+                    {showAddForm && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                      >
+                        <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                          <div className="space-y-6">
+                            <div className="flex justify-between items-center">
+                              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                Add New Project
+                              </h3>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setShowAddForm(false);
+                                  setNewWork({
+                                    title: "",
+                                    description: "",
+                                    images: [],
+                                    location: "",
+                                  });
+                                }}
+                              >
+                                <FiX className="h-5 w-5" />
+                              </Button>
+                            </div>
+
+                            <div className="grid gap-6">
+                              {/* Title */}
+                              <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Project Title *
+                                </label>
+                                <Input
+                                  placeholder="e.g., Kitchen Renovation"
+                                  value={newWork.title}
+                                  onChange={(e) => setNewWork({ ...newWork, title: e.target.value })}
+                                  className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                                />
+                              </div>
+
+                              {/* Location */}
+                              <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Location
+                                </label>
+                                <Input
+                                  placeholder="e.g., Andheri, Mumbai"
+                                  value={newWork.location}
+                                  onChange={(e) => setNewWork({ ...newWork, location: e.target.value })}
+                                  className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                                />
+                              </div>
+
+                              {/* Project Image */}
+                              <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Project Image *
+                                </label>
+                                <FileDropzone
+                                  accept="image/*"
+                                  maxSize={5 * 1024 * 1024}
+                                  onChange={(file) => setNewWork({ ...newWork, images: file ? [file] : [] })}
+                                />
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  Upload an image to showcase your work (max 5MB)
+                                </p>
+                              </div>
+
+                              {/* Description */}
+                              <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Description
+                                </label>
+                                <Textarea
+                                  placeholder="Describe the work you did, challenges faced, materials used..."
+                                  value={newWork.description}
+                                  onChange={(e) => setNewWork({ ...newWork, description: e.target.value })}
+                                  className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 min-h-24"
+                                  rows={4}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  setShowAddForm(false);
+                                  setNewWork({
+                                    title: "",
+                                    description: "",
+                                    images: [],
+                                    location: "",
+                                  });
+                                }}
+                                disabled={uploadingProject}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                onClick={handleAddProject}
+                                disabled={uploadingProject || !newWork.title.trim() || newWork.images.length === 0}
+                                className="bg-blue-600 hover:bg-blue-700"
+                              >
+                                {uploadingProject ? (
+                                  <>
+                                    <FiImage className="mr-2 h-4 w-4 animate-spin" />
+                                    Adding...
+                                  </>
+                                ) : (
+                                  <>
+                                    <FiCheckCircle className="mr-2 h-4 w-4" />
+                                    Add Project
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Portfolio Grid */}
+                  <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                     {profile.previousWorks && profile.previousWorks.length > 0 ? (
                       <div className="grid md:grid-cols-2 gap-4">
                         {profile.previousWorks.map((work, index) => {
+                          // Debug: log the raw image data
+                          console.log('Work:', work.title);
+                          console.log('Raw images array:', work.images);
+                          console.log('First image:', work.images?.[0]);
+                          
                           const imageUrl = work.images && work.images.length > 0 
-                            ? getImageUrl(work.images[0]) 
+                            ? parseImageUrl(work.images[0]) 
                             : null;
+                          console.log('Parsed image URL:', imageUrl);
                           
                           return (
                             <motion.div
@@ -638,12 +1090,17 @@ export default function WorkerProfilePage() {
                                     onError={(e) => {
                                       // Show fallback icon on error
                                       e.currentTarget.style.display = 'none';
+                                      const parent = e.currentTarget.parentElement;
+                                      if (parent) {
+                                        parent.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><p class="text-xs text-gray-500 mt-2">Image unavailable</p></div>';
+                                      }
                                     }}
                                   />
                                 </div>
                               ) : (
-                                <div className="aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                <div className="aspect-video bg-gray-100 dark:bg-gray-700 flex flex-col items-center justify-center gap-2">
                                   <FiImage className="h-12 w-12 text-gray-400" />
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">No image stored</p>
                                 </div>
                               )}
                               <div className="p-4">
