@@ -107,7 +107,7 @@ export default function ExpandableCardsWorkers({
                     </div>
                     <div className="flex items-center gap-3">
                       <Link
-                        href={`/worker/${w.id}`}
+                        href={`/workers/${w.id}`}
                         className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         View

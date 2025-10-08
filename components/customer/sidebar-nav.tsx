@@ -57,8 +57,8 @@ const navigation = [
 
 const secondaryNavigation = [
   {
-    name: "Help",
-    href: "/help",
+    name: "Help & Support",
+    href: "/customer/help",
     icon: FiHelpCircle,
   },
 ];

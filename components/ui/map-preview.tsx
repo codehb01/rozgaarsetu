@@ -194,13 +194,11 @@ export default function MapPreview({
               mk.skill
             )}</div>`
           : ""
-      }<div style="margin-top:8px;display:flex;gap:8px"><a href="/worker/${
+      }<div style="margin-top:8px;display:flex;gap:8px"><a href="/workers/${
         mk.id
       }" class="${viewBtnClasses}" data-popup-worker-id="${
         mk.id
-      }">View</a><button class="${bookBtnClasses}" data-popup-book-id="${
-        mk.id
-      }" style="background:${color};">Book</button></div></div>`;
+      }">View</a></div></div>`;
       // keep popup open while interacting with it
       marker.bindPopup(popupHtml, {
         closeButton: true,
