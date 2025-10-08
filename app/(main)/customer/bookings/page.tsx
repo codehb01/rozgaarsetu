@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ReviewDialog } from "@/components/review-dialog";
 import ScrollList from "@/components/ui/scroll-list";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiCalendar,
@@ -194,9 +195,12 @@ export default function CustomerBookingsPage() {
       </p>
       {type === "ongoing" && (
         <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            Find Workers
-          </Button>
+          <Link href="/customer/search">
+            {" "}
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              Find Workers
+            </Button>
+          </Link>
         </ClickSpark>
       )}
     </motion.div>

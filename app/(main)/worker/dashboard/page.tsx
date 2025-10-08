@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import UsageTracker from "@/components/usage-tracker";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { UserRole } from "@prisma/client";
 import {
   Briefcase,
   Clock,
@@ -18,7 +20,7 @@ import {
   Users,
   Wrench,
   Award,
-  Target
+  Target,
 } from "lucide-react";
 
 export default async function WorkerDashboardPage() {
@@ -41,23 +43,27 @@ export default async function WorkerDashboardPage() {
   if (!worker || worker.role !== "WORKER") {
     return (
       <main className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400">Worker access required.</div>
+        <div className="text-gray-500 dark:text-gray-400">
+          Worker access required.
+        </div>
       </main>
     );
   }
 
   // Fetch job statistics
-  const [totalJobs, pendingJobs, completedJobs, recentJobs] = await Promise.all([
-    prisma.job.count({ where: { workerId: worker.id } }),
-    prisma.job.count({ where: { workerId: worker.id, status: "PENDING" } }),
-    prisma.job.count({ where: { workerId: worker.id, status: "COMPLETED" } }),
-    prisma.job.findMany({
-      where: { workerId: worker.id },
-      include: { customer: { select: { name: true } } },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    }),
-  ]);
+  const [totalJobs, pendingJobs, completedJobs, recentJobs] = await Promise.all(
+    [
+      prisma.job.count({ where: { workerId: worker.id } }),
+      prisma.job.count({ where: { workerId: worker.id, status: "PENDING" } }),
+      prisma.job.count({ where: { workerId: worker.id, status: "COMPLETED" } }),
+      prisma.job.findMany({
+        where: { workerId: worker.id },
+        include: { customer: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
+    ]
+  );
 
   // Calculate total earnings from completed jobs
   const completedJobsWithEarnings = await prisma.job.findMany({
@@ -94,8 +100,8 @@ export default async function WorkerDashboardPage() {
           </Link>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* Quick Stats and Usage Tracker */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -111,7 +117,7 @@ export default async function WorkerDashboardPage() {
               </div>
             </div>
           </Card>
-          
+
           <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -127,7 +133,7 @@ export default async function WorkerDashboardPage() {
               </div>
             </div>
           </Card>
-          
+
           <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -143,6 +149,9 @@ export default async function WorkerDashboardPage() {
               </div>
             </div>
           </Card>
+
+          {/* Usage Tracker */}
+          <UsageTracker userRole={UserRole.WORKER} />
         </div>
       </div>
 
@@ -261,7 +270,10 @@ export default async function WorkerDashboardPage() {
               Your latest job activities
             </p>
           </div>
-          <Link href="/worker/job" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium">
+          <Link
+            href="/worker/job"
+            className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium"
+          >
             View all
           </Link>
         </div>
@@ -303,7 +315,7 @@ export default async function WorkerDashboardPage() {
                     {job.status}
                   </span>
                 </div>
-                
+
                 <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -313,11 +325,14 @@ export default async function WorkerDashboardPage() {
                     <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
                     <span>
                       {new Date(job.time).toLocaleDateString()} at{" "}
-                      {new Date(job.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(job.time).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-600 dark:text-gray-400">

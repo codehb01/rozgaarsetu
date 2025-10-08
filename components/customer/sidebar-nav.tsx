@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import ProfileButton from "@/components/profile-button"
-import React, { Dispatch, SetStateAction, useState, useEffect } from "react"
-import { IconType } from "react-icons"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import ProfileButton from "@/components/profile-button";
+import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { IconType } from "react-icons";
 import {
   FiHome,
   FiSearch,
@@ -20,17 +20,17 @@ import {
   FiChevronsRight,
   FiChevronDown,
   FiSun,
-  FiMoon
-} from "react-icons/fi"
-import { motion } from "framer-motion"
-import { useTheme } from "next-themes"
+  FiMoon,
+} from "react-icons/fi";
+import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 import {
   SignInButton,
   SignUpButton,
   SignedIn,
   SignedOut,
   UserButton,
-} from "@clerk/nextjs"
+} from "@clerk/nextjs";
 
 const navigation = [
   {
@@ -53,7 +53,7 @@ const navigation = [
     href: "/customer/profile",
     icon: FiUser,
   },
-]
+];
 
 const secondaryNavigation = [
   {
@@ -61,7 +61,7 @@ const secondaryNavigation = [
     href: "/help",
     icon: FiHelpCircle,
   },
-]
+];
 
 interface CustomerSidebarProps {
   onMobileClose?: () => void;
@@ -83,14 +83,14 @@ const Option = ({
   open: boolean;
 }) => {
   const isActive = pathname === href;
-  
+
   return (
     <Link href={href}>
       <motion.button
         layout
         className={`relative flex h-10 w-full items-center rounded-lg transition-all duration-200 ${
-          isActive 
-            ? "bg-blue-50 dark:bg-gray-800/50 text-blue-600 dark:text-blue-400 shadow-sm" 
+          isActive
+            ? "bg-blue-50 dark:bg-gray-800/50 text-blue-600 dark:text-blue-400 shadow-sm"
             : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/30 hover:text-gray-900 dark:hover:text-gray-200"
         }`}
       >
@@ -135,7 +135,9 @@ const ToggleClose = ({
           className="grid size-10 place-content-center text-lg"
         >
           <FiChevronsRight
-            className={`transition-transform text-gray-500 dark:text-gray-400 ${open && "rotate-180"}`}
+            className={`transition-transform text-gray-500 dark:text-gray-400 ${
+              open && "rotate-180"
+            }`}
           />
         </motion.div>
         {open && (
@@ -154,26 +156,32 @@ const ToggleClose = ({
   );
 };
 
-export function CustomerSidebar({ onMobileClose, open = true, setOpen }: CustomerSidebarProps) {
-  const pathname = usePathname()
-  const [searchQuery, setSearchQuery] = useState("")
-  const { theme, setTheme, systemTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  
-  useEffect(() => setMounted(true), [])
-  
-  const currentTheme = theme === "system" ? systemTheme : theme
-  
+export function CustomerSidebar({
+  onMobileClose,
+  open = true,
+  setOpen,
+}: CustomerSidebarProps) {
+  const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState("");
+  const { theme, setTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  const currentTheme = theme === "system" ? systemTheme : theme;
+
   // Use internal state only if no external state is provided (for mobile)
-  const [internalOpen, setInternalOpen] = useState(true)
-  const isOpen = setOpen ? open : internalOpen
-  const toggleOpen = setOpen ? ((newOpen: boolean | ((prev: boolean) => boolean)) => {
-    if (typeof newOpen === 'function') {
-      setOpen(newOpen(open))
-    } else {
-      setOpen(newOpen)
-    }
-  }) : setInternalOpen
+  const [internalOpen, setInternalOpen] = useState(true);
+  const isOpen = setOpen ? open : internalOpen;
+  const toggleOpen = setOpen
+    ? (newOpen: boolean | ((prev: boolean) => boolean)) => {
+        if (typeof newOpen === "function") {
+          setOpen(newOpen(open));
+        } else {
+          setOpen(newOpen);
+        }
+      }
+    : setInternalOpen;
 
   return (
     <motion.nav
@@ -191,18 +199,23 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
             animate={{ opacity: 1 }}
             className="flex items-center space-x-3"
           >
-            <img 
-              src="/hard-hat_11270170.svg" 
-              alt="RozgaarSetu Logo" 
-              className="w-8 h-8 object-contain filter brightness-0 dark:brightness-100 dark:invert"
-            />
-            <span className="font-semibold text-gray-900 dark:text-white tracking-tight">RozgaarSetu</span>
+            <Link href="/">
+              {" "}
+              <img
+                src="/hard-hat_11270170.svg"
+                alt="RozgaarSetu Logo"
+                className="w-8 h-8 object-contain filter brightness-0 dark:brightness-100 dark:invert"
+              />
+            </Link>
+            <span className="font-semibold text-gray-900 dark:text-white tracking-tight">
+              RozgaarSetu
+            </span>
           </motion.div>
         ) : (
           <div className="flex justify-center">
-            <img 
-              src="/hard-hat_11270170.svg" 
-              alt="RozgaarSetu Logo" 
+            <img
+              src="/hard-hat_11270170.svg"
+              alt="RozgaarSetu Logo"
               className="w-8 h-8 object-contain filter brightness-0 dark:brightness-100 dark:invert"
             />
           </div>
@@ -248,7 +261,7 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
             open={isOpen}
           />
         ))}
-        
+
         {/* Theme Toggle */}
         {mounted && (
           <motion.button
@@ -291,8 +304,10 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
                 <UserButton
                   appearance={{
                     elements: {
-                      avatarBox: "w-8 h-8 rounded-full ring-1 ring-gray-200 dark:ring-gray-700",
-                      userButtonPopoverCard: "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-black/95 border border-gray-200/50 dark:border-gray-800/50",
+                      avatarBox:
+                        "w-8 h-8 rounded-full ring-1 ring-gray-200 dark:ring-gray-700",
+                      userButtonPopoverCard:
+                        "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-black/95 border border-gray-200/50 dark:border-gray-800/50",
                     },
                   }}
                   afterSignOutUrl="/"
@@ -319,8 +334,10 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
               <UserButton
                 appearance={{
                   elements: {
-                    avatarBox: "w-10 h-10 rounded-full ring-1 ring-gray-200 dark:ring-gray-700",
-                    userButtonPopoverCard: "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-black/95 border border-gray-200/50 dark:border-gray-800/50",
+                    avatarBox:
+                      "w-10 h-10 rounded-full ring-1 ring-gray-200 dark:ring-gray-700",
+                    userButtonPopoverCard:
+                      "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-black/95 border border-gray-200/50 dark:border-gray-800/50",
                   },
                 }}
                 afterSignOutUrl="/"
@@ -328,7 +345,7 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
             </div>
           )}
         </SignedIn>
-        
+
         <SignedOut>
           {isOpen ? (
             <div className="space-y-2">
@@ -358,5 +375,5 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
       {/* Collapse Button - Now at bottom but visible */}
       <ToggleClose open={isOpen} setOpen={toggleOpen} />
     </motion.nav>
-  )
+  );
 }

@@ -2,7 +2,9 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BookWorkerButton from "@/components/book-worker-button";
+import UsageTracker from "@/components/usage-tracker";
 import prisma from "@/lib/prisma";
+import { UserRole } from "@prisma/client";
 import {
   Wrench,
   Plug,
@@ -16,7 +18,7 @@ import {
   MapPin,
   Star,
   Clock,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 
 const categories = [
@@ -121,8 +123,8 @@ export default async function CustomerDashboardPage() {
           </Link>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* Quick Stats and Usage Tracker */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -138,7 +140,7 @@ export default async function CustomerDashboardPage() {
               </div>
             </div>
           </Card>
-          
+
           <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -154,7 +156,7 @@ export default async function CustomerDashboardPage() {
               </div>
             </div>
           </Card>
-          
+
           <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -170,6 +172,9 @@ export default async function CustomerDashboardPage() {
               </div>
             </div>
           </Card>
+
+          {/* Usage Tracker */}
+          <UsageTracker userRole={UserRole.CUSTOMER} />
         </div>
       </div>
 
@@ -196,7 +201,9 @@ export default async function CustomerDashboardPage() {
             >
               <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200 hover:-translate-y-1">
                 <div className="flex flex-col items-center text-center space-y-3">
-                  <div className={`w-12 h-12 rounded-xl ${bgColor} flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 rounded-xl ${bgColor} flex items-center justify-center`}
+                  >
                     <Icon className={`h-6 w-6 ${color}`} />
                   </div>
                   <div>
@@ -225,7 +232,10 @@ export default async function CustomerDashboardPage() {
               New professionals on the platform
             </p>
           </div>
-          <Link href="/customer/search" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium">
+          <Link
+            href="/customer/search"
+            className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium"
+          >
             View all
           </Link>
         </div>
@@ -234,7 +244,9 @@ export default async function CustomerDashboardPage() {
           <Card className="p-8 text-center border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
             <div className="text-gray-500 dark:text-gray-400">
               <p className="text-lg font-medium">No workers available</p>
-              <p className="text-sm mt-1">Check back later for new professionals</p>
+              <p className="text-sm mt-1">
+                Check back later for new professionals
+              </p>
             </div>
           </Card>
         ) : (
@@ -252,43 +264,49 @@ export default async function CustomerDashboardPage() {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="min-w-0 flex-1">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                       {worker.name ?? "Professional"}
                     </h3>
-                    
+
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {worker.workerProfile?.qualification || "Skilled Professional"}
+                      {worker.workerProfile?.qualification ||
+                        "Skilled Professional"}
                     </p>
-                    
+
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-2">
                       <MapPin className="h-4 w-4 mr-1" />
                       <span className="truncate">
                         {worker.workerProfile?.city || "Location not specified"}
                       </span>
                       <span className="mx-2">•</span>
-                      <span>{worker.workerProfile?.yearsExperience ?? 0}+ years</span>
+                      <span>
+                        {worker.workerProfile?.yearsExperience ?? 0}+ years
+                      </span>
                     </div>
-                    
-                    {worker.workerProfile?.skilledIn && worker.workerProfile.skilledIn.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {worker.workerProfile.skilledIn.slice(0, 2).map((skill: string, index: number) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                        {worker.workerProfile.skilledIn.length > 2 && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
-                            +{worker.workerProfile.skilledIn.length - 2}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    
+
+                    {worker.workerProfile?.skilledIn &&
+                      worker.workerProfile.skilledIn.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-3">
+                          {worker.workerProfile.skilledIn
+                            .slice(0, 2)
+                            .map((skill: string, index: number) => (
+                              <span
+                                key={index}
+                                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          {worker.workerProfile.skilledIn.length > 2 && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                              +{worker.workerProfile.skilledIn.length - 2}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
                     <div className="flex gap-2 mt-4">
                       <Link href={`/workers/${worker.id}`} className="flex-1">
                         <Button

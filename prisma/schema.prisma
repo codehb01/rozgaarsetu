@@ -25,6 +25,8 @@ model User {
   transactions    Transaction[]
   reviewsGiven    Review[]         @relation("ReviewsByCustomer")
   reviewsReceived Review[]         @relation("ReviewsForWorker")
+  subscription    UserSubscription?
+  usageTracking   UsageTracking[]
 }
 
 enum UserRole {
@@ -164,4 +166,49 @@ model Review {
   comment String?
 
   createdAt DateTime @default(now())
+}
+
+// Subscription and Usage Tracking Models
+model UserSubscription {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  planType    PlanType @default(FREE)
+  planExpiry  DateTime?
+  isActive    Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, planType])
+}
+
+model UsageTracking {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Monthly tracking
+  month             Int // 1-12
+  year              Int
+  
+  // Customer metrics
+  monthlyBookings   Int @default(0) // jobs created by customer
+  
+  // Worker metrics  
+  monthlyLeads      Int @default(0) // leads received (job applications)
+  completedJobs     Int @default(0) // jobs completed by worker
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, month, year])
+  @@index([userId, year, month])
+}
+
+enum PlanType {
+  FREE
+  BOOST    // Worker boost plan ₹199
+  PRO      // Customer pro ₹499 or Worker pro ₹199
 }

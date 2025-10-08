@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { protectCustomerApi } from "@/lib/api-auth";
+import { UsageTracker } from "@/lib/usage-tracker";
 import type { User } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
@@ -39,18 +40,39 @@ export async function POST(req: NextRequest) {
 
     // Validate worker exists and is role WORKER
     const worker = await prisma.user.findUnique({ where: { id: workerId } });
-    
-    console.log('Worker lookup:', { workerId, found: !!worker, role: worker?.role });
-    
+
+    console.log("Worker lookup:", {
+      workerId,
+      found: !!worker,
+      role: worker?.role,
+    });
+
     if (!worker) {
       return NextResponse.json({ error: "Worker not found" }, { status: 404 });
     }
-    
+
     if (worker.role !== "WORKER") {
-      return NextResponse.json({ 
-        error: "Invalid worker", 
-        details: `User exists but has role '${worker.role}' instead of 'WORKER'` 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "Invalid worker",
+          details: `User exists but has role '${worker.role}' instead of 'WORKER'`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check if customer can create more bookings
+    const canBook = await UsageTracker.trackBooking(customer.clerkUserId);
+
+    if (!canBook) {
+      return NextResponse.json(
+        {
+          error: "Monthly booking limit exceeded",
+          message: "Upgrade to Pro plan for unlimited bookings",
+          needsUpgrade: true,
+        },
+        { status: 403 }
+      );
     }
 
     const job = await prisma.job.create({

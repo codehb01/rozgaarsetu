@@ -4,8 +4,24 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ArrowRight, User, Briefcase } from "lucide-react";
+import {
+  CheckCircle,
+  ArrowRight,
+  User,
+  Briefcase,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { getCurrentUser } from "@/app/api/actions/onboarding";
+import { motion } from "framer-motion";
+import {
+  triggerConfettiCelebration,
+  testConfetti,
+  simpleBurst,
+  checkConfetti,
+  basicConfettiEffect,
+} from "@/components/ui/confetti";
+import ClickSpark from "@/components/ClickSpark";
 
 export default function FinishPage() {
   const router = useRouter();
@@ -15,9 +31,32 @@ export default function FinishPage() {
   useEffect(() => {
     const checkUserRole = async () => {
       try {
+        console.log("🔍 Checking user role...");
+
+        // Check confetti availability first
+        checkConfetti();
+
         const user = await getCurrentUser();
+        console.log("👤 User data:", user);
         if (user?.role) {
           setUserRole(user.role as "CUSTOMER" | "WORKER");
+          console.log("✅ User role set:", user.role);
+
+          // Test immediate confetti first
+          console.log("🎯 Testing immediate confetti...");
+          simpleBurst();
+
+          // Test basic confetti effect as backup
+          setTimeout(() => {
+            console.log("🎈 Testing basic confetti effect...");
+            basicConfettiEffect();
+          }, 1000);
+
+          // Then trigger delayed celebration
+          setTimeout(() => {
+            console.log("⏰ Triggering main confetti celebration...");
+            triggerConfettiCelebration();
+          }, 3000); // Increased delay to 3 seconds for visibility
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -39,129 +78,292 @@ export default function FinishPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <div className="text-gray-600 dark:text-gray-400">Loading...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="w-24 h-24 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="h-12 w-12 text-white" />
-          </div>
-
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Welcome to RozgaarSetu! 🎉
-          </h1>
-
-          <p className="text-xl text-gray-300 mb-2">
-            Your profile has been created successfully
-          </p>
-
-          <p className="text-gray-400">
-            {userRole === "WORKER"
-              ? "You're now ready to receive job requests from customers"
-              : "You can now start browsing and booking services from skilled workers"}
-          </p>
-        </div>
-
-        <Card className="border-emerald-900/20 mb-8">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-emerald-900/20 rounded-full flex items-center justify-center">
-                {userRole === "WORKER" ? (
-                  <Briefcase className="h-8 w-8 text-emerald-400" />
-                ) : (
-                  <User className="h-8 w-8 text-emerald-400" />
-                )}
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">
-                  {userRole === "WORKER"
-                    ? "Worker Profile"
-                    : "Customer Profile"}
-                </h3>
-                <p className="text-gray-400">Profile setup completed</p>
-              </div>
-              <div className="ml-auto">
-                <CheckCircle className="h-6 w-6 text-emerald-400" />
-              </div>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              {userRole === "WORKER" ? (
-                <>
-                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Skills & Experience</span>
-                    <span className="text-emerald-400">✓ Added</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Pricing Information</span>
-                    <span className="text-emerald-400">✓ Set</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Service Areas</span>
-                    <span className="text-emerald-400">✓ Configured</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-400">Profile Visibility</span>
-                    <span className="text-emerald-400">✓ Public</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Address Information</span>
-                    <span className="text-emerald-400">✓ Added</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-gray-700">
-                    <span className="text-gray-400">Account Settings</span>
-                    <span className="text-emerald-400">✓ Configured</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-400">Ready to Book</span>
-                    <span className="text-emerald-400">✓ Yes</span>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="bg-emerald-900/10 border border-emerald-900/20 rounded-lg p-4">
-              <h4 className="font-semibold text-emerald-400 mb-2">
-                What&apos;s Next?
-              </h4>
-              <p className="text-gray-300 text-sm">
-                {userRole === "WORKER"
-                  ? "Complete your profile by adding a professional photo and start receiving job requests. You can update your pricing and availability anytime from your dashboard."
-                  : "Browse our skilled professionals by category or search for specific services. You can book services, track job progress, and leave reviews for completed work."}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="text-center">
-          <Button
-            onClick={handleGoToDashboard}
-            size="lg"
-            className="bg-emerald-600 hover:bg-emerald-700 px-8"
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Success Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="text-center mb-8"
           >
-            Go to Dashboard
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
+            <div className="relative mb-6">
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  delay: 0.3,
+                  duration: 0.8,
+                  type: "spring",
+                  bounce: 0.6,
+                }}
+                className="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/30"
+              >
+                <CheckCircle className="h-12 w-12 md:h-14 md:w-14 text-white" />
+              </motion.div>
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-500">
-            Need help getting started?{" "}
-            <span className="text-emerald-400 cursor-pointer hover:underline">
-              Check out our guide
-            </span>
-          </p>
+              {/* Sparkles around success icon */}
+              <div className="absolute inset-0 pointer-events-none">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.8 + i * 0.1, duration: 0.3 }}
+                    className="absolute"
+                    style={{
+                      left: `${20 + i * 15}%`,
+                      top: `${10 + (i % 2) * 80}%`,
+                    }}
+                  >
+                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-emerald-400" />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4"
+            >
+              Welcome to RozgaarSetu! 🎉
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="text-lg md:text-xl text-emerald-600 dark:text-emerald-400 font-semibold mb-2"
+            >
+              Profile Created Successfully!
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              className="text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+            >
+              {userRole === "WORKER"
+                ? "You're now ready to receive job requests from customers and start earning!"
+                : "You can now start browsing and booking services from skilled workers in your area."}
+            </motion.p>
+          </motion.div>
+
+          {/* Profile Summary Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            <Card className="border-2 border-gray-200/60 dark:border-gray-800/60 bg-white/80 dark:bg-black/80 backdrop-blur-sm shadow-xl mb-8">
+              <CardContent className="p-6 md:p-8">
+                <div className="flex items-center gap-4 md:gap-6 mb-6">
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 1, duration: 0.5, type: "spring" }}
+                    className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 dark:from-emerald-500/10 dark:to-emerald-600/10 rounded-2xl flex items-center justify-center border-2 border-emerald-200 dark:border-emerald-800"
+                  >
+                    {userRole === "WORKER" ? (
+                      <Briefcase className="h-8 w-8 md:h-10 md:w-10 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <User className="h-8 w-8 md:h-10 md:w-10 text-emerald-600 dark:text-emerald-400" />
+                    )}
+                  </motion.div>
+                  <div className="flex-1">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                      {userRole === "WORKER"
+                        ? "Worker Profile"
+                        : "Customer Profile"}
+                    </h3>
+                    <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                      Profile setup completed ✓
+                    </p>
+                  </div>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 1.2, duration: 0.3 }}
+                    className="flex-shrink-0"
+                  >
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
+                      <CheckCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                  </motion.div>
+                </div>
+
+                <div className="space-y-4 mb-6">
+                  {userRole === "WORKER" ? (
+                    <>
+                      {[
+                        "Skills & Experience",
+                        "Pricing Information",
+                        "Service Areas",
+                        "Profile Visibility",
+                      ].map((item, index) => (
+                        <motion.div
+                          key={item}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{
+                            delay: 1.3 + index * 0.1,
+                            duration: 0.3,
+                          }}
+                          className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700"
+                        >
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {item}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-emerald-500" />
+                            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                              Completed
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {[
+                        "Address Information",
+                        "Account Settings",
+                        "Ready to Book",
+                      ].map((item, index) => (
+                        <motion.div
+                          key={item}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{
+                            delay: 1.3 + index * 0.1,
+                            duration: 0.3,
+                          }}
+                          className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700"
+                        >
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {item}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-emerald-500" />
+                            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                              Completed
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </>
+                  )}
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.7, duration: 0.5 }}
+                  className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-400/20 rounded-xl p-5 md:p-6"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center">
+                      <Star className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-emerald-900 dark:text-emerald-100 mb-2">
+                        What&apos;s Next?
+                      </h4>
+                      <p className="text-sm md:text-base text-emerald-700 dark:text-emerald-300 leading-relaxed">
+                        {userRole === "WORKER"
+                          ? "Complete your profile by adding a professional photo and start receiving job requests. You can update your pricing and availability anytime from your dashboard."
+                          : "Browse our skilled professionals by category or search for specific services. You can book services, track job progress, and leave reviews for completed work."}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Action Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.9, duration: 0.6 }}
+            className="text-center space-y-6"
+          >
+            <ClickSpark sparkColor="#10b981" sparkCount={15} sparkRadius={30}>
+              <Button
+                onClick={handleGoToDashboard}
+                size="lg"
+                className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white px-8 md:px-12 py-3 md:py-4 text-base md:text-lg font-semibold shadow-xl shadow-emerald-500/30 dark:shadow-emerald-500/20 transition-all duration-300 hover:scale-105"
+              >
+                Go to Dashboard
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            </ClickSpark>
+
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Need help getting started?{" "}
+              <span className="text-emerald-600 dark:text-emerald-400 cursor-pointer hover:underline font-medium">
+                Check out our guide
+              </span>
+            </p>
+
+            {/* Debug Buttons - Remove in production */}
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Button
+                onClick={() => {
+                  console.log("🔥 Manual confetti test clicked");
+                  testConfetti();
+                }}
+                variant="outline"
+                size="sm"
+              >
+                Test Confetti 🎉
+              </Button>
+              <Button
+                onClick={() => {
+                  console.log("💥 Simple burst test clicked");
+                  simpleBurst();
+                }}
+                variant="outline"
+                size="sm"
+              >
+                Simple Burst 💥
+              </Button>
+              <Button
+                onClick={() => {
+                  console.log("🔍 Check confetti clicked");
+                  checkConfetti();
+                }}
+                variant="outline"
+                size="sm"
+              >
+                Check Library 🔍
+              </Button>
+              <Button
+                onClick={() => {
+                  console.log("🎈 Basic confetti test clicked");
+                  basicConfettiEffect();
+                }}
+                variant="outline"
+                size="sm"
+              >
+                Basic Effect 🎈
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
