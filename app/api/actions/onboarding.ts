@@ -197,10 +197,8 @@ export async function setUserRole(
       const latitude = latRaw ? parseFloat(latRaw) : undefined;
       const longitude = lngRaw ? parseFloat(lngRaw) : undefined;
 
-      // Build profile payload and include lat/lng when present. Cast to `any` for now to
-      // avoid TypeScript errors until the Prisma client is regenerated after applying
-      // the create-only migration.
-      const profileData: any = {
+      // Build profile payload and include lat/lng when present
+      const profileData = {
         skilledIn,
         qualification,
         certificates,
@@ -216,9 +214,13 @@ export async function setUserRole(
         country,
         postalCode,
         availableAreas,
+        ...(typeof latitude === "number" && !Number.isNaN(latitude)
+          ? { latitude }
+          : {}),
+        ...(typeof longitude === "number" && !Number.isNaN(longitude)
+          ? { longitude }
+          : {}),
       };
-      if (typeof latitude === "number" && !Number.isNaN(latitude)) profileData.latitude = latitude;
-      if (typeof longitude === "number" && !Number.isNaN(longitude)) profileData.longitude = longitude;
 
       await prisma.$transaction([
         prisma.user.update({
