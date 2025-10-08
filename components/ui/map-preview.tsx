@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+
 import L from "leaflet";
 import { useRef } from "react";
 
@@ -10,12 +10,30 @@ type Worker = {
   id: string;
   name?: string | null;
   distanceKm?: number | null;
-  workerProfile?: any;
+  workerProfile?: {
+    latitude?: number | null;
+    longitude?: number | null;
+    lat?: number | null;
+    lng?: number | null;
+    name?: string | null;
+    category?: string | null;
+    jobCategory?: string | null;
+    skill?: string | null;
+    skills?: string[] | null;
+  } | null;
   category?: string | null;
   skill?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  location?: {
+    lat?: number | null;
+    lng?: number | null;
+  } | null;
 };
 
-function pickLatLng(w: any): { lat: number; lng: number } | null {
+function pickLatLng(w: Worker): { lat: number; lng: number } | null {
   if (!w) return null;
   const candidates = [
     { lat: w.lat, lng: w.lng },
@@ -25,7 +43,8 @@ function pickLatLng(w: any): { lat: number; lng: number } | null {
     { lat: w.workerProfile?.lat, lng: w.workerProfile?.lng },
   ];
   for (const c of candidates) {
-    if (c && typeof c.lat === "number" && typeof c.lng === "number") return c;
+    if (c && typeof c.lat === "number" && typeof c.lng === "number")
+      return { lat: c.lat, lng: c.lng };
   }
   return null;
 }
@@ -67,26 +86,49 @@ export default function MapPreview({
   const markerMapRef = useRef<Map<string, L.Marker>>(new Map());
 
   const markers = useMemo(() => {
-    const m: { lat: number; lng: number; id: string; name?: string | null; category?: string | null; skill?: string | null }[] = [];
+    const m: {
+      lat: number;
+      lng: number;
+      id: string;
+      name?: string | null;
+      category?: string | null;
+      skill?: string | null;
+    }[] = [];
     for (const w of workers || []) {
-      const p = pickLatLng(w as any);
+      const p = pickLatLng(w);
       if (!p) continue;
       // try to infer category/skill from common places on the worker object
-      const category = w.category ?? w.workerProfile?.category ?? w.workerProfile?.jobCategory ?? null;
+      const category =
+        w.category ??
+        w.workerProfile?.category ??
+        w.workerProfile?.jobCategory ??
+        null;
       let skill: string | null = null;
       if (w.skill) skill = w.skill;
       else if (w.workerProfile?.skill) skill = w.workerProfile.skill;
-      else if (Array.isArray(w.workerProfile?.skills) && w.workerProfile.skills.length > 0) {
+      else if (
+        Array.isArray(w.workerProfile?.skills) &&
+        w.workerProfile.skills.length > 0
+      ) {
         const s = w.workerProfile.skills[0];
-        skill = typeof s === 'string' ? s : s?.name ?? null;
+        skill = typeof s === "string" ? s : String(s);
       }
-      m.push({ lat: p.lat, lng: p.lng, id: w.id, name: w.name ?? w.workerProfile?.name ?? "Worker", category, skill });
+      m.push({
+        lat: p.lat,
+        lng: p.lng,
+        id: w.id,
+        name: w.name ?? w.workerProfile?.name ?? "Worker",
+        category,
+        skill,
+      });
       if (m.length >= 200) break;
     }
     return m;
   }, [workers]);
 
-  const centerPoint = center ?? (markers.length > 0 ? { lat: markers[0].lat, lng: markers[0].lng } : null);
+  const centerPoint =
+    center ??
+    (markers.length > 0 ? { lat: markers[0].lat, lng: markers[0].lng } : null);
 
   // helper to create a colored div icon for a category
   function createIcon(color: string) {
@@ -99,11 +141,11 @@ export default function MapPreview({
   }
 
   const CATEGORY_COLORS: Record<string, string> = {
-    plumber: '#ef4444', // red
-    electrician: '#f59e0b', // amber
-    carpenter: '#10b981', // green
-    cleaner: '#3b82f6', // blue
-    default: '#6366f1',
+    plumber: "#ef4444", // red
+    electrician: "#f59e0b", // amber
+    carpenter: "#10b981", // green
+    cleaner: "#3b82f6", // blue
+    default: "#6366f1",
   };
   useEffect(() => {
     // guard: do nothing if centerPoint not available yet
@@ -125,51 +167,89 @@ export default function MapPreview({
     // clear existing markers
     const existingLayer = (mapRef.current as any)._markerLayer;
     if (existingLayer) {
-      try { mapRef.current.removeLayer(existingLayer); } catch (e) { /* ignore */ }
+      try {
+        mapRef.current.removeLayer(existingLayer);
+      } catch (e) {
+        /* ignore */
+      }
     }
 
     const markerGroup = L.layerGroup();
     for (const mk of markers) {
-      const color = (mk.category && CATEGORY_COLORS[String(mk.category).toLowerCase()]) ?? CATEGORY_COLORS.default;
+      const color =
+        (mk.category && CATEGORY_COLORS[String(mk.category).toLowerCase()]) ??
+        CATEGORY_COLORS.default;
       const marker = L.marker([mk.lat, mk.lng], { icon: createIcon(color) });
       // popup content uses a simple HTML string with a link back to the app and a Book button
-  // Use classes similar to the app's Button component for consistent design.
-  // We can't render the React Button component inside Leaflet popup (HTML string), so apply equivalent Tailwind classes.
-  const viewBtnClasses = 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-8 px-3 bg-white border text-neutral-900';
-  const bookBtnClasses = `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-8 px-3 text-white`;
-  const popupHtml = `<div class="map-popup" style="min-width:170px"><div class="map-popup-name" style="font-weight:600">${escapeHtml(mk.name || 'Worker')}</div>${mk.skill ? `<div class="map-popup-skill" style="font-size:0.9rem;color:#6b7280;margin-top:4px">${escapeHtml(mk.skill)}</div>` : ''}<div style="margin-top:8px;display:flex;gap:8px"><a href="/worker/${mk.id}" class="${viewBtnClasses}" data-popup-worker-id="${mk.id}">View</a><button class="${bookBtnClasses}" data-popup-book-id="${mk.id}" style="background:${color};">Book</button></div></div>`;
+      // Use classes similar to the app's Button component for consistent design.
+      // We can't render the React Button component inside Leaflet popup (HTML string), so apply equivalent Tailwind classes.
+      const viewBtnClasses =
+        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-8 px-3 bg-white border text-neutral-900";
+      const bookBtnClasses = `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-8 px-3 text-white`;
+      const popupHtml = `<div class="map-popup" style="min-width:170px"><div class="map-popup-name" style="font-weight:600">${escapeHtml(
+        mk.name || "Worker"
+      )}</div>${
+        mk.skill
+          ? `<div class="map-popup-skill" style="font-size:0.9rem;color:#6b7280;margin-top:4px">${escapeHtml(
+              mk.skill
+            )}</div>`
+          : ""
+      }<div style="margin-top:8px;display:flex;gap:8px"><a href="/worker/${
+        mk.id
+      }" class="${viewBtnClasses}" data-popup-worker-id="${
+        mk.id
+      }">View</a><button class="${bookBtnClasses}" data-popup-book-id="${
+        mk.id
+      }" style="background:${color};">Book</button></div></div>`;
       // keep popup open while interacting with it
-      marker.bindPopup(popupHtml, { closeButton: true, autoClose: false, closeOnClick: false });
+      marker.bindPopup(popupHtml, {
+        closeButton: true,
+        autoClose: false,
+        closeOnClick: false,
+      });
       // open popup on hover
-      marker.on('mouseover', () => marker.openPopup());
+      marker.on("mouseover", () => marker.openPopup());
       // when the popup opens, attach listeners to the popup element so leaving the popup closes it
-      marker.on('popupopen', (e: any) => {
-        const popupEl = e.popup && (e.popup.getElement ? e.popup.getElement() : e.popup._container);
+      marker.on("popupopen", (e: any) => {
+        const popupEl =
+          e.popup &&
+          (e.popup.getElement ? e.popup.getElement() : e.popup._container);
         // highlight the corresponding worker card
         try {
           const card = document.querySelector(`[data-worker-id="${mk.id}"]`);
-          if (card) card.classList.add('worker-highlight');
+          if (card) card.classList.add("worker-highlight");
         } catch (err) {}
         if (popupEl) {
           const enter = () => marker.openPopup();
           const leave = () => marker.closePopup();
-          popupEl.addEventListener('mouseenter', enter);
-          popupEl.addEventListener('mouseleave', leave);
+          popupEl.addEventListener("mouseenter", enter);
+          popupEl.addEventListener("mouseleave", leave);
           // intercept clicks on the popup link to use client navigation
-          const link = popupEl.querySelector('[data-popup-worker-id]') as HTMLAnchorElement | null;
-          const bookBtn = popupEl.querySelector('[data-popup-book-id]') as HTMLButtonElement | null;
+          const link = popupEl.querySelector(
+            "[data-popup-worker-id]"
+          ) as HTMLAnchorElement | null;
+          const bookBtn = popupEl.querySelector(
+            "[data-popup-book-id]"
+          ) as HTMLButtonElement | null;
           const onClick = (ev: MouseEvent) => {
             ev.preventDefault();
-            try { router.push(`/worker/${mk.id}`); } catch (err) { window.location.href = `/worker/${mk.id}`; }
+            try {
+              router.push(`/worker/${mk.id}`);
+            } catch (err) {
+              window.location.href = `/worker/${mk.id}`;
+            }
           };
           const onBook = (ev: MouseEvent) => {
             ev.preventDefault();
             try {
-              const hasListeners = (window as any).__rozgaar_book_listeners_count > 0;
+              const hasListeners =
+                (window as any).__rozgaar_book_listeners_count > 0;
               if (hasListeners) {
                 // dispatch open request
-                const custom = new CustomEvent('rozgaar:openBook', { detail: { workerId: mk.id } });
-                console.debug('[map-preview] dispatch openBook for', mk.id);
+                const custom = new CustomEvent("rozgaar:openBook", {
+                  detail: { workerId: mk.id },
+                });
+                console.debug("[map-preview] dispatch openBook for", mk.id);
                 window.dispatchEvent(custom);
                 // wait for confirmation that the dialog opened
                 let handled = false;
@@ -179,53 +259,86 @@ export default function MapPreview({
                     if (detail.workerId === mk.id) handled = true;
                   } catch (err) {}
                 };
-                window.addEventListener('rozgaar:bookOpened', onOpened as EventListener);
+                window.addEventListener(
+                  "rozgaar:bookOpened",
+                  onOpened as EventListener
+                );
                 // short timeout to fallback to navigation if not handled
                 setTimeout(() => {
-                  try { window.removeEventListener('rozgaar:bookOpened', onOpened as EventListener); } catch (e) {}
+                  try {
+                    window.removeEventListener(
+                      "rozgaar:bookOpened",
+                      onOpened as EventListener
+                    );
+                  } catch (e) {}
                   if (!handled) {
-                    console.debug('[map-preview] bookOpened not received for', mk.id, 'falling back to navigation');
-                    try { router.push(`/worker/${mk.id}?action=book`); } catch (err) { window.location.href = `/worker/${mk.id}?action=book`; }
+                    console.debug(
+                      "[map-preview] bookOpened not received for",
+                      mk.id,
+                      "falling back to navigation"
+                    );
+                    try {
+                      router.push(`/worker/${mk.id}?action=book`);
+                    } catch (err) {
+                      window.location.href = `/worker/${mk.id}?action=book`;
+                    }
                   }
                 }, 350);
                 return;
               }
             } catch (err) {}
             // fallback to navigation
-            console.debug('[map-preview] no listeners, navigating to worker page for', mk.id);
-            try { router.push(`/worker/${mk.id}?action=book`); } catch (err) { window.location.href = `/worker/${mk.id}?action=book`; }
-          };
-          if (link) link.addEventListener('click', onClick);
-          if (bookBtn) bookBtn.addEventListener('click', onBook);
-          // ensure cleanup when popup closes
-          marker.on('popupclose', () => {
+            console.debug(
+              "[map-preview] no listeners, navigating to worker page for",
+              mk.id
+            );
             try {
-              popupEl.removeEventListener('mouseenter', enter);
-              popupEl.removeEventListener('mouseleave', leave);
-              if (link) link.removeEventListener('click', onClick);
-              if (bookBtn) bookBtn.removeEventListener('click', onBook);
+              router.push(`/worker/${mk.id}?action=book`);
+            } catch (err) {
+              window.location.href = `/worker/${mk.id}?action=book`;
+            }
+          };
+          if (link) link.addEventListener("click", onClick);
+          if (bookBtn) bookBtn.addEventListener("click", onBook);
+          // ensure cleanup when popup closes
+          marker.on("popupclose", () => {
+            try {
+              popupEl.removeEventListener("mouseenter", enter);
+              popupEl.removeEventListener("mouseleave", leave);
+              if (link) link.removeEventListener("click", onClick);
+              if (bookBtn) bookBtn.removeEventListener("click", onBook);
             } catch (err) {}
             try {
-              const card = document.querySelector(`[data-worker-id="${mk.id}"]`);
-              if (card) card.classList.remove('worker-highlight');
+              const card = document.querySelector(
+                `[data-worker-id="${mk.id}"]`
+              );
+              if (card) card.classList.remove("worker-highlight");
             } catch (err) {}
           });
         }
       });
       markerGroup.addLayer(marker);
-      try { markerMapRef.current.set(mk.id, marker); } catch (err) {}
+      try {
+        markerMapRef.current.set(mk.id, marker);
+      } catch (err) {}
     }
     markerGroup.addTo(mapRef.current as L.Map);
     // store reference so we can remove later
     (mapRef.current as any)._markerLayer = markerGroup;
 
     // set view to centerPoint
-    try { (mapRef.current as any).setView([centerPoint.lat, centerPoint.lng], zoom, { animate: true }); } catch (e) { }
+    try {
+      (mapRef.current as any).setView(
+        [centerPoint.lat, centerPoint.lng],
+        zoom,
+        { animate: true }
+      );
+    } catch (e) {}
 
     return () => {
       try {
         markerGroup.clearLayers();
-      } catch (e) { }
+      } catch (e) {}
     };
   }, [containerRef, markers, centerPoint, zoom]);
 
@@ -235,7 +348,9 @@ export default function MapPreview({
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 h-[360px] overflow-hidden flex items-center justify-center">
           <div className="text-center text-neutral-500 dark:text-neutral-400">
             <div className="text-lg font-medium mb-2">Map placeholder</div>
-            <div className="text-sm">Set a location or allow browser location to view nearby workers.</div>
+            <div className="text-sm">
+              Set a location or allow browser location to view nearby workers.
+            </div>
           </div>
         </div>
       </div>
@@ -244,8 +359,11 @@ export default function MapPreview({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden" style={{ height }}>
-        <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      <div
+        className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
+        style={{ height }}
+      >
+        <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
       </div>
       <style>{`
         .marker-custom { display: flex; align-items: center; justify-content: center; }
@@ -262,5 +380,16 @@ export default function MapPreview({
 }
 
 function escapeHtml(s: string) {
-  return String(s).replace(/[&<>"'`]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '`':'&#96;' }[c] as string));
+  return String(s).replace(
+    /[&<>"'`]/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+        "`": "&#96;",
+      }[c] as string)
+  );
 }

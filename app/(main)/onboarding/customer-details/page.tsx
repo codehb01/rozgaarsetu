@@ -37,7 +37,6 @@ export default function CustomerDetailsPage() {
   });
 
   const { getCurrentPosition, status: geoStatus, place } = useLocation();
- 
 
   const onSubmit = async (data: CustomerFormData) => {
     setIsLoading(true);
@@ -53,20 +52,34 @@ export default function CustomerDetailsPage() {
 
   // When geocode or browser location is available, set latitude/longitude into form data
   // Note: CustomerFormData already allows latitude/longitude (schema updated)
-  const applyGeocode = (res: any) => {
-    const addr = res?.address || {}
-    if (addr.city) setValue("city", addr.city)
-    if (addr.state) setValue("state", addr.state)
-    if (addr.country) setValue("country", addr.country)
-    if (addr.postalCode) setValue("postalCode", addr.postalCode)
-    if (res?.coords?.lat) setValue("latitude", res.coords.lat)
-    if (res?.coords?.lng) setValue("longitude", res.coords.lng)
-  }
+  const applyGeocode = (res: {
+    address?: {
+      city?: string;
+      state?: string;
+      country?: string;
+      postalCode?: string;
+    };
+    coords?: {
+      lat?: number;
+      lng?: number;
+    };
+  }) => {
+    const addr = res?.address || {};
+    if (addr.city) setValue("city", addr.city);
+    if (addr.state) setValue("state", addr.state);
+    if (addr.country) setValue("country", addr.country);
+    if (addr.postalCode) setValue("postalCode", addr.postalCode);
+    if (res?.coords?.lat) setValue("latitude", res.coords.lat);
+    if (res?.coords?.lng) setValue("longitude", res.coords.lng);
+  };
 
   if (typeof window !== "undefined" && place && geoStatus === "success") {
     if (!watch("address")) {
-      setValue("address", formatDisplayAddress(place.address) || place.displayName || "")
-      applyGeocode(place)
+      setValue(
+        "address",
+        formatDisplayAddress(place.address) || place.displayName || ""
+      );
+      applyGeocode(place);
     }
   }
 
@@ -102,7 +115,9 @@ export default function CustomerDetailsPage() {
                 </h3>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Full Address</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Full Address
+                  </label>
                   <div className="flex gap-2">
                     <div className="flex-1">
                       <OpenStreetMapInput

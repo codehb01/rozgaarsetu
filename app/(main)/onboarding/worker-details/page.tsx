@@ -10,13 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import StaggeredDropDown from "@/components/ui/staggered-dropdown";
-import { 
-  Loader2, 
-  ArrowLeft, 
-  ArrowRight, 
-  User, 
-  Wrench, 
-  MapPin, 
+import {
+  Loader2,
+  ArrowLeft,
+  ArrowRight,
+  User,
+  Wrench,
+  MapPin,
   DollarSign,
   Camera,
   CheckCircle,
@@ -24,7 +24,7 @@ import {
   X,
   LocateFixed,
   Sparkles,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import OpenStreetMapInput from "@/components/ui/openstreetmap-input";
@@ -95,9 +95,21 @@ const steps: Step[] = [
 ];
 
 const popularSkills = [
-  "Plumbing", "Electrical", "Carpentry", "Painting", "Cleaning",
-  "Gardening", "AC Repair", "Appliance Repair", "Masonry", "Welding",
-  "Roofing", "Flooring", "Pest Control", "Moving", "Handyman"
+  "Plumbing",
+  "Electrical",
+  "Carpentry",
+  "Painting",
+  "Cleaning",
+  "Gardening",
+  "AC Repair",
+  "Appliance Repair",
+  "Masonry",
+  "Welding",
+  "Roofing",
+  "Flooring",
+  "Pest Control",
+  "Moving",
+  "Handyman",
 ];
 
 const qualificationOptions = [
@@ -117,7 +129,7 @@ const experienceLevels = [
   { range: "0-1", label: "New", description: "Just starting", years: 0 },
   { range: "2-5", label: "Experienced", description: "Few years", years: 3 },
   { range: "6-10", label: "Expert", description: "Many years", years: 8 },
-  { range: "10+", label: "Master", description: "Very experienced", years: 10 }
+  { range: "10+", label: "Master", description: "Very experienced", years: 10 },
 ];
 
 export default function WorkerDetailsPage() {
@@ -128,7 +140,9 @@ export default function WorkerDetailsPage() {
   const [customSkill, setCustomSkill] = useState("");
   const [selectedQualification, setSelectedQualification] = useState("");
   const [customQualification, setCustomQualification] = useState("");
-  const [selectedExperience, setSelectedExperience] = useState<number | null>(null);
+  const [selectedExperience, setSelectedExperience] = useState<number | null>(
+    null
+  );
 
   const {
     register,
@@ -162,30 +176,42 @@ export default function WorkerDetailsPage() {
   const { getCurrentPosition, status: geoStatus, place } = useLocation();
 
   // Apply geocode result to form fields
-  const applyGeocode = (res: any) => {
-    const addr = res?.address || {}
-    setValue("address", formatDisplayAddress(addr) || res?.displayName || "")
-    if (addr.city) setValue("city", addr.city)
-    if (addr.state) setValue("state", addr.state)
-    if (addr.country) setValue("country", addr.country)
-    if (addr.postalCode) setValue("postalCode", addr.postalCode)
-    if (res?.coords?.lat) setValue("latitude", res.coords.lat)
-    if (res?.coords?.lng) setValue("longitude", res.coords.lng)
-  }
+  const applyGeocode = (res: {
+    address?: {
+      city?: string;
+      state?: string;
+      country?: string;
+      postalCode?: string;
+    };
+    coords?: {
+      lat?: number;
+      lng?: number;
+    };
+    displayName?: string;
+  }) => {
+    const addr = res?.address || {};
+    setValue("address", formatDisplayAddress(addr) || res?.displayName || "");
+    if (addr.city) setValue("city", addr.city);
+    if (addr.state) setValue("state", addr.state);
+    if (addr.country) setValue("country", addr.country);
+    if (addr.postalCode) setValue("postalCode", addr.postalCode);
+    if (res?.coords?.lat) setValue("latitude", res.coords.lat);
+    if (res?.coords?.lng) setValue("longitude", res.coords.lng);
+  };
 
   // When user clicks "Use my location", hook updates `place`; reflect into form
   if (typeof window !== "undefined" && place && geoStatus === "success") {
     // best-effort: only set if address field is empty to avoid clobbering typed input
     if (!watch("address")) {
-      applyGeocode(place)
+      applyGeocode(place);
       if (place?.coords) {
-        setValue("latitude", place.coords.lat)
-        setValue("longitude", place.coords.lng)
+        setValue("latitude", place.coords.lat);
+        setValue("longitude", place.coords.lng);
       }
     }
   }
 
-  const currentStepData = steps.find(step => step.id === currentStep);
+  const currentStepData = steps.find((step) => step.id === currentStep);
   const isLastStep = currentStep === steps.length;
   const isFirstStep = currentStep === 1;
 
@@ -198,7 +224,7 @@ export default function WorkerDetailsPage() {
   };
 
   const removeSkill = (skill: string) => {
-    const updatedSkills = selectedSkills.filter(s => s !== skill);
+    const updatedSkills = selectedSkills.filter((s) => s !== skill);
     setSelectedSkills(updatedSkills);
     setValue("skilledIn", updatedSkills);
   };
@@ -213,20 +239,20 @@ export default function WorkerDetailsPage() {
   // Format Aadhar number with dashes (XXXX-XXXX-XXXX)
   const formatAadharNumber = (value: string) => {
     // Remove all non-digit characters
-    const digitsOnly = value.replace(/\D/g, '');
-    
+    const digitsOnly = value.replace(/\D/g, "");
+
     // Limit to 12 digits
     const limitedDigits = digitsOnly.slice(0, 12);
-    
+
     // Add dashes after every 4 digits
-    let formatted = '';
+    let formatted = "";
     for (let i = 0; i < limitedDigits.length; i++) {
       if (i > 0 && i % 4 === 0) {
-        formatted += '-';
+        formatted += "-";
       }
       formatted += limitedDigits[i];
     }
-    
+
     return formatted;
   };
 
@@ -238,7 +264,7 @@ export default function WorkerDetailsPage() {
   const handleQualificationChange = (value: string) => {
     setSelectedQualification(value);
     if (value !== "other") {
-      const selected = qualificationOptions.find(q => q.value === value);
+      const selected = qualificationOptions.find((q) => q.value === value);
       setValue("qualification", selected?.label || value);
       setCustomQualification("");
     }
@@ -259,24 +285,24 @@ export default function WorkerDetailsPage() {
     // Custom validation for step 1
     if (currentStep === 1) {
       const aadhar = watch("aadharNumber");
-      const digitsOnly = aadhar?.replace(/\D/g, '') || '';
-      
+      const digitsOnly = aadhar?.replace(/\D/g, "") || "";
+
       if (digitsOnly.length !== 12) {
         return;
       }
-      
+
       if (!selectedQualification) {
         return;
       }
-      
+
       if (selectedExperience === null) {
         return;
       }
     }
-    
+
     const fieldsToValidate = getFieldsForStep(currentStep);
     const isValid = await trigger(fieldsToValidate);
-    
+
     if (isValid && currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
@@ -365,35 +391,49 @@ export default function WorkerDetailsPage() {
                 const StepIcon = step.icon;
                 const isActive = currentStep === step.id;
                 const isCompleted = currentStep > step.id;
-                
+
                 return (
                   <div key={step.id} className="flex items-center">
                     {/* Icon Container */}
-                    <div className={`
+                    <div
+                      className={`
                       relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl transition-all duration-300
-                      ${isActive 
-                        ? 'bg-blue-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20 scale-110' 
-                        : isCompleted 
-                          ? 'bg-blue-100 dark:bg-blue-950/40 border-2 border-blue-300 dark:border-blue-600'
-                          : 'bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700'
+                      ${
+                        isActive
+                          ? "bg-blue-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20 scale-110"
+                          : isCompleted
+                          ? "bg-blue-100 dark:bg-blue-950/40 border-2 border-blue-300 dark:border-blue-600"
+                          : "bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700"
                       }
-                    `}>
+                    `}
+                    >
                       {isCompleted ? (
                         <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-400" />
                       ) : (
-                        <StepIcon className={`h-4 w-4 md:h-5 md:w-5 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
+                        <StepIcon
+                          className={`h-4 w-4 md:h-5 md:w-5 ${
+                            isActive
+                              ? "text-white"
+                              : "text-gray-500 dark:text-gray-400"
+                          }`}
+                        />
                       )}
                     </div>
-                    
+
                     {/* Connector Line */}
                     {index < steps.length - 1 && (
-                      <div 
+                      <div
                         className={`h-0.5 transition-all duration-300 ${
-                          currentStep > step.id 
-                            ? 'bg-blue-500' 
-                            : 'bg-gray-200 dark:bg-gray-700'
+                          currentStep > step.id
+                            ? "bg-blue-500"
+                            : "bg-gray-200 dark:bg-gray-700"
                         }`}
-                        style={{ width: 'calc((100vw - 40px - 200px) / 4)', maxWidth: '120px', minWidth: '40px', margin: '0 8px' }}
+                        style={{
+                          width: "calc((100vw - 40px - 200px) / 4)",
+                          maxWidth: "120px",
+                          minWidth: "40px",
+                          margin: "0 8px",
+                        }}
                       />
                     )}
                   </div>
@@ -462,12 +502,14 @@ export default function WorkerDetailsPage() {
                                 {errors.aadharNumber.message}
                               </p>
                             )}
-                            {watch("aadharNumber") && watch("aadharNumber").replace(/\D/g, '').length === 12 && (
-                              <p className="text-green-600 dark:text-green-400 text-xs flex items-center gap-1">
-                                <CheckCircle className="h-3 w-3" />
-                                Valid Aadhar number
-                              </p>
-                            )}
+                            {watch("aadharNumber") &&
+                              watch("aadharNumber").replace(/\D/g, "")
+                                .length === 12 && (
+                                <p className="text-green-600 dark:text-green-400 text-xs flex items-center gap-1">
+                                  <CheckCircle className="h-3 w-3" />
+                                  Valid Aadhar number
+                                </p>
+                              )}
                           </motion.div>
 
                           <motion.div
@@ -479,7 +521,7 @@ export default function WorkerDetailsPage() {
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                               Education
                             </label>
-                            
+
                             {/* Staggered Dropdown */}
                             <StaggeredDropDown
                               items={qualificationOptions}
@@ -490,12 +532,21 @@ export default function WorkerDetailsPage() {
                                 } else {
                                   setSelectedQualification(value);
                                   setCustomQualification("");
-                                  setValue("qualification", qualificationOptions.find(q => q.value === value)?.label || value);
+                                  setValue(
+                                    "qualification",
+                                    qualificationOptions.find(
+                                      (q) => q.value === value
+                                    )?.label || value
+                                  );
                                 }
                               }}
-                              label={selectedQualification 
-                                ? qualificationOptions.find(q => q.value === selectedQualification)?.label 
-                                : "Select your education level"}
+                              label={
+                                selectedQualification
+                                  ? qualificationOptions.find(
+                                      (q) => q.value === selectedQualification
+                                    )?.label
+                                  : "Select your education level"
+                              }
                             />
 
                             {selectedQualification === "other" && (
@@ -515,7 +566,7 @@ export default function WorkerDetailsPage() {
                                 />
                               </motion.div>
                             )}
-                            
+
                             {errors.qualification && (
                               <p className="text-red-500 text-xs md:text-sm mt-1">
                                 {errors.qualification.message}
@@ -535,7 +586,8 @@ export default function WorkerDetailsPage() {
                           </label>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {experienceLevels.map((level, idx) => {
-                              const isSelected = selectedExperience === level.years;
+                              const isSelected =
+                                selectedExperience === level.years;
                               return (
                                 <motion.div
                                   key={level.range}
@@ -546,23 +598,29 @@ export default function WorkerDetailsPage() {
                                   whileTap={{ scale: 0.98 }}
                                   className={`p-3 md:p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                                     isSelected
-                                      ? "border-blue-600 bg-blue-50 dark:bg-blue-950/40 shadow-md shadow-blue-500/30 ring-2 ring-blue-500/20" 
+                                      ? "border-blue-600 bg-blue-50 dark:bg-blue-950/40 shadow-md shadow-blue-500/30 ring-2 ring-blue-500/20"
                                       : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm"
                                   }`}
-                                  onClick={() => handleExperienceSelect(level.years)}
+                                  onClick={() =>
+                                    handleExperienceSelect(level.years)
+                                  }
                                 >
-                                  <div className={`text-sm font-semibold ${
-                                    isSelected 
-                                      ? "text-blue-700 dark:text-blue-300" 
-                                      : "text-gray-900 dark:text-white"
-                                  }`}>
+                                  <div
+                                    className={`text-sm font-semibold ${
+                                      isSelected
+                                        ? "text-blue-700 dark:text-blue-300"
+                                        : "text-gray-900 dark:text-white"
+                                    }`}
+                                  >
                                     {level.label}
                                   </div>
-                                  <div className={`text-xs mt-0.5 ${
-                                    isSelected
-                                      ? "text-blue-600 dark:text-blue-400"
-                                      : "text-gray-500 dark:text-gray-400"
-                                  }`}>
+                                  <div
+                                    className={`text-xs mt-0.5 ${
+                                      isSelected
+                                        ? "text-blue-600 dark:text-blue-400"
+                                        : "text-gray-500 dark:text-gray-400"
+                                    }`}
+                                  >
                                     {level.description}
                                   </div>
                                   {isSelected && (
@@ -583,7 +641,7 @@ export default function WorkerDetailsPage() {
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                             About Yourself
                           </label>
-                          
+
                           {/* Tips Box */}
                           <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-lg border border-blue-200/50 dark:border-blue-400/20">
                             <p className="text-xs font-semibold text-blue-900 dark:text-blue-100 mb-2">
@@ -609,7 +667,9 @@ export default function WorkerDetailsPage() {
                                   onClick={() => setValue("bio", example)}
                                   className="w-full text-left p-2 text-xs bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors"
                                 >
-                                  <span className="text-gray-700 dark:text-gray-300">{example}</span>
+                                  <span className="text-gray-700 dark:text-gray-300">
+                                    {example}
+                                  </span>
                                 </button>
                               ))}
                             </div>
@@ -621,8 +681,8 @@ export default function WorkerDetailsPage() {
                               required: "Please write about yourself",
                               minLength: {
                                 value: 30,
-                                message: "Please write at least 30 characters"
-                              }
+                                message: "Please write at least 30 characters",
+                              },
                             })}
                             className="min-h-28 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all resize-none"
                           />
@@ -632,11 +692,13 @@ export default function WorkerDetailsPage() {
                                 {errors.bio.message}
                               </p>
                             )}
-                            <p className={`text-xs ml-auto ${
-                              (watch("bio")?.length || 0) >= 30 
-                                ? "text-green-600 dark:text-green-400" 
-                                : "text-gray-400"
-                            }`}>
+                            <p
+                              className={`text-xs ml-auto ${
+                                (watch("bio")?.length || 0) >= 30
+                                  ? "text-green-600 dark:text-green-400"
+                                  : "text-gray-400"
+                              }`}
+                            >
                               {watch("bio")?.length || 0}/500
                               {(watch("bio")?.length || 0) >= 30 && " ✓"}
                             </p>
@@ -664,7 +726,7 @@ export default function WorkerDetailsPage() {
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                             Select your skills
                           </label>
-                          
+
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 mb-4">
                             {popularSkills.map((skill, index) => (
                               <motion.div
@@ -674,15 +736,19 @@ export default function WorkerDetailsPage() {
                                 transition={{ delay: index * 0.03 }}
                               >
                                 <Badge
-                                  variant={selectedSkills.includes(skill) ? "default" : "outline"}
+                                  variant={
+                                    selectedSkills.includes(skill)
+                                      ? "default"
+                                      : "outline"
+                                  }
                                   className={`cursor-pointer w-full justify-center py-2 px-3 transition-all duration-200 ${
                                     selectedSkills.includes(skill)
                                       ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600 shadow-sm"
                                       : "hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                                   }`}
-                                  onClick={() => 
-                                    selectedSkills.includes(skill) 
-                                      ? removeSkill(skill) 
+                                  onClick={() =>
+                                    selectedSkills.includes(skill)
+                                      ? removeSkill(skill)
                                       : addSkill(skill)
                                   }
                                 >
@@ -700,7 +766,9 @@ export default function WorkerDetailsPage() {
                               placeholder="Add custom skill"
                               value={customSkill}
                               onChange={(e) => setCustomSkill(e.target.value)}
-                              onKeyPress={(e) => e.key === 'Enter' && addCustomSkill()}
+                              onKeyPress={(e) =>
+                                e.key === "Enter" && addCustomSkill()
+                              }
                               className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                             />
                             <Button
@@ -730,8 +798,8 @@ export default function WorkerDetailsPage() {
                                     className="bg-blue-600 text-white hover:bg-blue-700"
                                   >
                                     {skill}
-                                    <X 
-                                      className="h-3 w-3 ml-1 cursor-pointer" 
+                                    <X
+                                      className="h-3 w-3 ml-1 cursor-pointer"
                                       onClick={() => removeSkill(skill)}
                                     />
                                   </Badge>
@@ -741,7 +809,7 @@ export default function WorkerDetailsPage() {
                           )}
 
                           {selectedSkills.length === 0 && (
-                            <motion.p 
+                            <motion.p
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
@@ -775,7 +843,9 @@ export default function WorkerDetailsPage() {
                               Hourly Rate (₹)
                             </label>
                             <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 z-10">₹</span>
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 z-10">
+                                ₹
+                              </span>
                               <Input
                                 placeholder="500"
                                 type="number"
@@ -784,16 +854,31 @@ export default function WorkerDetailsPage() {
                                 className="h-11 md:h-12 pl-8 pr-3 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 {...register("hourlyRate", {
                                   required: "Hourly rate is required",
-                                  min: { value: 100, message: "Minimum rate is ₹100/hour" },
-                                  valueAsNumber: true
+                                  min: {
+                                    value: 100,
+                                    message: "Minimum rate is ₹100/hour",
+                                  },
+                                  valueAsNumber: true,
                                 })}
                                 onKeyDown={(e) => {
-                                  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                                  if (
+                                    e.key === "ArrowUp" ||
+                                    e.key === "ArrowDown"
+                                  ) {
                                     e.preventDefault();
-                                    const currentValue = parseInt(watch("hourlyRate")?.toString() || "0");
-                                    const newValue = e.key === 'ArrowUp' 
-                                      ? Math.ceil((currentValue + 50) / 50) * 50
-                                      : Math.max(100, Math.floor((currentValue - 50) / 50) * 50);
+                                    const currentValue = parseInt(
+                                      watch("hourlyRate")?.toString() || "0"
+                                    );
+                                    const newValue =
+                                      e.key === "ArrowUp"
+                                        ? Math.ceil((currentValue + 50) / 50) *
+                                          50
+                                        : Math.max(
+                                            100,
+                                            Math.floor(
+                                              (currentValue - 50) / 50
+                                            ) * 50
+                                          );
                                     setValue("hourlyRate", newValue);
                                   }
                                 }}
@@ -819,7 +904,9 @@ export default function WorkerDetailsPage() {
                               Minimum Job Fee (₹)
                             </label>
                             <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 z-10">₹</span>
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 z-10">
+                                ₹
+                              </span>
                               <Input
                                 placeholder="1000"
                                 type="number"
@@ -828,16 +915,32 @@ export default function WorkerDetailsPage() {
                                 className="h-11 md:h-12 pl-8 pr-3 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 {...register("minimumFee", {
                                   required: "Minimum fee is required",
-                                  min: { value: 200, message: "Minimum fee should be at least ₹200" },
-                                  valueAsNumber: true
+                                  min: {
+                                    value: 200,
+                                    message:
+                                      "Minimum fee should be at least ₹200",
+                                  },
+                                  valueAsNumber: true,
                                 })}
                                 onKeyDown={(e) => {
-                                  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                                  if (
+                                    e.key === "ArrowUp" ||
+                                    e.key === "ArrowDown"
+                                  ) {
                                     e.preventDefault();
-                                    const currentValue = parseInt(watch("minimumFee")?.toString() || "0");
-                                    const newValue = e.key === 'ArrowUp' 
-                                      ? Math.ceil((currentValue + 50) / 50) * 50
-                                      : Math.max(200, Math.floor((currentValue - 50) / 50) * 50);
+                                    const currentValue = parseInt(
+                                      watch("minimumFee")?.toString() || "0"
+                                    );
+                                    const newValue =
+                                      e.key === "ArrowUp"
+                                        ? Math.ceil((currentValue + 50) / 50) *
+                                          50
+                                        : Math.max(
+                                            200,
+                                            Math.floor(
+                                              (currentValue - 50) / 50
+                                            ) * 50
+                                          );
                                     setValue("minimumFee", newValue);
                                   }
                                 }}
@@ -865,19 +968,31 @@ export default function WorkerDetailsPage() {
                           </h3>
                           <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
                             <li className="flex items-start gap-2">
-                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
-                              <span>Start competitive and adjust based on demand</span>
+                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">
+                                •
+                              </span>
+                              <span>
+                                Start competitive and adjust based on demand
+                              </span>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
-                              <span>Higher rates often signal quality to customers</span>
+                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">
+                                •
+                              </span>
+                              <span>
+                                Higher rates often signal quality to customers
+                              </span>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">
+                                •
+                              </span>
                               <span>Consider rush job premiums</span>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">•</span>
+                              <span className="text-blue-500 dark:text-blue-400 mt-0.5">
+                                •
+                              </span>
                               <span>Factor in travel time and materials</span>
                             </li>
                           </ul>
@@ -927,7 +1042,9 @@ export default function WorkerDetailsPage() {
                                 ) : (
                                   <LocateFixed className="h-4 w-4 mr-2" />
                                 )}
-                                <span className="hidden md:inline">Use my location</span>
+                                <span className="hidden md:inline">
+                                  Use my location
+                                </span>
                                 <span className="md:hidden">Use location</span>
                               </Button>
                             </div>
@@ -952,7 +1069,7 @@ export default function WorkerDetailsPage() {
                                 placeholder="Enter city name"
                                 className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("city", {
-                                  required: "City is required"
+                                  required: "City is required",
                                 })}
                               />
                               {errors.city && (
@@ -975,7 +1092,7 @@ export default function WorkerDetailsPage() {
                                 placeholder="Enter state name"
                                 className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("state", {
-                                  required: "State is required"
+                                  required: "State is required",
                                 })}
                               />
                               {errors.state && (
@@ -1000,7 +1117,7 @@ export default function WorkerDetailsPage() {
                                 placeholder="Enter country"
                                 className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("country", {
-                                  required: "Country is required"
+                                  required: "Country is required",
                                 })}
                               />
                               {errors.country && (
@@ -1023,7 +1140,7 @@ export default function WorkerDetailsPage() {
                                 placeholder="Enter postal code"
                                 className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("postalCode", {
-                                  required: "Postal code is required"
+                                  required: "Postal code is required",
                                 })}
                               />
                               {errors.postalCode && (
@@ -1057,7 +1174,7 @@ export default function WorkerDetailsPage() {
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
                             Profile Picture (Optional)
                           </label>
-                          
+
                           <Controller
                             name="profilePic"
                             control={control}
@@ -1065,13 +1182,16 @@ export default function WorkerDetailsPage() {
                               <FileDropzone
                                 accept="image/*"
                                 maxSize={5 * 1024 * 1024}
-                                onChange={(file) => field.onChange(file ? [file] : [])}
+                                onChange={(file) =>
+                                  field.onChange(file ? [file] : [])
+                                }
                               />
                             )}
                           />
-                          
+
                           <p className="text-xs text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
-                            💡 Upload a clear, professional photo to increase your booking chances by 3x
+                            💡 Upload a clear, professional photo to increase
+                            your booking chances by 3x
                           </p>
                         </motion.div>
 
@@ -1082,10 +1202,13 @@ export default function WorkerDetailsPage() {
                           className="bg-green-50/50 dark:bg-green-950/20 p-5 md:p-6 rounded-xl border border-green-200/50 dark:border-green-400/20"
                         >
                           <h3 className="font-semibold text-green-900 dark:text-green-100 mb-3 flex items-center gap-2">
-                            <span className="text-xl">🎉</span> You're almost done!
+                            <span className="text-xl">🎉</span> You're almost
+                            done!
                           </h3>
                           <p className="text-sm text-green-800 dark:text-green-200 mb-4">
-                            Your profile is looking great. Next, you'll be able to showcase your previous work and start receiving job requests.
+                            Your profile is looking great. Next, you'll be able
+                            to showcase your previous work and start receiving
+                            job requests.
                           </p>
                           <ul className="text-sm text-green-700 dark:text-green-300 space-y-2">
                             <li className="flex items-center gap-2">
@@ -1126,7 +1249,11 @@ export default function WorkerDetailsPage() {
                   </Button>
 
                   {isLastStep ? (
-                    <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+                    <ClickSpark
+                      sparkColor="#60a5fa"
+                      sparkCount={12}
+                      sparkRadius={25}
+                    >
                       <Button
                         type="button"
                         onClick={handleSubmit(onSubmit)}

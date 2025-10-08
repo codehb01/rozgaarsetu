@@ -36,7 +36,18 @@ function flattenStringArray(values: string[] | null | undefined): string[] {
   return Array.from(new Set(out));
 }
 
-function matchesKeyword(q: string, worker: any): boolean {
+interface WorkerForSearch {
+  name?: string | null;
+  workerProfile?: {
+    skilledIn?: string[] | null;
+    availableAreas?: string[] | null;
+    qualification?: string | null;
+    city?: string | null;
+    bio?: string | null;
+  } | null;
+}
+
+function matchesKeyword(q: string, worker: WorkerForSearch): boolean {
   if (!q) return true;
   const needle = q.toLowerCase();
   const skills = flattenStringArray(worker.workerProfile?.skilledIn);
@@ -76,10 +87,14 @@ export async function GET(req: NextRequest) {
     const lng = sp.lng ? parseFloat(sp.lng) : undefined;
 
     // If lat/lng provided and sort=nearest, perform a DB-side distance sort using Haversine
-    if (typeof lat === "number" && typeof lng === "number" && sort === "nearest") {
+    if (
+      typeof lat === "number" &&
+      typeof lng === "number" &&
+      sort === "nearest"
+    ) {
       try {
         // Use a parameterized raw query to compute distance and order.
-        const rows = await prisma.$queryRaw`
+        const rows = (await prisma.$queryRaw`
           SELECT u."id" as id, u."name" as name, u."role" as role, wp.* , (
             6371 * acos(
               cos(radians(${lat})) * cos(radians(wp."latitude")) * cos(radians(wp."longitude") - radians(${lng})) +
@@ -91,7 +106,25 @@ export async function GET(req: NextRequest) {
           WHERE u."role" = 'WORKER'
           ORDER BY distance_km ASC
           LIMIT ${limit}
-        ` as any[];
+        `) as Array<{
+          id: string;
+          name: string | null;
+          role: string;
+          skilledIn?: string[] | null;
+          skilled_in?: string[] | null;
+          city?: string | null;
+          availableAreas?: string[] | null;
+          available_areas?: string[] | null;
+          yearsExperience?: number | null;
+          years_experience?: number | null;
+          qualification?: string | null;
+          profilePic?: string | null;
+          profile_pic?: string | null;
+          bio?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          distance_km: number | string;
+        }>;
 
         const mapped = rows.map((r) => ({
           id: r.id,
@@ -108,7 +141,10 @@ export async function GET(req: NextRequest) {
             latitude: r.latitude,
             longitude: r.longitude,
           },
-          distanceKm: typeof r.distance_km === 'number' ? r.distance_km : parseFloat(r.distance_km),
+          distanceKm:
+            typeof r.distance_km === "number"
+              ? r.distance_km
+              : parseFloat(r.distance_km),
         }));
 
         const filtered = mapped.filter((w) => {
@@ -122,7 +158,17 @@ export async function GET(req: NextRequest) {
       } catch (e) {
         // Likely the DB doesn't have latitude/longitude columns yet (migration not applied).
         // Fall back to the JS-based fetch below instead of returning 500.
-        try { console.warn("/api/workers nearest query failed, falling back to JS filter:", JSON.stringify(e)); } catch { console.warn("/api/workers nearest query failed, falling back to JS filter", e); }
+        try {
+          console.warn(
+            "/api/workers nearest query failed, falling back to JS filter:",
+            JSON.stringify(e)
+          );
+        } catch {
+          console.warn(
+            "/api/workers nearest query failed, falling back to JS filter",
+            e
+          );
+        }
       }
     }
 
@@ -137,7 +183,22 @@ export async function GET(req: NextRequest) {
         workerProfile: true,
       },
       take: 200,
-    })) as any[];
+    })) as Array<{
+      id: string;
+      name: string | null;
+      role: string;
+      workerProfile: {
+        skilledIn?: string[] | null;
+        city?: string | null;
+        availableAreas?: string[] | null;
+        yearsExperience?: number | null;
+        qualification?: string | null;
+        profilePic?: string | null;
+        bio?: string | null;
+        latitude?: number | null;
+        longitude?: number | null;
+      } | null;
+    }>;
 
     // Compute distances where possible (JS fallback). This lets the frontend show distances
     // even before DB-side Haversine ordering is used.
@@ -146,10 +207,15 @@ export async function GET(req: NextRequest) {
       const latVal = wp.latitude;
       const lngVal = wp.longitude;
       let d: number | null = null;
-      if (typeof lat === "number" && typeof lng === "number" && typeof latVal === "number" && typeof lngVal === "number") {
+      if (
+        typeof lat === "number" &&
+        typeof lng === "number" &&
+        typeof latVal === "number" &&
+        typeof lngVal === "number"
+      ) {
         try {
           d = distanceKm({ lat, lng }, { lat: latVal, lng: lngVal });
-        } catch (e) {
+        } catch {
           d = null;
         }
       }
@@ -167,10 +233,16 @@ export async function GET(req: NextRequest) {
 
     // If requested sort=nearest and distances were computed, sort by distance (nulls last)
     let result = filtered;
-    if (sort === "nearest" && typeof lat === "number" && typeof lng === "number") {
+    if (
+      sort === "nearest" &&
+      typeof lat === "number" &&
+      typeof lng === "number"
+    ) {
       result = filtered.sort((a, b) => {
-        const da = a.distanceKm == null ? Number.POSITIVE_INFINITY : a.distanceKm;
-        const db = b.distanceKm == null ? Number.POSITIVE_INFINITY : b.distanceKm;
+        const da =
+          a.distanceKm == null ? Number.POSITIVE_INFINITY : a.distanceKm;
+        const db =
+          b.distanceKm == null ? Number.POSITIVE_INFINITY : b.distanceKm;
         return da - db;
       });
     }
