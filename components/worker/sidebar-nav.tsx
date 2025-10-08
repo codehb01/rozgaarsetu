@@ -57,11 +57,6 @@ const navigation = [
 
 const secondaryNavigation = [
   {
-    name: "Settings",
-    href: "/worker/settings",
-    icon: FiSettings,
-  },
-  {
     name: "Help & Support",
     href: "/worker/help",
     icon: FiHelpCircle,

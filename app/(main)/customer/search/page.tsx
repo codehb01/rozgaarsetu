@@ -213,7 +213,7 @@ export default function CustomerSearchPage() {
 
   // Skeleton Loader Component
   const SkeletonCard = () => (
-    <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 animate-pulse">
+    <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6 animate-pulse">
       <div className="flex items-start gap-4">
         <div className="h-16 w-16 rounded-2xl bg-gray-200 dark:bg-gray-700" />
         <div className="flex-1">
@@ -230,9 +230,9 @@ export default function CustomerSearchPage() {
   );
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-black">
+    <main className="min-h-screen bg-white dark:bg-black">
       {/* Header Section */}
-      <div className="bg-transparent border-b border-transparent">
+      <div className="bg-transparent border-b border-gray-200 dark:border-gray-800">
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
             <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -244,7 +244,7 @@ export default function CustomerSearchPage() {
           </div>
 
           {/* Enhanced Search + Controls Container */}
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-sm">
             {/* Enhanced Search Form */}
             <form onSubmit={onSubmit} className="max-w-4xl">
               <div className="flex flex-col lg:flex-row gap-3 mb-4 items-center">
@@ -255,7 +255,7 @@ export default function CustomerSearchPage() {
                   placeholder="Search for services, skills, or worker names..."
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  className="pl-12 pr-48 h-12 text-base bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="pl-12 pr-48 h-12 text-base bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
                   {/* Location dropdown trigger */}
@@ -277,7 +277,7 @@ export default function CustomerSearchPage() {
                       <span className="truncate max-w-[12rem] text-sm">{location || (locPlace?.displayName ?? 'Select location')}</span>
                     </button>
                     {locMenuOpen && menuPos && typeof document !== 'undefined' && createPortal(
-                      <div style={{ position: 'fixed', left: menuPos.left, top: menuPos.top, width: Math.max(240, menuPos.width) }} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[99999]">
+                      <div style={{ position: 'fixed', left: menuPos.left, top: menuPos.top, width: Math.max(240, menuPos.width) }} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg z-[99999]">
                         <div className="p-3">
                           <button
                             className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -421,7 +421,7 @@ export default function CustomerSearchPage() {
                             </div>
                             <div className="flex-shrink-0 ml-4">
                               <div className="flex items-center gap-3 h-full">
-                                <Link href={`/worker/${w.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
+                                <Link href={`/worker/${w.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
                                 {w.role === 'WORKER' ? (
                                   <BookWorkerButton workerId={w.id} className="px-3 py-1"/>
                                 ) : (
@@ -460,7 +460,7 @@ export default function CustomerSearchPage() {
                                 </div>
                                 <div className="flex-shrink-0 ml-4">
                                   <div className="flex items-center gap-3 h-full">
-                                    <Link href={`/worker/${worker.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
+                                    <Link href={`/worker/${worker.id}`} className="text-sm px-3 py-1 rounded-md border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">View</Link>
                                     {worker.role === 'WORKER' ? (
                                       <BookWorkerButton workerId={worker.id} className="px-3 py-1"/>
                                     ) : (

@@ -57,11 +57,6 @@ const navigation = [
 
 const secondaryNavigation = [
   {
-    name: "Settings",
-    href: "/customer/settings",
-    icon: FiSettings,
-  },
-  {
     name: "Help",
     href: "/help",
     icon: FiHelpCircle,
@@ -225,27 +220,6 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
             <FiX className="h-4 w-4" />
           </Button>
         </div>
-      )}
-
-      {/* Search Bar */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.125 }}
-          className="mb-4 px-4"
-        >
-          <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              type="search"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 transition-colors"
-            />
-          </div>
-        </motion.div>
       )}
 
       {/* Main Navigation */}

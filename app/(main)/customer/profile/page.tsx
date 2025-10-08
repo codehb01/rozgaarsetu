@@ -196,7 +196,7 @@ export default function CustomerProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
@@ -207,7 +207,7 @@ export default function CustomerProfilePage() {
 
   if (!data || !data.customerProfile) {
     return (
-      <main className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+      <main className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="text-center max-w-md px-4">
           <div className="mb-6">
             <FiAlertCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -229,7 +229,7 @@ export default function CustomerProfilePage() {
   const profile = data.customerProfile;
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-black">
+    <main className="min-h-screen bg-white dark:bg-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
@@ -485,7 +485,7 @@ export default function CustomerProfilePage() {
                               })
                             }
                             placeholder="Enter street address"
-                            className="bg-gray-50 dark:bg-black"
+                            className="bg-white dark:bg-black"
                             rows={2}
                           />
                         </div>
@@ -504,7 +504,7 @@ export default function CustomerProfilePage() {
                                 })
                               }
                               placeholder="City"
-                              className="bg-gray-50 dark:bg-black"
+                              className="bg-white dark:bg-black"
                             />
                           </div>
                           
@@ -521,7 +521,7 @@ export default function CustomerProfilePage() {
                                 })
                               }
                               placeholder="State"
-                              className="bg-gray-50 dark:bg-black"
+                              className="bg-white dark:bg-black"
                             />
                           </div>
                         </div>
@@ -540,7 +540,7 @@ export default function CustomerProfilePage() {
                                 })
                               }
                               placeholder="Postal Code"
-                              className="bg-gray-50 dark:bg-black"
+                              className="bg-white dark:bg-black"
                             />
                           </div>
                           
@@ -557,7 +557,7 @@ export default function CustomerProfilePage() {
                                 })
                               }
                               placeholder="Country"
-                              className="bg-gray-50 dark:bg-black"
+                              className="bg-white dark:bg-black"
                             />
                           </div>
                         </div>

@@ -203,7 +203,7 @@ export default function CustomerBookingsPage() {
   const list = filteredList;
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <main className="min-h-screen bg-white dark:bg-black">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -218,19 +218,19 @@ export default function CustomerBookingsPage() {
         {/* Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           {/* Segmented Control Tabs */}
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1 flex">
+          <div className="bg-gray-100 dark:bg-gray-900 rounded-xl p-1 flex border border-gray-200 dark:border-gray-800">
             {(["ONGOING", "PREVIOUS"] as Tab[]).map((tabOption) => (
               <button
                 key={tabOption}
                 onClick={() => setTab(tabOption)}
                 className={`px-6 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   tab === tabOption
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                    ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 {tabOption === "ONGOING" ? "Ongoing" : "Previous"}
-                <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+                <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">
                   {tabOption === "ONGOING" ? ongoing.length : previous.length}
                 </span>
               </button>
@@ -244,7 +244,7 @@ export default function CustomerBookingsPage() {
               placeholder="Search bookings..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+              className="pl-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-800"
             />
           </div>
         </div>

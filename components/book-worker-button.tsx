@@ -258,22 +258,22 @@ export default function BookWorkerButton({ workerId, className }: Props) {
       </ClickSpark>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent backdrop="blur" className="max-w-5xl lg:max-w-6xl xl:max-w-7xl w-[96vw] max-h-[92vh] overflow-y-auto p-0 bg-white">
+        <DialogContent backdrop="blur" className="max-w-5xl lg:max-w-6xl xl:max-w-7xl w-[96vw] max-h-[92vh] overflow-y-auto p-0 bg-white dark:bg-gray-900">
           {/* Header */}
-          <div className="px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6 bg-gradient-to-br from-blue-50 to-white border-b sticky top-0 z-10 bg-white/95 backdrop-blur-sm">
+          <div className="px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 pb-4 sm:pb-6 bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 border-b dark:border-gray-700 sticky top-0 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <DialogTitle className="text-xl sm:text-2xl font-bold text-gray-900">Book this Worker</DialogTitle>
-                <DialogDescription className="text-sm sm:text-base text-gray-600 mt-1 line-clamp-2">
+                <DialogTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Book this Worker</DialogTitle>
+                <DialogDescription className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
                   Provide job details and schedule. The worker will confirm your booking.
                 </DialogDescription>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+                className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <XIcon className="h-5 w-5 text-gray-500" />
+                <XIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
 
@@ -293,10 +293,10 @@ export default function BookWorkerButton({ workerId, className }: Props) {
                     disabled={!isClickable}
                     className={`group relative flex flex-col items-center text-center p-3 sm:p-4 rounded-xl transition-all duration-200 ${
                       isActive
-                        ? 'bg-white shadow-lg ring-2 ring-blue-500 ring-offset-2'
+                        ? 'bg-white dark:bg-gray-800 shadow-lg ring-2 ring-blue-500 ring-offset-2'
                         : isCompleted
-                        ? 'bg-white shadow-sm hover:shadow-md cursor-pointer border border-gray-200'
-                        : 'bg-gray-50 border border-gray-200 cursor-not-allowed opacity-60'
+                        ? 'bg-white dark:bg-gray-800 shadow-sm hover:shadow-md cursor-pointer border border-gray-200'
+                        : 'bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 border-gray-200 cursor-not-allowed opacity-60'
                     }`}
                   >
                     {/* Connector Line */}
@@ -332,7 +332,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
                     
                     {/* Text */}
                     <div className={`text-xs sm:text-sm font-bold transition-colors ${
-                      isActive ? 'text-blue-600' : isCompleted ? 'text-gray-900' : 'text-gray-500'
+                      isActive ? 'text-blue-600' : isCompleted ? 'text-gray-900 dark:text-white' : 'text-gray-500'
                     }`}>
                       {step.title}
                     </div>
@@ -352,7 +352,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
             {error && (
               <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 sm:gap-3">
                 <AlertCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                <p className="text-red-700 text-xs sm:text-sm">{error}</p>
+                <p className="text-red-700 dark:text-red-400 text-xs sm:text-sm">{error}</p>
               </div>
             )}
 
@@ -361,7 +361,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
               {currentStep === 0 && (
                 <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-300">
                   <div>
-                    <label htmlFor="description" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                    <label htmlFor="description" className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">
                       Job Title <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -372,11 +372,11 @@ export default function BookWorkerButton({ workerId, className }: Props) {
                       className="text-sm sm:text-base py-3 sm:py-4 md:py-6"
                       autoFocus
                     />
-                    <p className="text-xs text-gray-500 mt-1 sm:mt-1.5">Briefly describe the work you need done</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 sm:mt-1.5">Briefly describe the work you need done</p>
                   </div>
 
                   <div>
-                    <label htmlFor="details" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                    <label htmlFor="details" className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">
                       Additional Details (Optional)
                     </label>
                     <Textarea
@@ -387,7 +387,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
                       rows={4}
                       className="resize-none text-sm"
                     />
-                    <p className="text-xs text-gray-500 mt-1 sm:mt-1.5">Provide more context to help the worker prepare</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 sm:mt-1.5">Provide more context to help the worker prepare</p>
                   </div>
                 </div>
               )}
@@ -396,7 +396,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
               {currentStep === 1 && (
                 <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-300">
                   <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">
                       When do you need this done? <span className="text-red-500">*</span>
                     </label>
                     <SmartDateTimePicker
@@ -404,7 +404,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
                       onChange={(date: Date) => setBooking({ ...booking, datetime: date.toISOString() })}
                       className="w-full"
                     />
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                       Type naturally (e.g., "tomorrow at 2pm") or use the calendar picker
                     </p>
                   </div>
@@ -421,7 +421,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
               {currentStep === 2 && (
                 <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-300">
                   <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">
                       Work Location <span className="text-red-500">*</span>
                     </label>
                     <OpenStreetMapInput
@@ -456,7 +456,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
               {currentStep === 3 && (
                 <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-300">
                   <div>
-                    <label htmlFor="charge" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                    <label htmlFor="charge" className="block text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 sm:mb-2">
                       Your Proposed Budget (₹) <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -472,26 +472,26 @@ export default function BookWorkerButton({ workerId, className }: Props) {
                         className="pl-10 py-6 text-lg"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1.5">You can negotiate the final price with the worker</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">You can negotiate the final price with the worker</p>
                   </div>
 
                   {/* Review Summary */}
-                  <div className="mt-4 sm:mt-6 md:mt-8 p-4 sm:p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                    <h4 className="text-xs sm:text-sm font-bold text-gray-700 mb-3 sm:mb-4">Booking Summary</h4>
+                  <div className="mt-4 sm:mt-6 md:mt-8 p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 border-gray-200 rounded-lg">
+                    <h4 className="text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-200 mb-3 sm:mb-4">Booking Summary</h4>
                     <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Job:</span>
-                        <span className="font-medium text-gray-900">{booking.description || 'Not set'}</span>
+                        <span className="font-medium text-gray-900 dark:text-white">{booking.description || 'Not set'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">When:</span>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-gray-900 dark:text-white">
                           {booking.datetime ? new Date(booking.datetime).toLocaleString() : 'Not set'}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Location:</span>
-                        <span className="font-medium text-gray-900 text-right max-w-xs truncate">
+                        <span className="font-medium text-gray-900 dark:text-white text-right max-w-xs truncate">
                           {booking.location || 'Not set'}
                         </span>
                       </div>
@@ -509,7 +509,7 @@ export default function BookWorkerButton({ workerId, className }: Props) {
           </div>
 
           {/* Footer Actions */}
-          <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50/95 backdrop-blur-sm border-t flex items-center justify-between sticky bottom-0">
+          <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-sm border-t dark:border-gray-700 flex items-center justify-between sticky bottom-0">
             <div>
               {currentStep > 0 && (
                 <Button
