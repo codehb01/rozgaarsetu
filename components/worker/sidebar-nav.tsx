@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import ProfileButton from "@/components/profile-button"
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react"
 import { IconType } from "react-icons"
+import { TranslatedText } from "@/components/translation/auto-translate"
 import {
   FiHome,
   FiBriefcase,
@@ -108,7 +109,7 @@ const Option = ({
             transition={{ delay: 0.125 }}
             className="text-sm font-medium"
           >
-            {title}
+            <TranslatedText context="worker-sidebar">{title}</TranslatedText>
           </motion.span>
         )}
       </motion.button>
@@ -146,7 +147,7 @@ const ToggleClose = ({
             transition={{ delay: 0.125 }}
             className="text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Collapse
+            <TranslatedText context="worker-sidebar">Collapse</TranslatedText>
           </motion.span>
         )}
       </div>
@@ -270,7 +271,9 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
                 transition={{ delay: 0.125 }}
                 className="text-xs font-medium"
               >
-                {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
+                <TranslatedText context="worker-sidebar">
+                  {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
+                </TranslatedText>
               </motion.span>
             )}
           </motion.button>
@@ -299,10 +302,10 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    Worker Dashboard
+                    <TranslatedText context="worker-sidebar">Worker Dashboard</TranslatedText>
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    Manage your jobs
+                    <TranslatedText context="worker-sidebar">Manage your jobs</TranslatedText>
                   </p>
                 </div>
                 <Button
@@ -334,12 +337,12 @@ export function WorkerSidebar({ onMobileClose, open = true, setOpen }: WorkerSid
             <div className="space-y-2">
               <SignInButton>
                 <Button variant="outline" className="w-full">
-                  Sign In
+                  <TranslatedText context="worker-sidebar">Sign In</TranslatedText>
                 </Button>
               </SignInButton>
               <SignUpButton>
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Sign Up
+                  <TranslatedText context="worker-sidebar">Sign Up</TranslatedText>
                 </Button>
               </SignUpButton>
             </div>

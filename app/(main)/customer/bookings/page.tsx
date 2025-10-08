@@ -244,7 +244,7 @@ export default function CustomerBookingsPage() {
           <div className="relative w-full sm:w-80">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Search bookings..."
+              placeholder={<TranslatedText context="customer-bookings">Search bookings...</TranslatedText> as any}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-800"
@@ -383,7 +383,7 @@ export default function CustomerBookingsPage() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white text-xs">
-                            <TranslatedText context="customer-bookings">Date & Time</TranslatedText></p>
+                            <TranslatedText context="customer-bookings">Date & Time</TranslatedText>
                           </p>
                           <p className="text-xs">
                             {new Date(j.time).toLocaleString()}
@@ -415,7 +415,7 @@ export default function CustomerBookingsPage() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white text-xs">
-                            <TranslatedText context="customer-bookings">Location</TranslatedText></p>
+                            <TranslatedText context="customer-bookings">Location</TranslatedText>
                           </p>
                           <p className="text-xs">{j.location}</p>
                         </div>
@@ -441,7 +441,7 @@ export default function CustomerBookingsPage() {
                       </div>
                       <div className="flex-1">
                         <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Total Charge
+                          <TranslatedText context="customer-bookings">Total Charge</TranslatedText>
                         </p>
                         <p className="text-base font-bold text-gray-900 dark:text-white">
                           ₹{j.charge.toFixed(2)}
@@ -453,7 +453,7 @@ export default function CustomerBookingsPage() {
                     {j.details && (
                       <div className="p-2 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
                         <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
-                          Additional Details
+                          <TranslatedText context="customer-bookings">Additional Details</TranslatedText>
                         </p>
                         <p className="text-xs text-gray-700 dark:text-gray-200 line-clamp-2">
                           {j.details}
@@ -471,7 +471,7 @@ export default function CustomerBookingsPage() {
                           onClick={() => completeJob(j.id)}
                           className="bg-blue-600 hover:bg-blue-500 text-white w-full"
                         >
-                          {acting === j.id ? "Completing..." : "Done"}
+                          {acting === j.id ? <TranslatedText context="customer-bookings">Completing...</TranslatedText> : <TranslatedText context="customer-bookings">Done</TranslatedText>}
                         </Button>
                       </div>
                     )}
@@ -483,7 +483,7 @@ export default function CustomerBookingsPage() {
                             onClick={() => openReview(j.id)}
                             className="bg-emerald-600 hover:bg-emerald-500 text-white w-full"
                           >
-                            Review
+                            <TranslatedText context="customer-bookings">Review</TranslatedText>
                           </Button>
                         </div>
                       )}
@@ -492,7 +492,7 @@ export default function CustomerBookingsPage() {
                       j.review && (
                         <div className="mt-4 text-xs text-gray-400 flex items-center gap-2">
                           <span className="px-2 py-1 rounded bg-gray-700 text-gray-300">
-                            Rated {j.review.rating}/5
+                            <TranslatedText context="customer-bookings">Rated</TranslatedText> {j.review.rating}/5
                           </span>
                           {j.review.comment && (
                             <span className="line-clamp-1">
@@ -525,7 +525,7 @@ export default function CustomerBookingsPage() {
                         {j.description}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Worker: {j.worker?.name || "Worker"}
+                        <TranslatedText context="customer-bookings">Worker</TranslatedText>: {j.worker?.name || <TranslatedText context="customer-bookings">Worker</TranslatedText>}
                       </p>
                     </div>
                     <span
@@ -567,7 +567,7 @@ export default function CustomerBookingsPage() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white text-xs">
-                            Date & Time
+                            <TranslatedText context="customer-bookings">Date & Time</TranslatedText>
                           </p>
                           <p className="text-xs">
                             {new Date(j.time).toLocaleString()}
@@ -599,7 +599,7 @@ export default function CustomerBookingsPage() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white text-xs">
-                            Location
+                            <TranslatedText context="customer-bookings">Location</TranslatedText>
                           </p>
                           <p className="text-xs">{j.location}</p>
                         </div>
@@ -625,7 +625,7 @@ export default function CustomerBookingsPage() {
                       </div>
                       <div className="flex-1">
                         <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Total Charge
+                          <TranslatedText context="customer-bookings">Total Charge</TranslatedText>
                         </p>
                         <p className="text-lg font-bold text-gray-900 dark:text-white">
                           ₹{j.charge.toFixed(2)}
@@ -637,7 +637,7 @@ export default function CustomerBookingsPage() {
                     {j.details && (
                       <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
                         <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
-                          Additional Details
+                          <TranslatedText context="customer-bookings">Additional Details</TranslatedText>
                         </p>
                         <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2">
                           {j.details}
@@ -655,7 +655,7 @@ export default function CustomerBookingsPage() {
                           onClick={() => completeJob(j.id)}
                           className="bg-blue-600 hover:bg-blue-500 text-white w-full"
                         >
-                          {acting === j.id ? "Completing..." : "Done"}
+                          {acting === j.id ? <TranslatedText context="customer-bookings">Completing...</TranslatedText> : <TranslatedText context="customer-bookings">Done</TranslatedText>}
                         </Button>
                       </div>
                     )}
@@ -667,7 +667,7 @@ export default function CustomerBookingsPage() {
                             onClick={() => openReview(j.id)}
                             className="bg-emerald-600 hover:bg-emerald-500 text-white w-full"
                           >
-                            Review
+                            <TranslatedText context="customer-bookings">Review</TranslatedText>
                           </Button>
                         </div>
                       )}
@@ -676,7 +676,7 @@ export default function CustomerBookingsPage() {
                       j.review && (
                         <div className="mt-4 text-xs text-gray-400 flex items-center gap-2">
                           <span className="px-2 py-1 rounded bg-gray-700 text-gray-300">
-                            Rated {j.review.rating}/5
+                            <TranslatedText context="customer-bookings">Rated</TranslatedText> {j.review.rating}/5
                           </span>
                           {j.review.comment && (
                             <span className="line-clamp-1">

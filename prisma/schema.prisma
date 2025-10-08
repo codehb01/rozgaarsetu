@@ -8,22 +8,23 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(uuid())
-  email           String           @unique
-  phone           String           @unique
-  name            String
-  role            UserRole         @default(UNASSIGNED)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  clerkUserId     String           @unique
-  customerProfile CustomerProfile?
-  jobsCreated     Job[]            @relation("CustomerJobs")
-  jobsAssigned    Job[]            @relation("WorkerJobs")
-  JobOffer        JobOffer[]
-  reviewsGiven    Review[]         @relation("ReviewsByCustomer")
-  reviewsReceived Review[]         @relation("ReviewsForWorker")
-  transactions    Transaction[]
-  workerProfile   WorkerProfile?
+  id               String            @id @default(uuid())
+  email            String            @unique
+  phone            String            @unique
+  name             String
+  role             UserRole          @default(UNASSIGNED)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  clerkUserId      String            @unique
+  customerProfile  CustomerProfile?
+  jobsCreated      Job[]             @relation("CustomerJobs")
+  jobsAssigned     Job[]             @relation("WorkerJobs")
+  reviewsGiven     Review[]          @relation("ReviewsByCustomer")
+  reviewsReceived  Review[]          @relation("ReviewsForWorker")
+  transactions     Transaction[]
+  UsageTracking    UsageTracking[]
+  UserSubscription UserSubscription?
+  workerProfile    WorkerProfile?
 }
 
 model WorkerProfile {
@@ -77,28 +78,22 @@ model CustomerProfile {
 }
 
 model Job {
-  id              String        @id @default(uuid())
-  description     String
-  details         String?
-  date            DateTime
-  time            DateTime
-  location        String
-  charge          Float
-  status          JobStatus     @default(PENDING)
-  customerId      String
-  workerId        String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  agreedCharge    Float?
-  depositAmount   Float?
-  depositHeld     Boolean       @default(false)
-  estimatedHours  Float?
-  paymentIntentId String?
-  customer        User          @relation("CustomerJobs", fields: [customerId], references: [id])
-  worker          User?         @relation("WorkerJobs", fields: [workerId], references: [id])
-  JobOffer        JobOffer[]
-  review          Review?
-  Transaction     Transaction[]
+  id          String        @id @default(uuid())
+  description String
+  details     String?
+  date        DateTime
+  time        DateTime
+  location    String
+  charge      Float
+  status      JobStatus     @default(PENDING)
+  customerId  String
+  workerId    String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  customer    User          @relation("CustomerJobs", fields: [customerId], references: [id])
+  worker      User?         @relation("WorkerJobs", fields: [workerId], references: [id])
+  review      Review?
+  Transaction Transaction[]
 
   @@index([customerId, status])
   @@index([workerId, status])
@@ -128,19 +123,33 @@ model Review {
   worker     User     @relation("ReviewsForWorker", fields: [workerId], references: [id])
 }
 
-model JobOffer {
-  id         String   @id
-  jobId      String
-  fromUserId String
-  price      Float
-  note       String?
-  accepted   Boolean  @default(false)
-  rejected   Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  User       User     @relation(fields: [fromUserId], references: [id])
-  Job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+model UsageTracking {
+  id              String   @id
+  userId          String
+  month           Int
+  year            Int
+  monthlyBookings Int      @default(0)
+  monthlyLeads    Int      @default(0)
+  completedJobs   Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([jobId])
+  @@unique([userId, month, year])
+  @@index([userId, year, month])
+}
+
+model UserSubscription {
+  id         String    @id
+  userId     String    @unique
+  planType   PlanType  @default(FREE)
+  planExpiry DateTime?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+  User       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, planType])
 }
 
 model TranslationCache {
@@ -156,103 +165,13 @@ model TranslationCache {
 
   @@index([hashKey])
   @@index([sourceLanguage, targetLanguage])
+  @@map("TranslationCache")
 }
 
 enum UserRole {
   CUSTOMER
   WORKER
   UNASSIGNED
-}
-
-model WorkerProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  skilledIn       String[] // plumber, electrician, etc.
-  qualification   String?
-  certificates    String[] // file URLs
-  aadharNumber    String   @unique
-  yearsExperience Int?
-  profilePic      String?
-  bio             String?
-
-  address        String
-  city           String
-  state          String
-  country        String
-  postalCode     String
-  availableAreas String[] // list of areas where worker can work
-
-  // Optional geographic coordinates for proximity search
-  latitude      Float?
-  longitude     Float?
-
-   hourlyRate   Float?   // Optional, in your preferred currency
-  minimumFee   Float?   // Optional, base fee after booking acceptance
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-
-  // New relation
-  previousWorks PreviousWork[]
-}
-
-model PreviousWork {
-  id          String   @id @default(uuid())
-  workerId    String
-  worker      WorkerProfile @relation(fields: [workerId], references: [id], onDelete: Cascade)
-
-  title       String?   // Optional title for the work (e.g., "Pipe Repair Project")
-  description String?   // Optional description
-  images      String[]  // Array of image URLs
-  location    String?   // Optional location name
-
-  createdAt   DateTime @default(now())
-}
-
-
-model CustomerProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  address    String
-  city       String
-  state      String
-  country    String
-  postalCode String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Job {
-  id          String    @id @default(uuid())
-  description String
-  details     String?
-  date        DateTime
-  time        DateTime
-  location    String
-  charge      Float
-  status      JobStatus @default(PENDING)
-
-  // Relations
-  customerId String
-  customer   User   @relation("CustomerJobs", fields: [customerId], references: [id])
-
-  workerId String?
-  worker   User?   @relation("WorkerJobs", fields: [workerId], references: [id])
-
-  review Review?
-
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  Transaction Transaction[]
-
-  @@index([customerId, status])
-  @@index([workerId, status])
 }
 
 enum JobStatus {
@@ -267,4 +186,10 @@ enum TransactionType {
   PAYMENT
   PAYOUT
   REFUND
+}
+
+enum PlanType {
+  FREE
+  BOOST
+  PRO
 }

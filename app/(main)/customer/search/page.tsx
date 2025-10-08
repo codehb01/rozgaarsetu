@@ -15,6 +15,7 @@ import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
 import SkillBadge from "@/components/ui/skill-badge";
 import { TranslatedText } from "@/hooks/use-batch-translation";
+import { useTranslatedFetch } from "@/hooks/use-translated-fetch";
 
 const MapPreview = dynamic(() => import("@/components/ui/map-preview"), {
   ssr: false,

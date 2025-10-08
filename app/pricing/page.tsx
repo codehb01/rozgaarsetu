@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { TranslatedText } from "@/components/translation/auto-translate";
 
 export const metadata: Metadata = {
   title: "Pricing • RozgaarSetu",
   description: "Choose a plan that fits your needs. Simple, transparent pricing for customers and workers.",
 };
 
+// Note: Plan names are kept in English as brand identifiers
 const plans = [
   {
     name: "Starter",
@@ -60,9 +62,11 @@ export default function PricingPage() {
       <section className="bg-gradient-to-b from-background to-background/80">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
           <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Simple, transparent pricing</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+              <TranslatedText context="pricing">Simple, transparent pricing</TranslatedText>
+            </h1>
             <p className="mt-4 text-muted-foreground text-base sm:text-lg">
-              Whether you&apos;re hiring or looking for work, pick a plan that fits. Upgrade anytime.
+              <TranslatedText context="pricing">Whether you&apos;re hiring or looking for work, pick a plan that fits. Upgrade anytime.</TranslatedText>
             </p>
           </div>
 
@@ -79,25 +83,35 @@ export default function PricingPage() {
               >
                 <CardHeader>
                   <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
+                  <CardDescription>
+                    <TranslatedText context="pricing">{plan.description}</TranslatedText>
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-semibold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
+                    <span className="text-3xl font-semibold">
+                      <TranslatedText context="pricing">{plan.price}</TranslatedText>
+                    </span>
+                    <span className="text-muted-foreground">
+                      <TranslatedText context="pricing">{plan.period}</TranslatedText>
+                    </span>
                   </div>
                   <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2">
                         <span className="mt-1 size-1.5 rounded-full bg-primary/70" />
-                        <span>{f}</span>
+                        <span>
+                          <TranslatedText context="pricing">{f}</TranslatedText>
+                        </span>
                       </li>
                     ))}
                   </ul>
                 </CardContent>
                 <CardFooter>
                   <Button asChild className="w-full" variant={plan.highlighted ? "default" : "outline"}>
-                    <Link href={plan.cta.href}>{plan.cta.label}</Link>
+                    <Link href={plan.cta.href}>
+                      <TranslatedText context="pricing">{plan.cta.label}</TranslatedText>
+                    </Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -106,7 +120,7 @@ export default function PricingPage() {
 
           {/* FAQ teaser */}
           <p className="mt-10 text-center text-sm text-muted-foreground">
-            Have questions about pricing? Reach out at
+            <TranslatedText context="pricing">Have questions about pricing? Reach out at</TranslatedText>
             <a className="text-primary underline-offset-4 hover:underline ml-1" href="#"> support@rozgaarsetu.example</a>.
           </p>
         </div>

@@ -120,7 +120,7 @@ export default async function WorkerDashboardPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Completed Jobs
+                  <TranslatedText context="worker-dashboard">Completed Jobs</TranslatedText>
                 </p>
                 <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                   {completedJobs}
@@ -136,7 +136,7 @@ export default async function WorkerDashboardPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Total Earnings
+                  <TranslatedText context="worker-dashboard">Total Earnings</TranslatedText>
                 </p>
                 <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                   ₹{totalEarnings.toFixed(0)}
@@ -152,10 +152,10 @@ export default async function WorkerDashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Quick Actions
+              <TranslatedText context="worker-dashboard">Quick Actions</TranslatedText>
             </h2>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Manage your professional activities
+              <TranslatedText context="worker-dashboard">Manage your professional activities</TranslatedText>
             </p>
           </div>
         </div>
@@ -173,10 +173,10 @@ export default async function WorkerDashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Job Requests
+                    <TranslatedText context="worker-dashboard">Job Requests</TranslatedText>
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {pendingJobs} pending
+                    {pendingJobs} <TranslatedText context="worker-dashboard">pending</TranslatedText>
                   </p>
                 </div>
               </div>
@@ -195,10 +195,10 @@ export default async function WorkerDashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    View Profile
+                    <TranslatedText context="worker-dashboard">View Profile</TranslatedText>
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Public view
+                    <TranslatedText context="worker-dashboard">Public view</TranslatedText>
                   </p>
                 </div>
               </div>
@@ -217,10 +217,10 @@ export default async function WorkerDashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Settings
+                    <TranslatedText context="worker-dashboard">Settings</TranslatedText>
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Update profile
+                    <TranslatedText context="worker-dashboard">Update profile</TranslatedText>
                   </p>
                 </div>
               </div>
@@ -239,10 +239,10 @@ export default async function WorkerDashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    Earnings
+                    <TranslatedText context="worker-dashboard">Earnings</TranslatedText>
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    View details
+                    <TranslatedText context="worker-dashboard">View details</TranslatedText>
                   </p>
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default async function WorkerDashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              <TranslatedText context="worker-dashboard">Recent Jobs</TranslatedText></h2>
+              <TranslatedText context="worker-dashboard">Recent Jobs</TranslatedText>
             </h2>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               <TranslatedText context="worker-dashboard">Your latest job activities</TranslatedText>
@@ -284,10 +284,10 @@ export default async function WorkerDashboardPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                      {job.description || "Job Request"}
+                      {job.description || <TranslatedText context="worker-dashboard">Job Request</TranslatedText>}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      Customer: {job.customer?.name ?? "Unknown"}
+                      <TranslatedText context="worker-dashboard">Customer</TranslatedText>: {job.customer?.name ?? <TranslatedText context="worker-dashboard">Unknown</TranslatedText>}
                     </p>
                   </div>
                   <span
@@ -322,7 +322,7 @@ export default async function WorkerDashboardPage() {
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                      Job Charge
+                      <TranslatedText context="worker-dashboard">Job Charge</TranslatedText>
                     </span>
                     <span className="text-xl font-bold text-gray-900 dark:text-white">
                       ₹{job.charge.toFixed(2)}

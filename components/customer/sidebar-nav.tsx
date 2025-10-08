@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import ProfileButton from "@/components/profile-button"
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react"
 import { IconType } from "react-icons"
+import { TranslatedText } from "@/components/translation/auto-translate"
 import {
   FiHome,
   FiSearch,
@@ -109,7 +110,7 @@ const Option = ({
             transition={{ delay: 0.125 }}
             className="text-sm font-medium"
           >
-            {title}
+            <TranslatedText context="customer-sidebar">{title}</TranslatedText>
           </motion.span>
         )}
       </motion.button>
@@ -148,7 +149,7 @@ const ToggleClose = ({
             transition={{ delay: 0.125 }}
             className="text-xs font-medium text-gray-500 dark:text-gray-400"
           >
-            Collapse
+            <TranslatedText context="customer-sidebar">Collapse</TranslatedText>
           </motion.span>
         )}
       </div>
@@ -272,7 +273,9 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
                 transition={{ delay: 0.125 }}
                 className="text-xs font-medium"
               >
-                {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
+                <TranslatedText context="customer-sidebar">
+                  {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
+                </TranslatedText>
               </motion.span>
             )}
           </motion.button>
@@ -301,10 +304,10 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    Customer Dashboard
+                    <TranslatedText context="customer-sidebar">Customer Dashboard</TranslatedText>
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    Manage your bookings
+                    <TranslatedText context="customer-sidebar">Manage your bookings</TranslatedText>
                   </p>
                 </div>
                 <Button
@@ -336,12 +339,12 @@ export function CustomerSidebar({ onMobileClose, open = true, setOpen }: Custome
             <div className="space-y-2">
               <SignInButton>
                 <Button variant="outline" className="w-full">
-                  Sign In
+                  <TranslatedText context="customer-sidebar">Sign In</TranslatedText>
                 </Button>
               </SignInButton>
               <SignUpButton>
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Sign Up
+                  <TranslatedText context="customer-sidebar">Sign Up</TranslatedText>
                 </Button>
               </SignUpButton>
             </div>

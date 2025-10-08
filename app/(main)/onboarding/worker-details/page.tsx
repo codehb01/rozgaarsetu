@@ -490,7 +490,7 @@ export default function WorkerDetailsPage() {
                             className="space-y-2"
                           >
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                              Aadhar Number
+                              <TranslatedText context="onboarding">Aadhar Number</TranslatedText>
                             </label>
                             <Input
                               placeholder="XXXX-XXXX-XXXX"
@@ -509,7 +509,7 @@ export default function WorkerDetailsPage() {
                                 .length === 12 && (
                                 <p className="text-green-600 dark:text-green-400 text-xs flex items-center gap-1">
                                   <CheckCircle className="h-3 w-3" />
-                                  Valid Aadhar number
+                                  <TranslatedText context="onboarding">Valid Aadhar number</TranslatedText>
                                 </p>
                               )}
                           </motion.div>
@@ -521,7 +521,7 @@ export default function WorkerDetailsPage() {
                             className="space-y-2"
                           >
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                              Education
+                              <TranslatedText context="onboarding">Education</TranslatedText>
                             </label>
 
                             {/* Staggered Dropdown */}
@@ -547,7 +547,7 @@ export default function WorkerDetailsPage() {
                                   ? qualificationOptions.find(
                                       (q) => q.value === selectedQualification
                                     )?.label
-                                  : "Select your education level"
+                                  : <TranslatedText context="onboarding">Select your education level</TranslatedText>
                               }
                             />
 

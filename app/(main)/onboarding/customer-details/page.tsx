@@ -117,7 +117,7 @@ export default function CustomerDetailsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Full Address
+                    <TranslatedText context="onboarding">Full Address</TranslatedText>
                   </label>
                   <div className="flex gap-2">
                     <div className="flex-1">
@@ -141,7 +141,7 @@ export default function CustomerDetailsPage() {
                       ) : (
                         <LocateFixed className="h-4 w-4 mr-2" />
                       )}
-                      Use my location
+                      <TranslatedText context="onboarding">Use my location</TranslatedText>
                     </UIButton>
                   </div>
                   {errors.address && (

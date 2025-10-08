@@ -232,16 +232,14 @@ export async function GET(req: NextRequest) {
       return categoryOk && keywordOk;
     });
 
-    const result = filtered.slice(0, limit);
-    
     // Check if client requested translation
     const targetLanguage = req.headers.get('x-translate-to');
     
-    if (targetLanguage && targetLanguage !== 'en' && result.length > 0) {
+    if (targetLanguage && targetLanguage !== 'en' && filtered.length > 0) {
       try {
         // Auto-translate worker data
         const translatedWorkers = await Promise.all(
-          result.map(worker => 
+          filtered.slice(0, limit).map(worker => 
             contentScanner.autoTranslateComponentData(worker, targetLanguage, 'workers')
           )
         );

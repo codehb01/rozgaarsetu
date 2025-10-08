@@ -75,7 +75,7 @@ export default function WorkerEarningsPage() {
         <FiBarChart2 className="h-16 w-16 text-gray-400" />
       </div>
       <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-        No earnings yet
+        <TranslatedText context="worker-earnings">No earnings yet</TranslatedText>
       </h3>
       <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
         <TranslatedText context="worker-earnings">Complete jobs to start earning. Your earnings will be tracked here.</TranslatedText>
@@ -183,7 +183,7 @@ export default function WorkerEarningsPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          Total Earnings
+                          <TranslatedText context="worker-earnings">Total Earnings</TranslatedText>
                         </p>
                         <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
                           ₹{data.total.toFixed(2)}
@@ -194,7 +194,7 @@ export default function WorkerEarningsPage() {
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      All completed jobs
+                      <TranslatedText context="worker-earnings">All completed jobs</TranslatedText>
                     </p>
                   </Card>
                 </motion.div>
@@ -209,7 +209,7 @@ export default function WorkerEarningsPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          This Month
+                          <TranslatedText context="worker-earnings">This Month</TranslatedText>
                         </p>
                         <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
                           ₹{data.thisMonth.toFixed(2)}
@@ -220,7 +220,7 @@ export default function WorkerEarningsPage() {
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Current month earnings
+                      <TranslatedText context="worker-earnings">Current month earnings</TranslatedText>
                     </p>
                   </Card>
                 </motion.div>
@@ -235,7 +235,7 @@ export default function WorkerEarningsPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          Monthly Change
+                          <TranslatedText context="worker-earnings">Monthly Change</TranslatedText>
                         </p>
                         <div className="flex items-center gap-2">
                           {data.monthlyChange >= 0 ? (
@@ -265,7 +265,7 @@ export default function WorkerEarningsPage() {
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      vs last month (₹{data.lastMonth.toFixed(2)})
+                      <TranslatedText context="worker-earnings">vs last month</TranslatedText> (₹{data.lastMonth.toFixed(2)})
                     </p>
                   </Card>
                 </motion.div>
@@ -281,11 +281,11 @@ export default function WorkerEarningsPage() {
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        Job-by-Job Breakdown
+                        <TranslatedText context="worker-earnings">Job-by-Job Breakdown</TranslatedText>
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {data.jobs.length} completed{" "}
-                        {data.jobs.length === 1 ? "job" : "jobs"}
+                        {data.jobs.length} <TranslatedText context="worker-earnings">completed</TranslatedText>{" "}
+                        {data.jobs.length === 1 ? <TranslatedText context="worker-earnings">job</TranslatedText> : <TranslatedText context="worker-earnings">jobs</TranslatedText>}
                       </p>
                     </div>
                     <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
@@ -367,7 +367,7 @@ export default function WorkerEarningsPage() {
                         </div>
                         <div>
                           <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
-                            Average Earning per Job
+                            <TranslatedText context="worker-earnings">Average Earning per Job</TranslatedText>
                           </p>
                           <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                             ₹{(data.total / data.jobs.length).toFixed(2)}
@@ -376,7 +376,7 @@ export default function WorkerEarningsPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-blue-700 dark:text-blue-400 mb-1">
-                          Total Jobs Completed
+                          <TranslatedText context="worker-earnings">Total Jobs Completed</TranslatedText>
                         </p>
                         <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                           {data.jobs.length}
