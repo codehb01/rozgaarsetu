@@ -287,7 +287,11 @@ export async function getCurrentUser() {
     const user = await prisma.user.findUnique({
       where: { clerkUserId: userId },
       include: {
-        workerProfile: true,
+        workerProfile: {
+          include: {
+            previousWorks: true,
+          },
+        },
         customerProfile: true,
       },
     });
