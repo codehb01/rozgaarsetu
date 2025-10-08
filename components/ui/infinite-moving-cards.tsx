@@ -11,9 +11,9 @@ export const InfiniteMovingCards = ({
   className,
 }: {
   items: {
-    quote: string;
-    name: string;
-    title: string;
+    quote: string | React.ReactNode;
+    name: string | React.ReactNode;
+    title: string | React.ReactNode;
   }[];
   direction?: "left" | "right";
   speed?: "fast" | "normal" | "slow";
@@ -88,7 +88,7 @@ export const InfiniteMovingCards = ({
         {items.map((item, idx) => (
           <li
             className="relative w-[350px] max-w-full shrink-0 rounded-xl border border-gray-200/60 bg-white/95 px-6 py-8 md:w-[400px] dark:border-gray-700/60 dark:bg-gray-900/95 shadow-sm hover:shadow-md transition-shadow duration-200"
-            key={item.name}
+            key={idx}
           >
             <blockquote>
               {/* Clean quote text */}
@@ -99,7 +99,7 @@ export const InfiniteMovingCards = ({
               {/* Minimal user info */}
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
-                  {item.name.charAt(0)}
+                  {typeof item.name === 'string' ? item.name.charAt(0) : 'U'}
                 </div>
                 <div>
                   <div className="text-gray-900 dark:text-white text-sm font-medium">

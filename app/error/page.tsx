@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import { TranslatedText } from "@/components/translation/auto-translate";
 
 export default function NotFoundPage() {
   return (
@@ -25,14 +26,13 @@ export default function NotFoundPage() {
         {/* Main message */}
         <div className="animate-fade-in-up delay-300">
           <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
-            Page Not Found
+            <TranslatedText context="error-page">Page Not Found</TranslatedText>
           </h2>
           <p className="text-xl text-gray-300 max-w-lg mx-auto leading-relaxed">
-            The page you&apos;re looking for doesn&apos;t exist or has been
-            moved.
+            <TranslatedText context="error-page">The page you're looking for doesn't exist or has been moved.</TranslatedText>
             <br className="hidden md:block" />
             <span className="text-blue-400 font-medium">
-              Let&apos;s get you back on track.
+              <TranslatedText context="error-page">Let's get you back on track.</TranslatedText>
             </span>
           </p>
         </div>
@@ -46,7 +46,7 @@ export default function NotFoundPage() {
                 className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 px-10 py-4 rounded-full text-lg font-medium transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-500/25 flex items-center gap-2"
               >
                 <Home className="w-5 h-5" />
-                Back to Home
+                <TranslatedText context="error-page">Back to Home</TranslatedText>
               </Button>
             </Link>
             <Button
@@ -56,7 +56,7 @@ export default function NotFoundPage() {
               onClick={() => window.history.back()}
             >
               <ArrowLeft className="w-5 h-5" />
-              Go Back
+              <TranslatedText context="error-page">Go Back</TranslatedText>
             </Button>
           </div>
         </div>
@@ -64,12 +64,12 @@ export default function NotFoundPage() {
         {/* Subtle help text */}
         <div className="animate-fade-in-up delay-700">
           <p className="text-sm text-gray-500 mt-12">
-            If you believe this is an error, please{" "}
+            <TranslatedText context="error-page">If you believe this is an error, please</TranslatedText>{" "}
             <Link
               href="/contact"
               className="text-blue-400 hover:text-blue-300 underline"
             >
-              contact our support team
+              <TranslatedText context="error-page">contact our support team</TranslatedText>
             </Link>
           </p>
         </div>

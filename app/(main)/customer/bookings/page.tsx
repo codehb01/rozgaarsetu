@@ -368,7 +368,7 @@ export default function CustomerBookingsPage() {
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">Date & Time</p>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs"><TranslatedText context="customer-bookings">Date & Time</TranslatedText></p>
                           <p className="text-xs">{new Date(j.time).toLocaleString()}</p>
                         </div>
                       </div>
@@ -381,7 +381,7 @@ export default function CustomerBookingsPage() {
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">Location</p>
+                          <p className="font-medium text-gray-900 dark:text-white text-xs"><TranslatedText context="customer-bookings">Location</TranslatedText></p>
                           <p className="text-xs">{j.location}</p>
                         </div>
                       </div>
@@ -463,7 +463,7 @@ export default function CustomerBookingsPage() {
                       {j.description}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      Worker: {j.worker?.name || "Worker"}
+                      <TranslatedText context="customer-bookings">Worker</TranslatedText>: {j.worker?.name || <TranslatedText context="customer-bookings">Worker</TranslatedText>}
                     </p>
                   </div>
                   <span
@@ -494,7 +494,7 @@ export default function CustomerBookingsPage() {
                         </svg>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-white text-xs">Date & Time</p>
+                        <p className="font-medium text-gray-900 dark:text-white text-xs"><TranslatedText context="customer-bookings">Date & Time</TranslatedText></p>
                         <p className="text-xs">{new Date(j.time).toLocaleString()}</p>
                       </div>
                     </div>
@@ -507,7 +507,7 @@ export default function CustomerBookingsPage() {
                         </svg>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-white text-xs">Location</p>
+                        <p className="font-medium text-gray-900 dark:text-white text-xs"><TranslatedText context="customer-bookings">Location</TranslatedText></p>
                         <p className="text-xs">{j.location}</p>
                       </div>
                     </div>
@@ -521,7 +521,7 @@ export default function CustomerBookingsPage() {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Total Charge</p>
+                      <p className="text-xs font-medium text-gray-600 dark:text-gray-400"><TranslatedText context="customer-bookings">Total Charge</TranslatedText></p>
                       <p className="text-lg font-bold text-gray-900 dark:text-white">₹{j.charge.toFixed(2)}</p>
                     </div>
                   </div>
@@ -529,7 +529,7 @@ export default function CustomerBookingsPage() {
                   {/* Details Description */}
                   {j.details && (
                     <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
-                      <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Additional Details</p>
+                      <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1"><TranslatedText context="customer-bookings">Additional Details</TranslatedText></p>
                       <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2">
                         {j.details}
                       </p>
@@ -546,7 +546,7 @@ export default function CustomerBookingsPage() {
                       onClick={() => completeJob(j.id)}
                       className="bg-blue-600 hover:bg-blue-500 text-white w-full"
                     >
-                      {acting === j.id ? "Completing..." : "Done"}
+                      {acting === j.id ? <TranslatedText context="customer-bookings">Completing...</TranslatedText> : <TranslatedText context="customer-bookings">Done</TranslatedText>}
                     </Button>
                   </div>
                 )}
@@ -558,14 +558,14 @@ export default function CustomerBookingsPage() {
                         onClick={() => openReview(j.id)}
                         className="bg-emerald-600 hover:bg-emerald-500 text-white w-full"
                       >
-                        Review
+                        <TranslatedText context="customer-bookings">Review</TranslatedText>
                       </Button>
                     </div>
                   )}
                 {tab === "PREVIOUS" && j.status === "COMPLETED" && j.review && (
                   <div className="mt-4 text-xs text-gray-400 flex items-center gap-2">
                     <span className="px-2 py-1 rounded bg-gray-700 text-gray-300">
-                      Rated {j.review.rating}/5
+                      <TranslatedText context="customer-bookings">Rated</TranslatedText> {j.review.rating}/5
                     </span>
                     {j.review.comment && (
                       <span className="line-clamp-1">“{j.review.comment}”</span>

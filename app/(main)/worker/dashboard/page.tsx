@@ -223,14 +223,14 @@ export default async function WorkerDashboardPage() {
                       {job.description}
                     </h3>
                     <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                      <p>Customer: {job.customer?.name ?? "Unknown"}</p>
+                      <p><TranslatedText context="worker-dashboard">Customer</TranslatedText>: {job.customer?.name ?? <TranslatedText context="worker-dashboard">Unknown</TranslatedText>}</p>
                       <p className="flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />
                         {job.location}
                       </p>
                       <p className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
-                        {new Date(job.time).toLocaleDateString()} at{" "}
+                        {new Date(job.time).toLocaleDateString()} <TranslatedText context="worker-dashboard">at</TranslatedText>{" "}
                         {new Date(job.time).toLocaleTimeString()}
                       </p>
                     </div>

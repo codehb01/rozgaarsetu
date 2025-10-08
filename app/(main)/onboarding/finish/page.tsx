@@ -176,9 +176,9 @@ export default function FinishPage() {
 
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500">
-            Need help getting started?{" "}
+            <TranslatedText context="onboarding">Need help getting started?</TranslatedText>{" "}
             <span className="text-emerald-400 cursor-pointer hover:underline">
-              Check out our guide
+              <TranslatedText context="onboarding">Check out our guide</TranslatedText>
             </span>
           </p>
         </div>

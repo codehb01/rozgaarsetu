@@ -9,6 +9,7 @@ import ShapeHero from "@/components/kokonutui/shape-hero";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import ScrollText from "@/components/kokonutui/scroll-text";
 import TypewriterTitle from "@/components/kokonutui/type-writer";
+import TranslatedTypewriterTitle from "@/components/kokonutui/translated-typewriter";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
@@ -248,8 +249,8 @@ export default function Home() {
           {/* Card 1 - Find Work */}
           <div className={cn('p-2 rounded-lg', 'md:col-span-3')}>
             <MainMenusGradientCard
-              title="Find Work"
-              description="Discover opportunities that match your skills and location preferences with our smart matching system."
+              title={<TranslatedText context="homepage">Find Work</TranslatedText>}
+              description={<TranslatedText context="homepage">Discover opportunities that match your skills and location preferences with our smart matching system.</TranslatedText>}
               withArrow={false}
               circleSize={300}
             >
@@ -265,8 +266,8 @@ export default function Home() {
           {/* Card 2 - Get Paid */}
           <div className={cn('p-2 rounded-lg', 'md:col-span-3')}>
             <MainMenusGradientCard
-              title="Get Paid"
-              description="Secure payments delivered instantly with multiple payment options and transparent pricing."
+              title={<TranslatedText context="homepage">Get Paid</TranslatedText>}
+              description={<TranslatedText context="homepage">Secure payments delivered instantly with multiple payment options and transparent pricing.</TranslatedText>}
               withArrow={false}
               circleSize={300}
             >
@@ -282,8 +283,8 @@ export default function Home() {
           {/* Card 3 - Nearby Connections */}
           <div className={cn('p-2 rounded-lg', 'md:col-span-4')}>
             <MainMenusGradientCard
-              title="Nearby Connections"
-              description="Connect with workers in your area for quick and efficient hiring with location-based matching."
+              title={<TranslatedText context="homepage">Nearby Connections</TranslatedText>}
+              description={<TranslatedText context="homepage">Connect with workers in your area for quick and efficient hiring with location-based matching.</TranslatedText>}
               withArrow={false}
               circleSize={300}
             >
@@ -299,8 +300,8 @@ export default function Home() {
           {/* Card 4 - Smart Search */}
           <div className={cn('p-2 rounded-lg', 'md:col-span-2')}>
             <MainMenusGradientCard
-              title="Smart Search"
-              description="Advanced location-based matching with AI-powered recommendations for perfect job matches."
+              title={<TranslatedText context="homepage">Smart Search</TranslatedText>}
+              description={<TranslatedText context="homepage">Advanced location-based matching with AI-powered recommendations for perfect job matches.</TranslatedText>}
               withArrow={false}
               circleSize={300}
             >
@@ -316,8 +317,8 @@ export default function Home() {
           {/* Card 5 - Verified Profiles */}
           <div className={cn('p-2 rounded-lg', 'md:col-span-2')}>
             <MainMenusGradientCard
-              title="Verified Profiles"
-              description="Work with trusted professionals. Profiles are verified for identity and skills."
+              title={<TranslatedText context="homepage">Verified Profiles</TranslatedText>}
+              description={<TranslatedText context="homepage">Work with trusted professionals. Profiles are verified for identity and skills.</TranslatedText>}
               withArrow={false}
               circleSize={300}
             >
@@ -333,8 +334,8 @@ export default function Home() {
           {/* Card 6 - Trust & Safety */}
           <div className={cn('p-2 rounded-lg', 'md:col-span-4')}>
             <MainMenusGradientCard
-              title="Trust & Safety"
-              description="Ratings, reviews, and dispute support ensure a safe experience for everyone."
+              title={<TranslatedText context="homepage">Trust & Safety</TranslatedText>}
+              description={<TranslatedText context="homepage">Ratings, reviews, and dispute support ensure a safe experience for everyone.</TranslatedText>}
               withArrow={false}
               circleSize={300}
             >
@@ -354,29 +355,48 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
-            How It Works
+            <TranslatedText context="homepage">How It Works</TranslatedText>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400">
-            Three simple steps to transform your career
+            <TranslatedText context="homepage">Three simple steps to transform your career</TranslatedText>
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left side - Scroll Text Animation */}
           <div className="order-2 lg:order-1">
-            <ScrollText
-              texts={[
-                "Create Profile",
-                "Showcase Skills", 
-                "Find Local Jobs",
-                "Apply Instantly",
-                "Work & Deliver",
-                "Get Paid Fast",
-                "Build Reputation",
-                "Grow Your Career"
-              ]}
-              className="h-[400px]"
-            />
+            <div className="h-[400px] w-full max-w-3xl mx-auto">
+              <div className="h-[300px] overflow-y-auto scrollbar-none relative flex flex-col items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="h-[150px]" />
+                <div className="flex flex-col items-center w-full">
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-black dark:text-white">
+                    <TranslatedText context="homepage">Create Profile</TranslatedText>
+                  </div>
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-neutral-500/50 dark:text-neutral-600">
+                    <TranslatedText context="homepage">Showcase Skills</TranslatedText>
+                  </div>
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-neutral-500/50 dark:text-neutral-600">
+                    <TranslatedText context="homepage">Find Local Jobs</TranslatedText>
+                  </div>
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-neutral-500/50 dark:text-neutral-600">
+                    <TranslatedText context="homepage">Apply Instantly</TranslatedText>
+                  </div>
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-neutral-500/50 dark:text-neutral-600">
+                    <TranslatedText context="homepage">Work & Deliver</TranslatedText>
+                  </div>
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-neutral-500/50 dark:text-neutral-600">
+                    <TranslatedText context="homepage">Get Paid Fast</TranslatedText>
+                  </div>
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-neutral-500/50 dark:text-neutral-600">
+                    <TranslatedText context="homepage">Build Reputation</TranslatedText>
+                  </div>
+                  <div className="text-5xl font-bold py-8 px-4 whitespace-nowrap text-neutral-500/50 dark:text-neutral-600">
+                    <TranslatedText context="homepage">Grow Your Career</TranslatedText>
+                  </div>
+                </div>
+                <div className="h-[150px]" />
+              </div>
+            </div>
           </div>
 
           {/* Right side - Step Cards */}
@@ -429,21 +449,18 @@ export default function Home() {
       {/* Testimonials Section */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
-          <ShimmerText 
-            text="What Workers Say"
-            className="text-5xl font-light mb-4"
-          />
-          <TypewriterEffect
-            words={[
-              { text: "Real" },
-              { text: "stories" },
-              { text: "from" },
-              { text: "our" },
-              { text: "community", className: "text-blue-500 dark:text-blue-400" }
-            ]}
-            className="text-xl text-gray-600 dark:text-gray-400"
-            cursorClassName="bg-blue-500"
-          />
+          <div className="text-5xl font-light mb-4">
+            <TranslatedText context="homepage">What Workers Say</TranslatedText>
+          </div>
+          <div className="text-xl text-gray-600 dark:text-gray-400 flex items-center justify-center gap-2">
+            <TranslatedText context="homepage">Real</TranslatedText>
+            <TranslatedText context="homepage">stories</TranslatedText>
+            <TranslatedText context="homepage">from</TranslatedText>
+            <TranslatedText context="homepage">our</TranslatedText>
+            <span className="text-blue-500 dark:text-blue-400">
+              <TranslatedText context="homepage">community</TranslatedText>
+            </span>
+          </div>
         </div>
 
         {/* Infinite Moving Testimonials */}
@@ -451,34 +468,34 @@ export default function Home() {
           <InfiniteMovingCards
             items={[
               {
-                quote: "RozgaarSetu changed my life. I found steady work and the payments are always on time.",
-                name: "Rajesh Kumar",
-                title: "Electrician"
+                quote: <TranslatedText context="homepage">RozgaarSetu changed my life. I found steady work and the payments are always on time.</TranslatedText>,
+                name: <TranslatedText context="homepage">Rajesh Kumar</TranslatedText>,
+                title: <TranslatedText context="homepage">Electrician</TranslatedText>
               },
               {
-                quote: "The platform is easy to use. I can find work near my home and get paid instantly.",
-                name: "Priya Sharma",
-                title: "Cleaner"
+                quote: <TranslatedText context="homepage">The platform is easy to use. I can find work near my home and get paid instantly.</TranslatedText>,
+                name: <TranslatedText context="homepage">Priya Sharma</TranslatedText>,
+                title: <TranslatedText context="homepage">Cleaner</TranslatedText>
               },
               {
-                quote: "Great platform for contractors. Professional, reliable, and secure payments.",
-                name: "Amit Singh",
-                title: "Plumber"
+                quote: <TranslatedText context="homepage">Great platform for contractors. Professional, reliable, and secure payments.</TranslatedText>,
+                name: <TranslatedText context="homepage">Amit Singh</TranslatedText>,
+                title: <TranslatedText context="homepage">Plumber</TranslatedText>
               },
               {
-                quote: "Finding consistent work was a challenge. RozgaarSetu gave me the stability I needed.",
-                name: "Deepak Verma",
-                title: "Painter"
+                quote: <TranslatedText context="homepage">Finding consistent work was a challenge. RozgaarSetu gave me the stability I needed.</TranslatedText>,
+                name: <TranslatedText context="homepage">Deepak Verma</TranslatedText>,
+                title: <TranslatedText context="homepage">Painter</TranslatedText>
               },
               {
-                quote: "Excellent support and user-friendly app. I recommend RozgaarSetu to all workers.",
-                name: "Sunita Devi",
-                title: "Cook"
+                quote: <TranslatedText context="homepage">Excellent support and user-friendly app. I recommend RozgaarSetu to all workers.</TranslatedText>,
+                name: <TranslatedText context="homepage">Sunita Devi</TranslatedText>,
+                title: <TranslatedText context="homepage">Cook</TranslatedText>
               },
               {
-                quote: "Quick payments, verified customers, and transparent pricing. Much more rewarding.",
-                name: "Mohammad Ali",
-                title: "Carpenter"
+                quote: <TranslatedText context="homepage">Quick payments, verified customers, and transparent pricing. Much more rewarding.</TranslatedText>,
+                name: <TranslatedText context="homepage">Mohammad Ali</TranslatedText>,
+                title: <TranslatedText context="homepage">Carpenter</TranslatedText>
               }
             ]}
             direction="right"
@@ -508,7 +525,7 @@ export default function Home() {
               <h2 className="text-6xl md:text-7xl font-thin text-gray-900 dark:text-white mb-2 tracking-tight">
                 <TranslatedText context="homepage">Ready to</TranslatedText>
               </h2>
-              <TypewriterTitle
+              <TranslatedTypewriterTitle
                 sequences={[
                   { text: "transform your career", deleteAfter: true, pauseAfter: 2000 },
                   { text: "unlock new opportunities", deleteAfter: true, pauseAfter: 2000 },
@@ -519,6 +536,7 @@ export default function Home() {
                 startDelay={1000}
                 autoLoop={true}
                 loopDelay={3000}
+                context="homepage"
               />
             </div>
 

@@ -210,11 +210,11 @@ export default function OnboardingPage() {
       >
         <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
           <Shield className="h-4 w-4" />
-          <span>Secure platform</span>
+          <span><TranslatedText context="onboarding">Secure platform</TranslatedText></span>
           <span>•</span>
-          <span>Verified profiles</span>
+          <span><TranslatedText context="onboarding">Verified profiles</TranslatedText></span>
           <span>•</span>
-          <span>Protected payments</span>
+          <span><TranslatedText context="onboarding">Protected payments</TranslatedText></span>
         </div>
       </motion.div>
     </div>

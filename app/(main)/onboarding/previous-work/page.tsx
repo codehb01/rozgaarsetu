@@ -26,6 +26,7 @@ import {
   List
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { TranslatedText } from "@/hooks/use-batch-translation";
 
 // Work Categories
 const workCategories = [
@@ -61,7 +62,7 @@ function WorkPreviewImage({
       <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700">
         <div className="text-center">
           <Camera className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-          <span className="text-gray-500 text-sm">No Image</span>
+          <span className="text-gray-500 text-sm"><TranslatedText context="onboarding">No Image</TranslatedText></span>
         </div>
       </div>
     );
@@ -186,15 +187,15 @@ export default function PreviousWorkPage() {
               className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Details
+              <TranslatedText context="onboarding">Back to Details</TranslatedText>
             </Button>
 
             <div className="text-center">
               <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
-                Portfolio & Previous Work
+                <TranslatedText context="onboarding">Portfolio & Previous Work</TranslatedText>
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
-                Showcase your expertise to build trust with customers
+                <TranslatedText context="onboarding">Showcase your expertise to build trust with customers</TranslatedText>
               </p>
             </div>
           </motion.div>
@@ -252,7 +253,7 @@ export default function PreviousWorkPage() {
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Project
+                <TranslatedText context="onboarding">Add Project</TranslatedText>
               </Button>
             </div>
           </motion.div>
@@ -271,7 +272,7 @@ export default function PreviousWorkPage() {
                   className="cursor-pointer"
                   onClick={() => setSelectedCategory('All')}
                 >
-                  All ({previousWorks.length})
+                  <TranslatedText context="onboarding">All</TranslatedText> ({previousWorks.length})
                 </Badge>
                 {[...new Set(previousWorks.map(work => work.category))].map(category => {
                   const count = previousWorks.filter(work => work.category === category).length;
@@ -303,7 +304,7 @@ export default function PreviousWorkPage() {
                   <CardContent className="p-6">
                     <div className="flex justify-between items-center mb-6">
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        Add New Project
+                        <TranslatedText context="onboarding">Add New Project</TranslatedText>
                       </h3>
                       <Button
                         variant="ghost"
@@ -319,7 +320,7 @@ export default function PreviousWorkPage() {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Project Title *
+                            <TranslatedText context="onboarding">Project Title</TranslatedText> *
                           </label>
                           <Input
                             placeholder="e.g., Kitchen Renovation, Bathroom Plumbing"
@@ -331,14 +332,14 @@ export default function PreviousWorkPage() {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Category
+                            <TranslatedText context="onboarding">Category</TranslatedText>
                           </label>
                           <select
                             value={newWork.category}
                             onChange={(e) => setNewWork({ ...newWork, category: e.target.value })}
                             className="w-full p-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
                           >
-                            <option value="">Select category</option>
+                            <option value=""><TranslatedText context="onboarding">Select category</TranslatedText></option>
                             {workCategories.map(category => (
                               <option key={category} value={category}>{category}</option>
                             ))}
@@ -347,7 +348,7 @@ export default function PreviousWorkPage() {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Complexity Level
+                            <TranslatedText context="onboarding">Complexity Level</TranslatedText>
                           </label>
                           <div className="grid grid-cols-2 gap-2">
                             {complexityLevels.map(level => (
@@ -374,7 +375,7 @@ export default function PreviousWorkPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              Date Completed
+                              <TranslatedText context="onboarding">Date Completed</TranslatedText>
                             </label>
                             <Input
                               type="date"
@@ -385,7 +386,7 @@ export default function PreviousWorkPage() {
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              Duration
+                              <TranslatedText context="onboarding">Duration</TranslatedText>
                             </label>
                             <Input
                               placeholder="e.g., 2 days, 1 week"
@@ -401,19 +402,19 @@ export default function PreviousWorkPage() {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Project Images *
+                            <TranslatedText context="onboarding">Project Images</TranslatedText> *
                           </label>
                           <FileUpload
                             onChange={(files) => setNewWork({ ...newWork, images: files })}
                           />
                           <p className="text-xs text-gray-500 mt-1">
-                            Upload multiple images to showcase your work
+                            <TranslatedText context="onboarding">Upload multiple images to showcase your work</TranslatedText>
                           </p>
                         </div>
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Description
+                            <TranslatedText context="onboarding">Description</TranslatedText>
                           </label>
                           <Textarea
                             placeholder="Describe the work you did, challenges faced, materials used..."
@@ -425,7 +426,7 @@ export default function PreviousWorkPage() {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Cost Range (Optional)
+                            <TranslatedText context="onboarding">Cost Range (Optional)</TranslatedText>
                           </label>
                           <Input
                             placeholder="e.g., ₹5,000 - ₹10,000"
@@ -442,14 +443,14 @@ export default function PreviousWorkPage() {
                         variant="outline"
                         onClick={() => setShowAddForm(false)}
                       >
-                        Cancel
+                        <TranslatedText context="onboarding">Cancel</TranslatedText>
                       </Button>
                       <Button
                         onClick={addWork}
                         disabled={!newWork.title.trim() || newWork.images.length === 0}
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
-                        Add Project
+                        <TranslatedText context="onboarding">Add Project</TranslatedText>
                       </Button>
                     </div>
                   </CardContent>
@@ -515,7 +516,7 @@ export default function PreviousWorkPage() {
                           {/* Image Count Badge */}
                           {work.images.length > 1 && (
                             <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs">
-                              +{work.images.length - 1} more
+                              +{work.images.length - 1} <TranslatedText context="onboarding">more</TranslatedText>
                             </div>
                           )}
                         </div>
@@ -588,17 +589,17 @@ export default function PreviousWorkPage() {
               <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-8 max-w-md mx-auto">
                 <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  No Projects Yet
+                  <TranslatedText context="onboarding">No Projects Yet</TranslatedText>
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Add your first project to start building your portfolio and attract more customers.
+                  <TranslatedText context="onboarding">Add your first project to start building your portfolio and attract more customers.</TranslatedText>
                 </p>
                 <Button
                   onClick={() => setShowAddForm(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Your First Project
+                  <TranslatedText context="onboarding">Add Your First Project</TranslatedText>
                 </Button>
               </div>
             </motion.div>
@@ -653,14 +654,14 @@ export default function PreviousWorkPage() {
               onClick={handleSkip}
               className="border-gray-200 dark:border-gray-700"
             >
-              Skip for Now
+              <TranslatedText context="onboarding">Skip for Now</TranslatedText>
             </Button>
 
             <Button
               onClick={handleContinue}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Continue to Preview
+              <TranslatedText context="onboarding">Continue to Preview</TranslatedText>
               {previousWorks.length > 0 && (
                 <span className="ml-2 bg-blue-700 text-white px-2 py-0.5 rounded-full text-xs">
                   {previousWorks.length}

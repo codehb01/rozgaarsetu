@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import BookWorkerButton from "@/components/book-worker-button";
 import { auth } from "@clerk/nextjs/server";
+import { TranslatedText } from "@/components/translation/auto-translate";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +66,7 @@ export default async function WorkerOrSpecialityPage({
       return (
         <main className="min-h-[calc(100vh-4rem)] bg-gray-900">
           <section className="mx-auto max-w-4xl px-6 py-10">
-            <div className="text-gray-300">Worker not found.</div>
+            <div className="text-gray-300"><TranslatedText context="workers">Worker not found.</TranslatedText></div>
           </section>
         </main>
       );
@@ -83,23 +84,23 @@ export default async function WorkerOrSpecialityPage({
           <Card className="border-gray-800 bg-gray-800/50 p-6 mb-6">
             <div className="grid md:grid-cols-2 gap-6 text-gray-200">
               <div>
-                <div className="text-sm text-gray-400">Qualification</div>
+                <div className="text-sm text-gray-400"><TranslatedText context="workers">Qualification</TranslatedText></div>
                 <div>{wp.qualification || "—"}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-400">Experience</div>
-                <div>{wp.yearsExperience ?? 0} years</div>
+                <div className="text-sm text-gray-400"><TranslatedText context="workers">Experience</TranslatedText></div>
+                <div>{wp.yearsExperience ?? 0} <TranslatedText context="workers">years</TranslatedText></div>
               </div>
               <div>
-                <div className="text-sm text-gray-400">City</div>
+                <div className="text-sm text-gray-400"><TranslatedText context="workers">City</TranslatedText></div>
                 <div>{wp.city}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-400">Aadhar</div>
+                <div className="text-sm text-gray-400"><TranslatedText context="workers">Aadhar</TranslatedText></div>
                 <div>{wp.aadharNumber}</div>
               </div>
               <div className="md:col-span-2">
-                <div className="text-sm text-gray-400">Bio</div>
+                <div className="text-sm text-gray-400"><TranslatedText context="workers">Bio</TranslatedText></div>
                 <div>{wp.bio || "—"}</div>
               </div>
             </div>
@@ -107,7 +108,7 @@ export default async function WorkerOrSpecialityPage({
           <Card className="border-gray-800 bg-gray-800/50 p-6">
             <div className="text-gray-200">
               <div className="mb-3">
-                <div className="text-sm text-gray-400">Skills</div>
+                <div className="text-sm text-gray-400"><TranslatedText context="workers">Skills</TranslatedText></div>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {(wp.skilledIn || []).map((s, i) => (
                     <span
@@ -120,7 +121,7 @@ export default async function WorkerOrSpecialityPage({
                 </div>
               </div>
               <div className="mb-3">
-                <div className="text-sm text-gray-400">Available Areas</div>
+                <div className="text-sm text-gray-400"><TranslatedText context="workers">Available Areas</TranslatedText></div>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {(wp.availableAreas || []).map((s, i) => (
                     <span
@@ -134,11 +135,11 @@ export default async function WorkerOrSpecialityPage({
               </div>
               <div className="grid md:grid-cols-2 gap-4 mt-4">
                 <div>
-                  <div className="text-sm text-gray-400">Address</div>
+                  <div className="text-sm text-gray-400"><TranslatedText context="workers">Address</TranslatedText></div>
                   <div>{wp.address}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400">Location</div>
+                  <div className="text-sm text-gray-400"><TranslatedText context="workers">Location</TranslatedText></div>
                   <div>
                     {wp.city}, {wp.state}, {wp.country} - {wp.postalCode}
                   </div>
@@ -180,15 +181,15 @@ export default async function WorkerOrSpecialityPage({
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-light text-white">
-            Speciality: {slug.replace(/-/g, " ")}
+            <TranslatedText context="workers">Speciality</TranslatedText>: {slug.replace(/-/g, " ")}
           </h1>
           <p className="text-gray-400 mt-2">
-            Browse professionals in this speciality.
+            <TranslatedText context="workers">Browse professionals in this speciality.</TranslatedText>
           </p>
         </div>
         {workers.length === 0 ? (
           <div className="text-gray-400">
-            No workers found for this speciality.
+            <TranslatedText context="workers">No workers found for this speciality.</TranslatedText>
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -202,7 +203,7 @@ export default async function WorkerOrSpecialityPage({
                     </div>
                     <div className="text-sm text-gray-400">
                       {w.workerProfile?.qualification || "—"} •{" "}
-                      {w.workerProfile?.yearsExperience ?? 0} yrs exp
+                      {w.workerProfile?.yearsExperience ?? 0} <TranslatedText context="workers">yrs exp</TranslatedText>
                     </div>
                     <div className="mt-1 text-sm text-gray-400">
                       {w.workerProfile?.city || "City"} •{" "}
@@ -221,7 +222,7 @@ export default async function WorkerOrSpecialityPage({
                           href={`/workers/${w.id}`}
                           className="inline-flex px-3 py-2 rounded-md text-sm bg-gray-700 text-white hover:bg-gray-600"
                         >
-                          View
+                          <TranslatedText context="workers">View</TranslatedText>
                         </Link>
                         <BookWorkerButton workerId={w.id} />
                       </div>

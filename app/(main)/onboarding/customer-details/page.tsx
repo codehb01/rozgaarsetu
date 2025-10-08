@@ -74,8 +74,11 @@ export default function CustomerDetailsPage() {
                 </h3>
 
                 <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <TranslatedText context="onboarding">Address</TranslatedText>
+                  </label>
                   <Input
-                    placeholder="Address"
+                    placeholder="Enter your full address"
                     {...register("address")}
                     className="bg-gray-800 border-gray-700"
                   />
@@ -88,8 +91,11 @@ export default function CustomerDetailsPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <TranslatedText context="onboarding">City</TranslatedText>
+                    </label>
                     <Input
-                      placeholder="City"
+                      placeholder="Enter your city"
                       {...register("city")}
                       className="bg-gray-800 border-gray-700"
                     />
@@ -101,8 +107,11 @@ export default function CustomerDetailsPage() {
                   </div>
 
                   <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <TranslatedText context="onboarding">State</TranslatedText>
+                    </label>
                     <Input
-                      placeholder="State"
+                      placeholder="Enter your state"
                       {...register("state")}
                       className="bg-gray-800 border-gray-700"
                     />
@@ -116,8 +125,11 @@ export default function CustomerDetailsPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <TranslatedText context="onboarding">Country</TranslatedText>
+                    </label>
                     <Input
-                      placeholder="Country"
+                      placeholder="Enter your country"
                       {...register("country")}
                       className="bg-gray-800 border-gray-700"
                     />
@@ -129,8 +141,11 @@ export default function CustomerDetailsPage() {
                   </div>
 
                   <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <TranslatedText context="onboarding">Postal Code</TranslatedText>
+                    </label>
                     <Input
-                      placeholder="Postal Code"
+                      placeholder="Enter postal code"
                       {...register("postalCode")}
                       className="bg-gray-800 border-gray-700"
                     />

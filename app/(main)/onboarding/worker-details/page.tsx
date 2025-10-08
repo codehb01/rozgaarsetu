@@ -50,6 +50,7 @@ interface Step {
   icon: React.ElementType;
 }
 
+// Note: Steps are displayed dynamically, translations applied in JSX
 const steps: Step[] = [
   {
     id: 1,
@@ -271,10 +272,10 @@ export default function WorkerDetailsPage() {
                         <div className={`text-sm font-medium ${
                           isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
                         }`}>
-                          {step.title}
+                          <TranslatedText context="onboarding">{step.title}</TranslatedText>
                         </div>
                         <div className="text-xs text-gray-400 hidden sm:block">
-                          {step.description}
+                          <TranslatedText context="onboarding">{step.description}</TranslatedText>
                         </div>
                       </div>
                     </div>
@@ -310,10 +311,10 @@ export default function WorkerDetailsPage() {
                       <div className="space-y-6">
                         <div className="text-center mb-8">
                           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                            Personal Information
+                            <TranslatedText context="onboarding">Personal Information</TranslatedText>
                           </h2>
                           <p className="text-gray-600 dark:text-gray-400">
-                            Tell us about your background and experience
+                            <TranslatedText context="onboarding">Tell us about your background and experience</TranslatedText>
                           </p>
                         </div>
 
@@ -324,7 +325,7 @@ export default function WorkerDetailsPage() {
                             transition={{ delay: 0.1 }}
                           >
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              Aadhar Number
+                              <TranslatedText context="onboarding">Aadhar Number</TranslatedText>
                             </label>
                             <Input
                               placeholder="Enter 12-digit Aadhar number"
@@ -350,7 +351,7 @@ export default function WorkerDetailsPage() {
                             transition={{ delay: 0.2 }}
                           >
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              Qualification
+                              <TranslatedText context="onboarding">Qualification</TranslatedText>
                             </label>
                             <Input
                               placeholder="e.g., ITI, Diploma, Graduate"
@@ -374,7 +375,7 @@ export default function WorkerDetailsPage() {
                           className="space-y-4"
                         >
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Experience Level
+                            <TranslatedText context="onboarding">Experience Level</TranslatedText>
                           </label>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                             {experienceLevels.map((level) => (
@@ -390,13 +391,13 @@ export default function WorkerDetailsPage() {
                                 onClick={() => setValue("yearsExperience", parseInt(level.range) || 10)}
                               >
                                 <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {level.label}
+                                  <TranslatedText context="onboarding">{level.label}</TranslatedText>
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                                  {level.range} years
+                                  {level.range} <TranslatedText context="onboarding">years</TranslatedText>
                                 </div>
                                 <div className="text-xs text-gray-400 mt-1">
-                                  {level.description}
+                                  <TranslatedText context="onboarding">{level.description}</TranslatedText>
                                 </div>
                               </motion.div>
                             ))}
@@ -409,7 +410,7 @@ export default function WorkerDetailsPage() {
                           transition={{ delay: 0.4 }}
                         >
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Tell us about yourself
+                            <TranslatedText context="onboarding">Tell us about yourself</TranslatedText>
                           </label>
                           <Textarea
                             placeholder="Describe your experience, specializations, and what makes you unique..."
@@ -440,10 +441,10 @@ export default function WorkerDetailsPage() {
                       <div className="space-y-6">
                         <div className="text-center mb-8">
                           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                            Skills & Services
+                            <TranslatedText context="onboarding">Skills & Services</TranslatedText>
                           </h2>
                           <p className="text-gray-600 dark:text-gray-400">
-                            What services do you provide?
+                            <TranslatedText context="onboarding">What services do you provide?</TranslatedText>
                           </p>
                         </div>
 
@@ -453,7 +454,7 @@ export default function WorkerDetailsPage() {
                           transition={{ delay: 0.1 }}
                         >
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-                            Select your skills
+                            <TranslatedText context="onboarding">Select your skills</TranslatedText>
                           </label>
                           
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
@@ -511,7 +512,7 @@ export default function WorkerDetailsPage() {
                               className="mt-4"
                             >
                               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                Selected skills ({selectedSkills.length}):
+                                <TranslatedText context="onboarding">Selected skills</TranslatedText> ({selectedSkills.length}):
                               </p>
                               <div className="flex flex-wrap gap-2">
                                 {selectedSkills.map((skill) => (
@@ -538,10 +539,10 @@ export default function WorkerDetailsPage() {
                       <div className="space-y-6">
                         <div className="text-center mb-8">
                           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                            Set Your Rates
+                            <TranslatedText context="onboarding">Set Your Rates</TranslatedText>
                           </h2>
                           <p className="text-gray-600 dark:text-gray-400">
-                            Configure your pricing to attract customers
+                            <TranslatedText context="onboarding">Configure your pricing to attract customers</TranslatedText>
                           </p>
                         </div>
 
@@ -553,7 +554,7 @@ export default function WorkerDetailsPage() {
                             className="space-y-4"
                           >
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Hourly Rate (₹)
+                              <TranslatedText context="onboarding">Hourly Rate (₹)</TranslatedText>
                             </label>
                             <Input
                               placeholder="e.g., 500"
@@ -571,7 +572,7 @@ export default function WorkerDetailsPage() {
                               </p>
                             )}
                             <p className="text-xs text-gray-500">
-                              Competitive rates in your area: ₹300-800/hour
+                              <TranslatedText context="onboarding">Competitive rates in your area: ₹300-800/hour</TranslatedText>
                             </p>
                           </motion.div>
 
@@ -582,7 +583,7 @@ export default function WorkerDetailsPage() {
                             className="space-y-4"
                           >
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Minimum Job Fee (₹)
+                              <TranslatedText context="onboarding">Minimum Job Fee (₹)</TranslatedText>
                             </label>
                             <Input
                               placeholder="e.g., 1000"
@@ -600,7 +601,7 @@ export default function WorkerDetailsPage() {
                               </p>
                             )}
                             <p className="text-xs text-gray-500">
-                              For small jobs regardless of time spent
+                              <TranslatedText context="onboarding">For small jobs regardless of time spent</TranslatedText>
                             </p>
                           </motion.div>
                         </div>
@@ -612,13 +613,13 @@ export default function WorkerDetailsPage() {
                           className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg"
                         >
                           <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                            💡 Pricing Tips
+                            💡 <TranslatedText context="onboarding">Pricing Tips</TranslatedText>
                           </h3>
                           <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                            <li>• Start competitive and adjust based on demand</li>
-                            <li>• Higher rates often signal quality to customers</li>
-                            <li>• Consider rush job premiums</li>
-                            <li>• Factor in travel time and materials</li>
+                            <li>• <TranslatedText context="onboarding">Start competitive and adjust based on demand</TranslatedText></li>
+                            <li>• <TranslatedText context="onboarding">Higher rates often signal quality to customers</TranslatedText></li>
+                            <li>• <TranslatedText context="onboarding">Consider rush job premiums</TranslatedText></li>
+                            <li>• <TranslatedText context="onboarding">Factor in travel time and materials</TranslatedText></li>
                           </ul>
                         </motion.div>
                       </div>
@@ -628,10 +629,10 @@ export default function WorkerDetailsPage() {
                       <div className="space-y-6">
                         <div className="text-center mb-8">
                           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                            Service Location
+                            <TranslatedText context="onboarding">Service Location</TranslatedText>
                           </h2>
                           <p className="text-gray-600 dark:text-gray-400">
-                            Where do you provide your services?
+                            <TranslatedText context="onboarding">Where do you provide your services?</TranslatedText>
                           </p>
                         </div>
 
@@ -642,7 +643,7 @@ export default function WorkerDetailsPage() {
                             transition={{ delay: 0.1 }}
                           >
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              Full Address
+                              <TranslatedText context="onboarding">Full Address</TranslatedText>
                             </label>
                             <Input
                               placeholder="Street address, building name, etc."
@@ -665,7 +666,7 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.2 }}
                             >
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                City
+                                <TranslatedText context="onboarding">City</TranslatedText>
                               </label>
                               <Input
                                 placeholder="Enter city name"
@@ -687,7 +688,7 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.3 }}
                             >
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                State
+                                <TranslatedText context="onboarding">State</TranslatedText>
                               </label>
                               <Input
                                 placeholder="Enter state name"
@@ -711,7 +712,7 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.4 }}
                             >
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Country
+                                <TranslatedText context="onboarding">Country</TranslatedText>
                               </label>
                               <Input
                                 placeholder="Enter country"
@@ -733,7 +734,7 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.5 }}
                             >
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Postal Code
+                                <TranslatedText context="onboarding">Postal Code</TranslatedText>
                               </label>
                               <Input
                                 placeholder="Enter postal code"
@@ -757,10 +758,10 @@ export default function WorkerDetailsPage() {
                       <div className="space-y-6">
                         <div className="text-center mb-8">
                           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                            Complete Your Profile
+                            <TranslatedText context="onboarding">Complete Your Profile</TranslatedText>
                           </h2>
                           <p className="text-gray-600 dark:text-gray-400">
-                            Add a profile picture to build trust
+                            <TranslatedText context="onboarding">Add a profile picture to build trust</TranslatedText>
                           </p>
                         </div>
 
@@ -771,7 +772,7 @@ export default function WorkerDetailsPage() {
                           className="space-y-4"
                         >
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-                            Profile Picture (Optional)
+                            <TranslatedText context="onboarding">Profile Picture (Optional)</TranslatedText>
                           </label>
                           
                           <Controller
@@ -785,7 +786,7 @@ export default function WorkerDetailsPage() {
                           />
                           
                           <p className="text-xs text-gray-500 text-center">
-                            Upload a clear, professional photo to increase your booking chances by 3x
+                            <TranslatedText context="onboarding">Upload a clear, professional photo to increase your booking chances by 3x</TranslatedText>
                           </p>
                         </motion.div>
 
@@ -796,16 +797,16 @@ export default function WorkerDetailsPage() {
                           className="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg"
                         >
                           <h3 className="font-medium text-green-900 dark:text-green-100 mb-3">
-                            🎉 You're almost done!
+                            🎉 <TranslatedText context="onboarding">You're almost done!</TranslatedText>
                           </h3>
                           <p className="text-sm text-green-800 dark:text-green-200 mb-4">
-                            Your profile is looking great. Next, you'll be able to showcase your previous work and start receiving job requests.
+                            <TranslatedText context="onboarding">Your profile is looking great. Next, you'll be able to showcase your previous work and start receiving job requests.</TranslatedText>
                           </p>
                           <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
-                            <li>✓ Personal information completed</li>
-                            <li>✓ Skills and services added</li>
-                            <li>✓ Pricing configured</li>
-                            <li>✓ Location details provided</li>
+                            <li>✓ <TranslatedText context="onboarding">Personal information completed</TranslatedText></li>
+                            <li>✓ <TranslatedText context="onboarding">Skills and services added</TranslatedText></li>
+                            <li>✓ <TranslatedText context="onboarding">Pricing configured</TranslatedText></li>
+                            <li>✓ <TranslatedText context="onboarding">Location details provided</TranslatedText></li>
                           </ul>
                         </motion.div>
                       </div>
