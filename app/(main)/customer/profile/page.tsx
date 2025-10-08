@@ -19,9 +19,7 @@ import {
   FiMail,
   FiPhone,
   FiCalendar,
-  FiStar,
   FiNavigation,
-  FiClock,
   FiCheckCircle,
   FiAlertCircle,
   FiBriefcase,
@@ -56,8 +54,13 @@ type Job = {
   time: string;
   location: string;
   charge: number;
+  charges?: number;
+  createdAt: string;
   status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
-  worker: { name: string | null };
+  worker: {
+    name: string | null;
+    city?: string;
+  };
   review?: { id: string; rating: number; comment: string | null } | null;
 };
 
