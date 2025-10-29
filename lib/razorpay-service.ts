@@ -1,14 +1,31 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
-// Initialize Razorpay instance (Test Mode)
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "",
-});
-
 // Platform fee configuration (10% of job charge)
 const PLATFORM_FEE_PERCENTAGE = 10;
+
+// Lazy initialization of Razorpay instance
+let razorpayInstance: Razorpay | null = null;
+
+function getRazorpayInstance(): Razorpay {
+  if (!razorpayInstance) {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      throw new Error(
+        "Razorpay credentials not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your environment variables."
+      );
+    }
+
+    razorpayInstance = new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
+  }
+
+  return razorpayInstance;
+}
 
 /**
  * Calculate platform fee and worker earnings
@@ -40,6 +57,8 @@ export async function createRazorpayOrder(
   customerPhone: string
 ) {
   try {
+    const razorpay = getRazorpayInstance();
+    
     // Convert amount to paise (Razorpay requires amount in smallest currency unit)
     const amountInPaise = Math.round(amount * 100);
 
@@ -101,6 +120,7 @@ export function verifyPaymentSignature(
  */
 export async function fetchPaymentDetails(paymentId: string) {
   try {
+    const razorpay = getRazorpayInstance();
     const payment = await razorpay.payments.fetch(paymentId);
     return payment;
   } catch (error) {
@@ -117,6 +137,7 @@ export async function fetchPaymentDetails(paymentId: string) {
  */
 export async function createRefund(paymentId: string, amount?: number) {
   try {
+    const razorpay = getRazorpayInstance();
     const refundData: { payment_id: string; amount?: number } = {
       payment_id: paymentId,
     };
@@ -133,4 +154,4 @@ export async function createRefund(paymentId: string, amount?: number) {
   }
 }
 
-export default razorpay;
+export default getRazorpayInstance;
