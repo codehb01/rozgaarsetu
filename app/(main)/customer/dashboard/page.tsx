@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BookWorkerButton from "@/components/book-worker-button";
-import UsageTracker from "@/components/usage-tracker";
 import prisma from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import {
@@ -173,8 +172,7 @@ export default async function CustomerDashboardPage() {
             </div>
           </Card>
 
-          {/* Usage Tracker */}
-          <UsageTracker userRole={UserRole.CUSTOMER} />
+          {/* Usage Tracker removed */}
         </div>
       </div>
 

@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import UsageTracker from "@/components/usage-tracker";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { UserRole } from "@prisma/client";
 import {
   Briefcase,
   Clock,
@@ -150,8 +148,7 @@ export default async function WorkerDashboardPage() {
             </div>
           </Card>
 
-          {/* Usage Tracker */}
-          <UsageTracker userRole={UserRole.WORKER} />
+          {/* Usage Tracker removed */}
         </div>
       </div>
 

@@ -203,7 +203,9 @@ export default function CustomerBookingsPage() {
       },
       modal: {
         ondismiss: function () {
-          toast.info("Payment cancelled. You can retry by clicking the button again.");
+          toast.info(
+            "Payment cancelled. You can retry by clicking the button again."
+          );
           setPaymentProcessing(false);
           // Don't clear razorpayOrder or paymentJobId - allow retry
         },
