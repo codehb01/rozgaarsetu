@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { protectCustomerApi } from "@/lib/api-auth";
-import { UsageTracker } from "@/lib/usage-tracker";
+import { calculateFees } from "@/lib/razorpay-service";
 import type { User } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
@@ -28,6 +28,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (charge <= 0) {
+      return NextResponse.json(
+        { error: "Charge must be greater than 0" },
+        { status: 400 }
+      );
+    }
+
     const dt = new Date(datetime);
     if (isNaN(dt.getTime())) {
       return NextResponse.json({ error: "Invalid datetime" }, { status: 400 });
@@ -40,12 +47,6 @@ export async function POST(req: NextRequest) {
 
     // Validate worker exists and is role WORKER
     const worker = await prisma.user.findUnique({ where: { id: workerId } });
-
-    console.log("Worker lookup:", {
-      workerId,
-      found: !!worker,
-      role: worker?.role,
-    });
 
     if (!worker) {
       return NextResponse.json({ error: "Worker not found" }, { status: 404 });
@@ -61,20 +62,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if customer can create more bookings
-    const canBook = await UsageTracker.trackBooking(customer.clerkUserId);
+    // Calculate platform fees and worker earnings
+    const { platformFee, workerEarnings } = calculateFees(charge);
 
-    if (!canBook) {
-      return NextResponse.json(
-        {
-          error: "Monthly booking limit exceeded",
-          message: "Upgrade to Pro plan for unlimited bookings",
-          needsUpgrade: true,
-        },
-        { status: 403 }
-      );
-    }
-
+    // Create job with payment tracking fields
     const job = await prisma.job.create({
       data: {
         customerId: customer.id,
@@ -86,6 +77,26 @@ export async function POST(req: NextRequest) {
         location,
         charge,
         status: "PENDING",
+        platformFee,
+        workerEarnings,
+        paymentStatus: "PENDING",
+      },
+    });
+
+    // Create audit log for job creation
+    await prisma.jobLog.create({
+      data: {
+        jobId: job.id,
+        fromStatus: null,
+        toStatus: "PENDING",
+        action: "JOB_CREATED",
+        performedBy: customer.id,
+        metadata: {
+          charge,
+          platformFee,
+          workerEarnings,
+          location,
+        },
       },
     });
 
