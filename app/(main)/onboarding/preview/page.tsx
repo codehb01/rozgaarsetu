@@ -259,6 +259,7 @@ export default function PreviewPage() {
   const handleSubmit = async () => {
     if (!workerDetails && !customerDetails) return;
 
+    // Create profile
     const formData = new FormData();
 
     if (isWorker && workerDetails) {

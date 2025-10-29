@@ -185,13 +185,19 @@ export async function PATCH(
 
       // Check if Razorpay order already exists
       if (job.razorpayOrderId) {
-        return NextResponse.json(
-          {
-            error: "Payment already initiated",
+        // Allow retry with existing order - don't block
+        return NextResponse.json({
+          success: true,
+          requiresPayment: true,
+          razorpayOrder: {
             orderId: job.razorpayOrderId,
+            amount: job.charge * 100, // Convert to paise
+            currency: "INR",
+            keyId: process.env.RAZORPAY_KEY_ID,
           },
-          { status: 400 }
-        );
+          job: job,
+          message: "Resuming previous payment attempt",
+        });
       }
 
       // Create Razorpay order

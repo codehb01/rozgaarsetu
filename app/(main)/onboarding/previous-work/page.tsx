@@ -9,10 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { FileDropzone } from "@/components/ui/file-dropzone";
-import { 
-  ArrowLeft, 
-  Plus, 
-  X, 
+import {
+  ArrowLeft,
+  Plus,
+  X,
   Calendar,
   DollarSign,
   Clock,
@@ -23,24 +23,55 @@ import {
   Trash2,
   Upload,
   Grid3X3,
-  List
+  List,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ClickSpark from "@/components/ClickSpark";
 
 // Work Categories
 const workCategories = [
-  "Plumbing", "Electrical", "Carpentry", "Painting", "Cleaning",
-  "Gardening", "AC Repair", "Appliance Repair", "Masonry", "Welding",
-  "Roofing", "Flooring", "Interior Design", "Renovation", "Maintenance"
+  "Plumbing",
+  "Electrical",
+  "Carpentry",
+  "Painting",
+  "Cleaning",
+  "Gardening",
+  "AC Repair",
+  "Appliance Repair",
+  "Masonry",
+  "Welding",
+  "Roofing",
+  "Flooring",
+  "Interior Design",
+  "Renovation",
+  "Maintenance",
 ];
 
 // Project Complexity Levels
 const complexityLevels = [
-  { level: "Simple", color: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300", description: "Basic repair/maintenance" },
-  { level: "Moderate", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300", description: "Standard installation" },
-  { level: "Complex", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300", description: "Advanced project" },
-  { level: "Expert", color: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300", description: "Specialized work" }
+  {
+    level: "Simple",
+    color:
+      "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300",
+    description: "Basic repair/maintenance",
+  },
+  {
+    level: "Moderate",
+    color:
+      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300",
+    description: "Standard installation",
+  },
+  {
+    level: "Complex",
+    color:
+      "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300",
+    description: "Advanced project",
+  },
+  {
+    level: "Expert",
+    color: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300",
+    description: "Specialized work",
+  },
 ];
 
 // Work Image Component with fallback and lightbox
@@ -106,10 +137,10 @@ export default function PreviousWorkPage() {
   const [previousWorks, setPreviousWorks] = useState<PreviousWork[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingWork, setEditingWork] = useState<PreviousWork | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-  
+
   const [newWork, setNewWork] = useState({
     title: "",
     description: "",
@@ -163,9 +194,10 @@ export default function PreviousWorkPage() {
     router.push("/onboarding/preview");
   };
 
-  const filteredWorks = selectedCategory === 'All' 
-    ? previousWorks 
-    : previousWorks.filter(work => work.category === selectedCategory);
+  const filteredWorks =
+    selectedCategory === "All"
+      ? previousWorks
+      : previousWorks.filter((work) => work.category === selectedCategory);
 
   const getImageUrl = (file: File) => {
     return URL.createObjectURL(file);
@@ -218,7 +250,10 @@ export default function PreviousWorkPage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-semibold text-gray-900 dark:text-white">
-                  {previousWorks.reduce((acc, work) => acc + work.images.length, 0)}
+                  {previousWorks.reduce(
+                    (acc, work) => acc + work.images.length,
+                    0
+                  )}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Photos
@@ -230,17 +265,17 @@ export default function PreviousWorkPage() {
               {/* View Mode Toggle */}
               <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
                 <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => setViewMode("grid")}
                   className="h-8 px-3"
                 >
                   <Grid3X3 className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
-                  onClick={() => setViewMode('list')}
+                  onClick={() => setViewMode("list")}
                   className="h-8 px-3"
                 >
                   <List className="h-4 w-4" />
@@ -268,25 +303,31 @@ export default function PreviousWorkPage() {
             >
               <div className="flex flex-wrap gap-2">
                 <Badge
-                  variant={selectedCategory === 'All' ? 'default' : 'outline'}
+                  variant={selectedCategory === "All" ? "default" : "outline"}
                   className="cursor-pointer"
-                  onClick={() => setSelectedCategory('All')}
+                  onClick={() => setSelectedCategory("All")}
                 >
                   All ({previousWorks.length})
                 </Badge>
-                {[...new Set(previousWorks.map(work => work.category))].map(category => {
-                  const count = previousWorks.filter(work => work.category === category).length;
-                  return (
-                    <Badge
-                      key={category}
-                      variant={selectedCategory === category ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category} ({count})
-                    </Badge>
-                  );
-                })}
+                {[...new Set(previousWorks.map((work) => work.category))].map(
+                  (category) => {
+                    const count = previousWorks.filter(
+                      (work) => work.category === category
+                    ).length;
+                    return (
+                      <Badge
+                        key={category}
+                        variant={
+                          selectedCategory === category ? "default" : "outline"
+                        }
+                        className="cursor-pointer"
+                        onClick={() => setSelectedCategory(category)}
+                      >
+                        {category} ({count})
+                      </Badge>
+                    );
+                  }
+                )}
               </div>
             </motion.div>
           )}
@@ -325,7 +366,9 @@ export default function PreviousWorkPage() {
                           <Input
                             placeholder="e.g., Kitchen Renovation, Bathroom Plumbing"
                             value={newWork.title}
-                            onChange={(e) => setNewWork({ ...newWork, title: e.target.value })}
+                            onChange={(e) =>
+                              setNewWork({ ...newWork, title: e.target.value })
+                            }
                             className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
                           />
                         </div>
@@ -336,12 +379,19 @@ export default function PreviousWorkPage() {
                           </label>
                           <select
                             value={newWork.category}
-                            onChange={(e) => setNewWork({ ...newWork, category: e.target.value })}
+                            onChange={(e) =>
+                              setNewWork({
+                                ...newWork,
+                                category: e.target.value,
+                              })
+                            }
                             className="w-full p-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
                           >
                             <option value="">Select category</option>
-                            {workCategories.map(category => (
-                              <option key={category} value={category}>{category}</option>
+                            {workCategories.map((category) => (
+                              <option key={category} value={category}>
+                                {category}
+                              </option>
                             ))}
                           </select>
                         </div>
@@ -351,7 +401,7 @@ export default function PreviousWorkPage() {
                             Complexity Level
                           </label>
                           <div className="grid grid-cols-2 gap-2">
-                            {complexityLevels.map(level => (
+                            {complexityLevels.map((level) => (
                               <div
                                 key={level.level}
                                 className={`p-3 rounded-lg border cursor-pointer transition-all ${
@@ -359,7 +409,12 @@ export default function PreviousWorkPage() {
                                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                                     : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
                                 }`}
-                                onClick={() => setNewWork({ ...newWork, complexity: level.level })}
+                                onClick={() =>
+                                  setNewWork({
+                                    ...newWork,
+                                    complexity: level.level,
+                                  })
+                                }
                               >
                                 <div className="text-sm font-medium text-gray-900 dark:text-white">
                                   {level.level}
@@ -380,7 +435,12 @@ export default function PreviousWorkPage() {
                             <Input
                               type="date"
                               value={newWork.dateCompleted}
-                              onChange={(e) => setNewWork({ ...newWork, dateCompleted: e.target.value })}
+                              onChange={(e) =>
+                                setNewWork({
+                                  ...newWork,
+                                  dateCompleted: e.target.value,
+                                })
+                              }
                               className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
                             />
                           </div>
@@ -391,7 +451,12 @@ export default function PreviousWorkPage() {
                             <Input
                               placeholder="e.g., 2 days, 1 week"
                               value={newWork.duration}
-                              onChange={(e) => setNewWork({ ...newWork, duration: e.target.value })}
+                              onChange={(e) =>
+                                setNewWork({
+                                  ...newWork,
+                                  duration: e.target.value,
+                                })
+                              }
                               className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
                             />
                           </div>
@@ -407,7 +472,12 @@ export default function PreviousWorkPage() {
                           <FileDropzone
                             accept="image/*"
                             maxSize={5 * 1024 * 1024}
-                            onChange={(file) => setNewWork({ ...newWork, images: file ? [file] : [] })}
+                            onChange={(file) =>
+                              setNewWork({
+                                ...newWork,
+                                images: file ? [file] : [],
+                              })
+                            }
                           />
                           <p className="text-xs text-gray-500 mt-1">
                             Upload an image to showcase your work
@@ -421,7 +491,12 @@ export default function PreviousWorkPage() {
                           <Textarea
                             placeholder="Describe the work you did, challenges faced, materials used..."
                             value={newWork.description}
-                            onChange={(e) => setNewWork({ ...newWork, description: e.target.value })}
+                            onChange={(e) =>
+                              setNewWork({
+                                ...newWork,
+                                description: e.target.value,
+                              })
+                            }
                             className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 min-h-24"
                           />
                         </div>
@@ -433,7 +508,12 @@ export default function PreviousWorkPage() {
                           <Input
                             placeholder="e.g., ₹5,000 - ₹10,000"
                             value={newWork.costRange}
-                            onChange={(e) => setNewWork({ ...newWork, costRange: e.target.value })}
+                            onChange={(e) =>
+                              setNewWork({
+                                ...newWork,
+                                costRange: e.target.value,
+                              })
+                            }
                             className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
                           />
                         </div>
@@ -449,7 +529,9 @@ export default function PreviousWorkPage() {
                       </Button>
                       <Button
                         onClick={addWork}
-                        disabled={!newWork.title.trim() || newWork.images.length === 0}
+                        disabled={
+                          !newWork.title.trim() || newWork.images.length === 0
+                        }
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         Add Project
@@ -469,11 +551,13 @@ export default function PreviousWorkPage() {
               transition={{ delay: 0.3 }}
               className="mb-8"
             >
-              <div className={`grid gap-6 ${
-                viewMode === 'grid' 
-                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-                  : 'grid-cols-1'
-              }`}>
+              <div
+                className={`grid gap-6 ${
+                  viewMode === "grid"
+                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1"
+                }`}
+              >
                 {filteredWorks.map((work, index) => (
                   <motion.div
                     key={work.id}
@@ -491,10 +575,12 @@ export default function PreviousWorkPage() {
                               src={getImageUrl(work.images[0])}
                               alt={work.title}
                               className="w-full h-48 object-cover rounded-t-lg"
-                              onClick={() => setLightboxImage(getImageUrl(work.images[0]))}
+                              onClick={() =>
+                                setLightboxImage(getImageUrl(work.images[0]))
+                              }
                             />
                           )}
-                          
+
                           {/* Action Buttons */}
                           <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Button
@@ -547,7 +633,9 @@ export default function PreviousWorkPage() {
                             {work.dateCompleted && (
                               <div className="flex items-center">
                                 <Calendar className="h-3 w-3 mr-1" />
-                                {new Date(work.dateCompleted).toLocaleDateString()}
+                                {new Date(
+                                  work.dateCompleted
+                                ).toLocaleDateString()}
                               </div>
                             )}
                             {work.duration && (
@@ -566,9 +654,13 @@ export default function PreviousWorkPage() {
 
                           {/* Complexity Badge */}
                           <div className="mt-3">
-                            <Badge 
-                              variant="outline" 
-                              className={complexityLevels.find(level => level.level === work.complexity)?.color}
+                            <Badge
+                              variant="outline"
+                              className={
+                                complexityLevels.find(
+                                  (level) => level.level === work.complexity
+                                )?.color
+                              }
                             >
                               {work.complexity}
                             </Badge>
@@ -594,7 +686,8 @@ export default function PreviousWorkPage() {
                   No Projects Yet
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Add your first project to start building your portfolio and attract more customers.
+                  Add your first project to start building your portfolio and
+                  attract more customers.
                 </p>
                 <Button
                   onClick={() => setShowAddForm(true)}

@@ -39,6 +39,9 @@ export async function setUserRole(
   // Get user record
   const user = await prisma.user.findUnique({
     where: { clerkUserId: userId },
+    select: {
+      id: true,
+    },
   });
   if (!user) throw new Error("User not found in database");
 
@@ -87,6 +90,7 @@ export async function setUserRole(
 
     if (role === "WORKER") {
       console.log("Processing WORKER role");
+
       const skilledInRaw = formData.get("skilledIn")?.toString();
       console.log("skilledInRaw:", skilledInRaw);
 
