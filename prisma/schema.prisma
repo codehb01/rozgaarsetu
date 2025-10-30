@@ -8,24 +8,26 @@ datasource db {
 }
 
 model User {
-  id                                           String            @id @default(uuid())
-  email                                        String            @unique
-  phone                                        String            @unique
+  id                                           String             @id @default(uuid())
+  email                                        String             @unique
+  phone                                        String             @unique
   name                                         String
-  role                                         UserRole          @default(UNASSIGNED)
-  createdAt                                    DateTime          @default(now())
-  updatedAt                                    DateTime          @updatedAt
-  clerkUserId                                  String            @unique
+  role                                         UserRole           @default(UNASSIGNED)
+  createdAt                                    DateTime           @default(now())
+  updatedAt                                    DateTime           @updatedAt
+  clerkUserId                                  String             @unique
   customerProfile                              CustomerProfile?
-  jobsCreated                                  Job[]             @relation("CustomerJobs")
-  jobsAssigned                                 Job[]             @relation("WorkerJobs")
+  jobsCreated                                  Job[]              @relation("CustomerJobs")
+  jobsAssigned                                 Job[]              @relation("WorkerJobs")
   JobApplication                               JobApplication[]
-  JobPosting_JobPosting_employerIdToUser       JobPosting[]      @relation("JobPosting_employerIdToUser")
-  JobPosting_JobPosting_selectedWorkerIdToUser JobPosting[]      @relation("JobPosting_selectedWorkerIdToUser")
-  reviewsGiven                                 Review[]          @relation("ReviewsByCustomer")
-  reviewsReceived                              Review[]          @relation("ReviewsForWorker")
+  JobPosting_JobPosting_employerIdToUser       JobPosting[]       @relation("JobPosting_employerIdToUser")
+  JobPosting_JobPosting_selectedWorkerIdToUser JobPosting[]       @relation("JobPosting_selectedWorkerIdToUser")
+  reviewsGiven                                 Review[]           @relation("ReviewsByCustomer")
+  reviewsReceived                              Review[]           @relation("ReviewsForWorker")
   transactions                                 Transaction[]
   workerProfile                                WorkerProfile?
+  pushSubscriptions                            PushSubscription[]
+  notifications                                Notification[]
 }
 
 model WorkerProfile {
@@ -262,4 +264,30 @@ model JobLog {
   job          Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   @@index([jobId, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique @db.Text
+  keys      Json
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([createdAt])
 }

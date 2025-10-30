@@ -5,6 +5,12 @@ import {
   createRazorpayOrder,
   verifyPaymentSignature,
 } from "@/lib/razorpay-service";
+import {
+  notifyJobAccepted,
+  notifyJobStarted,
+  notifyJobCompleted,
+  notifyJobCancelled,
+} from "@/lib/push-service";
 
 export async function PATCH(
   _req: NextRequest,
@@ -76,6 +82,12 @@ export async function PATCH(
           action: "WORKER_ACCEPTED",
           performedBy: user.id,
         },
+      });
+
+      // Notify customer that job was accepted
+      await notifyJobAccepted(job.customerId, {
+        id: job.id,
+        description: job.description,
       });
 
       return NextResponse.json({ success: true, job: updated });
@@ -156,6 +168,12 @@ export async function PATCH(
             gpsLocation: { lat: startProofGpsLat, lng: startProofGpsLng },
           },
         },
+      });
+
+      // Notify customer that work has started
+      await notifyJobStarted(job.customerId, {
+        id: job.id,
+        description: job.description,
       });
 
       return NextResponse.json({ success: true, job: updated });
@@ -307,6 +325,19 @@ export async function PATCH(
         },
       });
 
+      // Notify the other party (customer if worker cancelled, worker if customer cancelled)
+      const otherPartyId =
+        user.role === "CUSTOMER" ? job.workerId : job.customerId;
+      const cancelledBy = user.role === "CUSTOMER" ? "customer" : "worker";
+
+      if (otherPartyId) {
+        await notifyJobCancelled(
+          otherPartyId,
+          { id: job.id, description: job.description },
+          cancelledBy
+        );
+      }
+
       return NextResponse.json({ success: true, job: updated });
     }
 
@@ -431,6 +462,14 @@ export async function POST(
         },
       },
     });
+
+    // Notify worker that payment is completed
+    if (job.workerId) {
+      await notifyJobCompleted(job.workerId, {
+        id: job.id,
+        description: job.description,
+      });
+    }
 
     return NextResponse.json({
       success: true,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { protectCustomerApi } from "@/lib/api-auth";
 import { calculateFees } from "@/lib/razorpay-service";
+import { notifyJobCreated } from "@/lib/push-service";
 import type { User } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
@@ -98,6 +99,13 @@ export async function POST(req: NextRequest) {
           location,
         },
       },
+    });
+
+    // Send notification to worker
+    await notifyJobCreated(worker.id, {
+      id: job.id,
+      description: job.description,
+      charge: job.charge,
     });
 
     return NextResponse.json({ success: true, job });
