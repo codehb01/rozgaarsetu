@@ -52,7 +52,7 @@ export function Header() {
   // Log any errors for debugging
   useEffect(() => {
     if (error) {
-      console.error('Header: Error loading user profile:', error);
+      console.error("Header: Error loading user profile:", error);
     }
   }, [error]);
 
@@ -60,9 +60,7 @@ export function Header() {
 
   // Dynamic navigation items based on user role
   const getNavItems = () => {
-    const baseItems = [
-      { name: "Home", link: "/" },
-    ];
+    const baseItems = [{ name: "Home", link: "/" }];
 
     // Add dashboard link only when user is logged in and has a role assigned
     if (userProfile) {
@@ -74,10 +72,7 @@ export function Header() {
       // Don't add dashboard link for UNASSIGNED role - they should complete onboarding first
     }
 
-    baseItems.push(
-      { name: "Pricing", link: "/pricing" },
-      { name: "About", link: "/about" }
-    );
+    baseItems.push({ name: "Pricing", link: "/pricing" });
 
     return baseItems;
   };
@@ -97,12 +92,14 @@ export function Header() {
             className="relative z-20 flex items-center space-x-3 px-2 py-1.5 text-sm font-normal text-black dark:text-white group"
           >
             {/* Hard Hat Logo */}
-            <img 
-              src="/hard-hat_11270170.svg" 
-              alt="RozgaarSetu Logo" 
+            <img
+              src="/hard-hat_11270170.svg"
+              alt="RozgaarSetu Logo"
               className="w-8 h-8 object-contain hover:scale-105 transition-transform duration-200 filter brightness-0 dark:brightness-100 dark:invert"
             />
-            <span className="font-semibold text-black dark:text-white tracking-tight">RozgaarSetu</span>
+            <span className="font-semibold text-black dark:text-white tracking-tight">
+              RozgaarSetu
+            </span>
           </Link>
         </div>
 
@@ -143,15 +140,15 @@ export function Header() {
           <SignedOut>
             <div className="hidden md:flex items-center space-x-2">
               <SignInButton>
-                <NavbarButton 
-                  variant="secondary" 
+                <NavbarButton
+                  variant="secondary"
                   className="bg-gray-100/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 border-0 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 backdrop-blur font-medium transition-all duration-200 rounded-full"
                 >
                   Sign In
                 </NavbarButton>
               </SignInButton>
               <SignUpButton>
-                <NavbarButton 
+                <NavbarButton
                   variant="primary"
                   className="bg-blue-500 hover:bg-blue-600 text-white border-0 font-medium shadow-sm hover:shadow-md transition-all duration-200 rounded-full"
                 >
@@ -160,15 +157,17 @@ export function Header() {
               </SignUpButton>
             </div>
           </SignedOut>
-          
+
           <SignedIn>
             <UserButton
               appearance={{
                 elements: {
                   avatarBox:
                     "w-9 h-9 rounded-full ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-gray-300 dark:hover:ring-gray-600 transition-all duration-200",
-                  userButtonPopoverCard: "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 border border-gray-200/50 dark:border-gray-800/50",
-                  userPreviewMainIdentifier: "font-medium text-gray-900 dark:text-gray-100",
+                  userButtonPopoverCard:
+                    "shadow-xl rounded-xl backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 border border-gray-200/50 dark:border-gray-800/50",
+                  userPreviewMainIdentifier:
+                    "font-medium text-gray-900 dark:text-gray-100",
                 },
               }}
               afterSignOutUrl="/"
@@ -177,7 +176,10 @@ export function Header() {
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden">
-            <MobileNavToggle isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+            <MobileNavToggle
+              isOpen={isOpen}
+              onClick={() => setIsOpen(!isOpen)}
+            />
           </div>
         </div>
       </NavBody>
@@ -188,14 +190,19 @@ export function Header() {
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center space-x-3">
               {/* Hard Hat Logo */}
-              <img 
-                src="/hard-hat_11270170.svg" 
-                alt="RozgaarSetu Logo" 
+              <img
+                src="/hard-hat_11270170.svg"
+                alt="RozgaarSetu Logo"
                 className="w-8 h-8 object-contain filter brightness-0 dark:brightness-100 dark:invert"
               />
-              <span className="font-semibold text-black dark:text-white tracking-tight">RozgaarSetu</span>
+              <span className="font-semibold text-black dark:text-white tracking-tight">
+                RozgaarSetu
+              </span>
             </div>
-            <MobileNavToggle isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+            <MobileNavToggle
+              isOpen={isOpen}
+              onClick={() => setIsOpen(!isOpen)}
+            />
           </div>
         </MobileNavHeader>
 
@@ -222,13 +229,13 @@ export function Header() {
                 </Link>
               ))
             )}
-            
+
             <div className="border-t border-gray-200/50 dark:border-gray-800/50 pt-4 mt-4 space-y-1">
               {/* Mobile Theme Toggler */}
               <div className="px-4 py-3">
                 <AnimatedThemeToggler />
               </div>
-              
+
               <SignedOut>
                 <SignInButton>
                   <button className="w-full text-left px-4 py-3 rounded-full text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 font-medium">
@@ -244,7 +251,9 @@ export function Header() {
               <SignedIn>
                 <div className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-gray-50/80 dark:bg-gray-800/50">
                   <UserButton />
-                  <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">Your Account</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                    Your Account
+                  </span>
                 </div>
               </SignedIn>
             </div>

@@ -12,90 +12,8 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Pricing • RozgaarSetu",
-  description:
-    "Choose a plan that fits your needs. Simple, transparent pricing for customers and workers.",
+  description: "Simple platform fee model. Pay only when you complete work.",
 };
-
-// Customer Plans
-const customerPlans = [
-  {
-    name: "Free",
-    price: "₹0",
-    period: "/month",
-    description: "Perfect for occasional hiring needs",
-    features: [
-      "Up to 7 bookings per month",
-      "Browse worker profiles",
-      "Basic messaging",
-      "Standard support",
-    ],
-    cta: { label: "Get Started", href: "/sign-up" },
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "₹499",
-    period: "/month",
-    description: "For frequent hiring and priority service",
-    features: [
-      "Unlimited bookings",
-      "Priority scheduling",
-      "Priority customer support",
-      "Advanced job management",
-      "Faster worker responses",
-    ],
-    cta: { label: "Upgrade to Pro", href: "/sign-up" },
-    highlighted: true,
-  },
-];
-
-// Worker Plans
-const workerPlans = [
-  {
-    name: "Free",
-    price: "₹0",
-    period: "/month",
-    description: "Start earning with basic access",
-    features: [
-      "Up to 25 leads per month",
-      "Basic profile visibility",
-      "Standard messaging",
-      "Basic support",
-    ],
-    cta: { label: "Get Started", href: "/sign-up" },
-    highlighted: false,
-  },
-  {
-    name: "Boost",
-    price: "₹199",
-    period: "/month",
-    description: "Enhanced visibility and unlimited leads",
-    features: [
-      "Unlimited leads",
-      "Featured profile placement",
-      "Priority in search results",
-      "Enhanced profile badges",
-      "Priority support",
-    ],
-    cta: { label: "Get Boost", href: "/sign-up" },
-    highlighted: true,
-  },
-  {
-    name: "Pro",
-    price: "₹199",
-    period: "/month",
-    description: "Maximum earning potential",
-    features: [
-      "Everything in Boost",
-      "Top placement in search",
-      "Verified professional badge",
-      "Premium customer insights",
-      "Dedicated account manager",
-    ],
-    cta: { label: "Go Pro", href: "/sign-up" },
-    highlighted: false,
-  },
-];
 
 export default function PricingPage() {
   return (
@@ -108,142 +26,192 @@ export default function PricingPage() {
               Simple, transparent pricing
             </h1>
             <p className="mt-4 text-muted-foreground text-base sm:text-lg">
-              Whether you&apos;re hiring or looking for work, pick a plan that
-              fits. Upgrade anytime.
+              No subscriptions. No hidden fees. Pay only when work is completed.
             </p>
           </div>
 
-          {/* Customer Plans Section */}
-          <div className="mt-12">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold mb-2">For Customers</h2>
-              <p className="text-muted-foreground">
-                Find and hire skilled workers
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-              {customerPlans.map((plan) => (
-                <Card
-                  key={plan.name}
-                  className={
-                    plan.highlighted
-                      ? "border-primary/40 shadow-md ring-1 ring-primary/20"
-                      : ""
-                  }
-                >
-                  <CardHeader>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-semibold">
-                        {plan.price}
+          {/* Platform Fee Model */}
+          <div className="mt-16 max-w-4xl mx-auto">
+            <Card className="border-primary/40 shadow-lg">
+              <CardHeader className="text-center">
+                <CardTitle className="text-3xl">Platform Fee Model</CardTitle>
+                <CardDescription className="text-lg mt-2">
+                  We charge a small platform fee only on completed jobs
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {/* For Customers */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <span className="text-2xl">👤</span> For Customers
+                  </h3>
+                  <div className="bg-muted/50 rounded-lg p-6">
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-4xl font-bold text-primary">
+                        5%
                       </span>
                       <span className="text-muted-foreground">
-                        {plan.period}
+                        platform fee per completed job
                       </span>
                     </div>
-                    <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-                      {plan.features.map((feature: string) => (
-                        <li key={feature} className="flex items-start gap-2">
-                          <span className="mt-1 size-1.5 rounded-full bg-primary/70" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
+                    <ul className="space-y-3 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Unlimited job postings</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Browse all worker profiles</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Direct messaging with workers</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>24/7 customer support</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Secure payment processing</span>
+                      </li>
                     </ul>
-                  </CardContent>
-                  <CardFooter>
-                    <Button
-                      asChild
-                      className="w-full"
-                      variant={plan.highlighted ? "default" : "outline"}
-                    >
-                      <Link href={plan.cta.href}>{plan.cta.label}</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </div>
+                  </div>
+                </div>
 
-          {/* Worker Plans Section */}
-          <div className="mt-16">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold mb-2">For Workers</h2>
-              <p className="text-muted-foreground">
-                Grow your business and earn more
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3">
-              {workerPlans.map((plan) => (
-                <Card
-                  key={plan.name}
-                  className={
-                    plan.highlighted
-                      ? "border-primary/40 shadow-md ring-1 ring-primary/20"
-                      : ""
-                  }
-                >
-                  <CardHeader>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-semibold">
-                        {plan.price}
+                {/* For Workers */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <span className="text-2xl">🔧</span> For Workers
+                  </h3>
+                  <div className="bg-muted/50 rounded-lg p-6">
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-4xl font-bold text-primary">
+                        10%
                       </span>
                       <span className="text-muted-foreground">
-                        {plan.period}
+                        platform fee per completed job
                       </span>
                     </div>
-                    <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-                      {plan.features.map((feature: string) => (
-                        <li key={feature} className="flex items-start gap-2">
-                          <span className="mt-1 size-1.5 rounded-full bg-primary/70" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
+                    <ul className="space-y-3 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Unlimited job leads</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Professional profile showcase</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Direct communication with customers</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>Fast & secure payments</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          ✓
+                        </span>
+                        <span>24/7 support & dispute resolution</span>
+                      </li>
                     </ul>
-                  </CardContent>
-                  <CardFooter>
-                    <Button
-                      asChild
-                      className="w-full"
-                      variant={plan.highlighted ? "default" : "outline"}
-                    >
-                      <Link href={plan.cta.href}>{plan.cta.label}</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                  </div>
+                </div>
+
+                {/* Example Calculation */}
+                <div className="border-t pt-6">
+                  <h4 className="font-semibold mb-4">Example Calculation</h4>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-4">
+                      <p className="font-medium mb-2">Customer pays:</p>
+                      <p className="text-muted-foreground">Job cost: ₹1,000</p>
+                      <p className="text-muted-foreground">
+                        Platform fee (5%): ₹50
+                      </p>
+                      <p className="font-semibold text-lg mt-2">
+                        Total: ₹1,050
+                      </p>
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-950 rounded-lg p-4">
+                      <p className="font-medium mb-2">Worker receives:</p>
+                      <p className="text-muted-foreground">Job cost: ₹1,000</p>
+                      <p className="text-muted-foreground">
+                        Platform fee (10%): -₹100
+                      </p>
+                      <p className="font-semibold text-lg mt-2">
+                        Earnings: ₹900
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-center">
+                <Button asChild size="lg">
+                  <Link href="/sign-up">Get Started Free</Link>
+                </Button>
+              </CardFooter>
+            </Card>
           </div>
 
           {/* Key Benefits */}
           <div className="mt-16 text-center">
-            <h3 className="text-lg font-semibold mb-4">Why upgrade?</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
-              <div>
-                <span className="font-medium text-foreground">
-                  No hidden fees
+            <h3 className="text-lg font-semibold mb-6">Why RozgaarSetu?</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
+              <div className="p-4">
+                <div className="text-3xl mb-2">💰</div>
+                <span className="font-medium text-foreground block mb-1">
+                  No subscriptions
                 </span>
-                <p>Transparent pricing with no setup costs</p>
+                <p className="text-muted-foreground">
+                  No monthly fees or commitments
+                </p>
               </div>
-              <div>
-                <span className="font-medium text-foreground">
-                  Cancel anytime
+              <div className="p-4">
+                <div className="text-3xl mb-2">✨</div>
+                <span className="font-medium text-foreground block mb-1">
+                  Pay per use
                 </span>
-                <p>Flexible subscriptions you can pause or cancel</p>
+                <p className="text-muted-foreground">
+                  Only charged on completed work
+                </p>
               </div>
-              <div>
-                <span className="font-medium text-foreground">
-                  Instant upgrade
+              <div className="p-4">
+                <div className="text-3xl mb-2">🔒</div>
+                <span className="font-medium text-foreground block mb-1">
+                  Secure payments
                 </span>
-                <p>Start benefiting immediately after upgrade</p>
+                <p className="text-muted-foreground">
+                  Safe and encrypted transactions
+                </p>
+              </div>
+              <div className="p-4">
+                <div className="text-3xl mb-2">🚀</div>
+                <span className="font-medium text-foreground block mb-1">
+                  Instant access
+                </span>
+                <p className="text-muted-foreground">
+                  Start using all features immediately
+                </p>
               </div>
             </div>
           </div>
@@ -253,12 +221,10 @@ export default function PricingPage() {
             Have questions about pricing? Reach out at
             <a
               className="text-primary underline-offset-4 hover:underline ml-1"
-              href="#"
+              href="mailto:support@rozgaarsetu.com"
             >
-              {" "}
-              support@rozgaarsetu.example
+              support@rozgaarsetu.com
             </a>
-            .
           </p>
         </div>
       </section>
