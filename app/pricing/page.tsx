@@ -16,86 +16,7 @@ export const metadata: Metadata = {
     "Choose a plan that fits your needs. Simple, transparent pricing for customers and workers.",
 };
 
-// Customer Plans
-const customerPlans = [
-  {
-    name: "Free",
-    price: "₹0",
-    period: "/month",
-    description: "Perfect for occasional hiring needs",
-    features: [
-      "Up to 7 bookings per month",
-      "Browse worker profiles",
-      "Basic messaging",
-      "Standard support",
-    ],
-    cta: { label: "Get Started", href: "/sign-up" },
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "₹499",
-    period: "/month",
-    description: "For frequent hiring and priority service",
-    features: [
-      "Unlimited bookings",
-      "Priority scheduling",
-      "Priority customer support",
-      "Advanced job management",
-      "Faster worker responses",
-    ],
-    cta: { label: "Upgrade to Pro", href: "/sign-up" },
-    highlighted: true,
-  },
-];
 
-// Worker Plans
-const workerPlans = [
-  {
-    name: "Free",
-    price: "₹0",
-    period: "/month",
-    description: "Start earning with basic access",
-    features: [
-      "Up to 25 leads per month",
-      "Basic profile visibility",
-      "Standard messaging",
-      "Basic support",
-    ],
-    cta: { label: "Get Started", href: "/sign-up" },
-    highlighted: false,
-  },
-  {
-    name: "Boost",
-    price: "₹199",
-    period: "/month",
-    description: "Enhanced visibility and unlimited leads",
-    features: [
-      "Unlimited leads",
-      "Featured profile placement",
-      "Priority in search results",
-      "Enhanced profile badges",
-      "Priority support",
-    ],
-    cta: { label: "Get Boost", href: "/sign-up" },
-    highlighted: true,
-  },
-  {
-    name: "Pro",
-    price: "₹199",
-    period: "/month",
-    description: "Maximum earning potential",
-    features: [
-      "Everything in Boost",
-      "Top placement in search",
-      "Verified professional badge",
-      "Premium customer insights",
-      "Dedicated account manager",
-    ],
-    cta: { label: "Go Pro", href: "/sign-up" },
-    highlighted: false,
-  },
-];
 
 export default function PricingPage() {
   return (
@@ -113,153 +34,52 @@ export default function PricingPage() {
             </p>
           </div>
 
-          {/* Customer Plans Section */}
-          <div className="mt-12">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold mb-2">For Customers</h2>
-              <p className="text-muted-foreground">
-                Find and hire skilled workers
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-              {customerPlans.map((plan) => (
-                <Card
-                  key={plan.name}
-                  className={
-                    plan.highlighted
-                      ? "border-primary/40 shadow-md ring-1 ring-primary/20"
-                      : ""
-                  }
-                >
-                  <CardHeader>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-semibold">
-                        {plan.price}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {plan.period}
-                      </span>
-                    </div>
-                    <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-                      {plan.features.map((feature: string) => (
-                        <li key={feature} className="flex items-start gap-2">
-                          <span className="mt-1 size-1.5 rounded-full bg-primary/70" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter>
-                    <Button
-                      asChild
-                      className="w-full"
-                      variant={plan.highlighted ? "default" : "outline"}
-                    >
-                      <Link href={plan.cta.href}>{plan.cta.label}</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+          {/* Single Transparent Pricing Card */}
+          <div className="mt-16 flex justify-center">
+            <Card className="max-w-xl w-full mx-auto border-0 shadow-2xl ring-2 ring-blue-700/20 bg-gradient-to-br from-blue-50/80 to-white dark:from-blue-950/60 dark:to-gray-900/90 p-0 overflow-hidden">
+              <CardHeader className="flex flex-col items-center gap-2 bg-blue-700/90 dark:bg-blue-900/80 py-8 px-6">
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-5xl">💸</span>
+                  <CardTitle className="text-3xl font-extrabold text-white tracking-tight text-center drop-shadow">Simple, Transparent Pricing</CardTitle>
+                </div>
+                <CardDescription className="text-center text-lg mt-2 text-blue-100 font-medium">
+                  Only pay a <span className="font-bold text-yellow-300">10% platform fee</span> on each booking.<br />
+                  <span className="text-green-200 font-semibold">No subscriptions. No hidden charges. No fees for workers.</span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="py-10 px-8 flex flex-col gap-6">
+                <ul className="space-y-4 text-base text-gray-800 dark:text-gray-200">
+                  <li className="flex items-center gap-3">
+                    <span className="inline-block size-2.5 rounded-full bg-blue-700" />
+                    <span>Customers pay only when a job is completed</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="inline-block size-2.5 rounded-full bg-blue-700" />
+                    <span><span className="font-semibold text-blue-700">10% platform fee</span> is added to the job charge</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="inline-block size-2.5 rounded-full bg-blue-700" />
+                    <span>Workers receive the full remaining amount—<span className="font-semibold text-green-700">no deductions</span></span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="inline-block size-2.5 rounded-full bg-blue-700" />
+                    <span>No subscriptions, no monthly fees, no pay-to-unlock features</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="inline-block size-2.5 rounded-full bg-blue-700" />
+                    <span>All features included for both customers and workers</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter className="flex flex-col items-center gap-4 pb-8">
+                <a href="mailto:support@rozgaarsetu.com" className="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-full px-8 py-3 shadow-lg transition-colors text-lg">Contact Support</a>
+                <span className="text-xs text-gray-500 text-center">Questions? We’re here to help.</span>
+              </CardFooter>
+            </Card>
           </div>
 
-          {/* Worker Plans Section */}
-          <div className="mt-16">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold mb-2">For Workers</h2>
-              <p className="text-muted-foreground">
-                Grow your business and earn more
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3">
-              {workerPlans.map((plan) => (
-                <Card
-                  key={plan.name}
-                  className={
-                    plan.highlighted
-                      ? "border-primary/40 shadow-md ring-1 ring-primary/20"
-                      : ""
-                  }
-                >
-                  <CardHeader>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-semibold">
-                        {plan.price}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {plan.period}
-                      </span>
-                    </div>
-                    <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-                      {plan.features.map((feature: string) => (
-                        <li key={feature} className="flex items-start gap-2">
-                          <span className="mt-1 size-1.5 rounded-full bg-primary/70" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter>
-                    <Button
-                      asChild
-                      className="w-full"
-                      variant={plan.highlighted ? "default" : "outline"}
-                    >
-                      <Link href={plan.cta.href}>{plan.cta.label}</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Key Benefits */}
-          <div className="mt-16 text-center">
-            <h3 className="text-lg font-semibold mb-4">Why upgrade?</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-muted-foreground">
-              <div>
-                <span className="font-medium text-foreground">
-                  No hidden fees
-                </span>
-                <p>Transparent pricing with no setup costs</p>
-              </div>
-              <div>
-                <span className="font-medium text-foreground">
-                  Cancel anytime
-                </span>
-                <p>Flexible subscriptions you can pause or cancel</p>
-              </div>
-              <div>
-                <span className="font-medium text-foreground">
-                  Instant upgrade
-                </span>
-                <p>Start benefiting immediately after upgrade</p>
-              </div>
-            </div>
-          </div>
-
-          {/* FAQ teaser */}
-          <p className="mt-10 text-center text-sm text-muted-foreground">
-            Have questions about pricing? Reach out at
-            <a
-              className="text-primary underline-offset-4 hover:underline ml-1"
-              href="#"
-            >
-              {" "}
-              support@rozgaarsetu.example
-            </a>
-            .
-          </p>
         </div>
       </section>
     </div>

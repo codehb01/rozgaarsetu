@@ -255,7 +255,16 @@ export default function ShapeHero({
             >
               Get Started
             </a>
-            <button className="w-full sm:w-auto bg-transparent text-blue-600 dark:text-blue-400 px-8 py-3.5 rounded-full text-base font-semibold border-2 border-blue-600/20 dark:border-blue-400/20 hover:border-blue-600/40 dark:hover:border-blue-400/40 hover:bg-blue-600/5 dark:hover:bg-blue-400/5 transition-all duration-200">
+            <button
+              type="button"
+              className="w-full sm:w-auto bg-transparent text-blue-600 dark:text-blue-400 px-8 py-3.5 rounded-full text-base font-semibold border-2 border-blue-600/20 dark:border-blue-400/20 hover:border-blue-600/40 dark:hover:border-blue-400/40 hover:bg-blue-600/5 dark:hover:bg-blue-400/5 transition-all duration-200"
+              onClick={() => {
+                const featureSection = document.getElementById('feature-section');
+                if (featureSection) {
+                  featureSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+            >
               Learn More
             </button>
           </motion.div>

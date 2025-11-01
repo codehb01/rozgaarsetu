@@ -50,6 +50,13 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="relative bg-slate-900">
       <div className="bg-white dark:bg-black text-foreground pb-20 rounded-b-[3rem] relative z-10">
@@ -59,6 +66,7 @@ export default function Home() {
           title2="Grow."
           subtitle="The modern platform connecting blue-collar workers with opportunities."
         />
+        {/* Removed duplicate Learn More button; handled in ShapeHero */}
 
         {/* Platform Demo Section */}
         <div className="flex flex-col overflow-hidden">
@@ -74,124 +82,26 @@ export default function Home() {
               </>
             }
           >
-            <div className="mx-auto rounded-2xl object-cover h-full object-left-top bg-white dark:bg-gray-900 border-4 border-gray-200 dark:border-gray-700 shadow-2xl">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 h-full rounded-xl p-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-                  {/* Worker Dashboard Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                        <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
-                      </div>
-                      <div className="ml-3">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Worker Dashboard
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Live job opportunities
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="h-3 bg-blue-200 dark:bg-blue-800 rounded w-3/4 animate-pulse"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 animate-pulse"></div>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-2xl font-bold text-green-600">
-                        ₹2,500
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        Today&apos;s earnings
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Customer Platform Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                        <div className="w-6 h-6 bg-green-600 rounded-full"></div>
-                      </div>
-                      <div className="ml-3">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Customer Portal
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Find skilled workers
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="h-3 bg-green-200 dark:bg-green-800 rounded w-2/3 animate-pulse"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-4/5 animate-pulse"></div>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-2xl font-bold text-blue-600">
-                        156
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        Available workers
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Analytics Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
-                        <div className="w-6 h-6 bg-purple-600 rounded-full"></div>
-                      </div>
-                      <div className="ml-3">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          Real-time Analytics
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Track performance
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="h-3 bg-purple-200 dark:bg-purple-800 rounded w-5/6 animate-pulse"></div>
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-2xl font-bold text-purple-600">
-                        98%
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        Success rate
-                      </span>
-                    </div>
-                  </div>
+            {isClient && (
+              <>
+                <video
+                  src="./demo.mp4"
+                  controls
+                  poster="./demo.png"
+                  className="w-full h-full object-cover rounded-2xl shadow-lg border border-gray-300 dark:border-gray-700 bg-black"
+                  style={{ maxHeight: '32rem', background: '#111' }}
+                />
+                <div className="flex items-center space-x-2 mt-4">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-gray-500">Online</span>
                 </div>
-
-                {/* Bottom Feature Bar */}
-                <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                        <div className="w-4 h-4 bg-blue-600 rounded-full animate-pulse"></div>
-                      </div>
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        Live Job Matching
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm text-gray-500">Online</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </>
+            )}
           </ContainerScroll>
         </div>
 
         {/* Features Section */}
-        <section className="max-w-6xl mx-auto px-6 py-20">
+  <section id="feature-section" className="max-w-6xl mx-auto px-6 py-20">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-light text-gray-900 dark:text-white mb-4">
               Why Choose RozgaarSetu?
@@ -281,8 +191,12 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">💼</div>
-                    <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                    <div className="text-5xl">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-10 h-10" fill="currentColor">
+                        <path d="M14,2.5c0-1.381,1.119-2.5,2.5-2.5s2.5,1.119,2.5,2.5-1.119,2.5-2.5,2.5-2.5-1.119-2.5-2.5Zm9.171,9.658l-2.644-1.322-1.694-2.54c-.958-1.438-2.562-2.296-4.289-2.296-.509,0-1.015,.075-1.5,.223l-3.882,1.181c-.706,.215-1.278,.728-1.569,1.407l-.471,1.098c-.326,.761,.026,1.643,.788,1.97,.761,.327,1.643-.025,1.97-.788l.379-.885,2.585-.786-.751,3.21c-.351,1.5,.339,3.079,1.679,3.84l4.229,2.402v3.627c0,.829,.671,1.5,1.5,1.5s1.5-.671,1.5-1.5v-3.918c0-.897-.484-1.73-1.265-2.174l-3.229-1.834,.834-3.109,.764,1.146c.241,.361,.574,.655,.962,.85l2.763,1.381c.215,.107,.444,.159,.67,.159,.55,0,1.08-.304,1.343-.83,.37-.741,.07-1.642-.671-2.013Zm-9.5,6c-.739-.369-1.641-.069-2.013,.671l-1.5,3c-.37,.741-.07,1.642,.671,2.013,.215,.107,.444,.159,.67,.159,.55,0,1.08-.304,1.343-.83l1.5-3c.37-.741,.07-1.642-.671-2.013Zm-3.78,.461l-.826,1.676c-.566,1.149-1.953,1.629-3.108,1.075l-4.63-2.22c-1.173-.562-1.662-1.975-1.086-3.142l.832-1.689c.568-1.152,1.958-1.63,3.114-1.072l.152,.073,.105-.226c.352-.755,1.251-1.079,2.003-.721l1.582,.751c.745,.354,1.064,1.241,.716,1.988l-.13,.273,.195,.094c1.169,.565,1.654,1.974,1.081,3.139Z"/>
+                      </svg>
+                    </div>
+                    <div className="text-lg font-semibold text-black dark:text-white">
                       Opportunity Awaits
                     </div>
                   </div>
@@ -298,8 +212,12 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">💰</div>
-                    <div className="text-lg font-semibold text-green-600 dark:text-green-400">
+                    <div className="text-5xl">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-10 h-10" fill="currentColor">
+                        <path d="M13.053,5.079c.971-.909,2.344-2.36,2.894-3.744,.255-.641-.257-1.335-.947-1.335h-6c-.69,0-1.202,.693-.947,1.335,.55,1.384,1.923,2.835,2.894,3.744C5.569,5.878,1,12.618,1,18c0,3.309,2.691,6,6,6h10c3.309,0,6-2.691,6-6,0-5.382-4.569-12.122-9.947-12.921Zm-2.409,8.682l3.042,.507c1.341,.223,2.315,1.373,2.315,2.733,0,1.654-1.346,3-3,3v1c0,.552-.448,1-1,1s-1-.448-1-1v-1h-.268c-1.068,0-2.063-.574-2.598-1.499-.276-.478-.113-1.089,.365-1.366,.476-.277,1.089-.114,1.366,.365,.178,.308,.511,.5,.867,.5h2.268c.551,0,1-.449,1-1,0-.378-.271-.698-.644-.76l-3.042-.507c-1.341-.223-2.315-1.373-2.315-2.733,0-1.654,1.346-3,3-3v-1c0-.552,.448-1,1-1s1,.448,1,1v1h.268c1.067,0,2.063,.575,2.598,1.5,.276,.478,.113,1.089-.365,1.366-.477,.277-1.089,.114-1.366-.365-.179-.309-.511-.5-.867-.5h-2.268c-.551,0-1,.449-1,1,0,.378,.271,.698,.644,.76Z"/>
+                      </svg>
+                    </div>
+                    <div className="text-lg font-semibold text-black dark:text-white">
                       Instant Payments
                     </div>
                   </div>
@@ -315,8 +233,12 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">📍</div>
-                    <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">
+                    <div className="text-5xl">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 304 432" className="w-10 h-10" fill="currentColor">
+                        <path d="M149 3q62 0 106 43.5T299 152q0 31-15.5 71.5t-37.5 75t-44 65t-37 48.5l-16 17q-6-6-16-18t-35.5-46.5t-45.5-67T16 224T0 152Q0 90 43.5 46.5T149 3zm0 202q22 0 38-15.5t16-37.5t-16-37.5T149 99t-37.5 15.5T96 152t15.5 37.5T149 205z"/>
+                      </svg>
+                    </div>
+                    <div className="text-lg font-semibold text-black dark:text-white">
                       Local Network
                     </div>
                   </div>
@@ -332,8 +254,12 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-4xl">🔍</div>
-                    <div className="text-base font-semibold text-orange-600 dark:text-orange-400">
+                    <div className="text-4xl">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" className="w-8 h-8" fill="currentColor">
+                        <path d="M3.5 0C1.57 0 0 1.57 0 3.5S1.57 7 3.5 7c.59 0 1.17-.14 1.66-.41a1 1 0 0 0 .13.13l1 1a1.02 1.02 0 1 0 1.44-1.44l-1-1a1 1 0 0 0-.16-.13c.27-.49.44-1.06.44-1.66c0-1.93-1.57-3.5-3.5-3.5zm0 1C4.89 1 6 2.11 6 3.5c0 .66-.24 1.27-.66 1.72l-.03.03a1 1 0 0 0-.13.13c-.44.4-1.04.63-1.69.63c-1.39 0-2.5-1.11-2.5-2.5s1.11-2.5 2.5-2.5z"/>
+                      </svg>
+                    </div>
+                    <div className="text-base font-semibold text-black dark:text-white">
                       AI-Powered
                     </div>
                   </div>
@@ -349,8 +275,12 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-4xl">✅</div>
-                    <div className="text-base font-semibold text-sky-600 dark:text-sky-400">
+                    <div className="text-4xl">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" className="w-8 h-8" fill="currentColor">
+                        <path fillRule="evenodd" d="M0 7.5a7.5 7.5 0 1 1 15 0a7.5 7.5 0 0 1-15 0Zm7.072 3.21l4.318-5.398l-.78-.624l-3.682 4.601L4.32 7.116l-.64.768l3.392 2.827Z" clipRule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div className="text-base font-semibold text-black dark:text-white">
                       Trusted & Verified
                     </div>
                   </div>
@@ -366,8 +296,12 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">🛡️</div>
-                    <div className="text-lg font-semibold text-teal-600 dark:text-teal-400">
+                    <div className="text-5xl">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 24" className="w-10 h-10" fill="currentColor">
+                        <path d="M17 13V3h-7v17.766a22.036 22.036 0 0 0 3.376-2.177l-.048.036Q17 15.751 17 13zm3-12v12a7.15 7.15 0 0 1-.541 2.712l.017-.048a9.968 9.968 0 0 1-1.315 2.37l.018-.026a14.545 14.545 0 0 1-1.827 1.98l-.013.012a21.487 21.487 0 0 1-1.915 1.567l-.062.043q-.906.64-1.89 1.211t-1.398.774t-.664.313a.932.932 0 0 1-.818-.002l.005.002q-.25-.11-.664-.313t-1.398-.774t-1.89-1.211a21.613 21.613 0 0 1-1.996-1.624l.015.014a14.574 14.574 0 0 1-1.815-1.958l-.025-.034a9.813 9.813 0 0 1-1.273-2.277l-.024-.067a7.034 7.034 0 0 1-.523-2.663V1c.008-.549.451-.992.999-1h18.001c.549.008.992.451 1 .999V1z"/>
+                      </svg>
+                    </div>
+                    <div className="text-lg font-semibold text-black dark:text-white">
                       Safe & Reliable
                     </div>
                   </div>
