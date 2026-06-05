@@ -618,6 +618,7 @@ We welcome contributions to RozgaarSetu! Please follow these guidelines:
 - Write meaningful commit messages
 - Add comments for complex logic
 - Test thoroughly before submitting PR
+- Test thoroughly before submitting PR
 
 ---
 
