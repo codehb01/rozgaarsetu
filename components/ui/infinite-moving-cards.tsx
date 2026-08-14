@@ -93,7 +93,7 @@ export const InfiniteMovingCards = ({
             <blockquote>
               {/* Clean quote text */}
               <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-6">
-                "{item.quote}"
+                &quot;{item.quote}&quot;
               </p>
               
               {/* Minimal user info */}

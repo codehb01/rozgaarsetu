@@ -32,9 +32,31 @@ import { toast } from "sonner";
 import Script from "next/script";
 
 // Extend Window interface for Razorpay
+type RazorpayPaymentResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayPaymentResponse) => void;
+  prefill?: Record<string, string>;
+  theme?: Record<string, string>;
+};
+
+type RazorpayInstance = {
+  open: () => void;
+};
+
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
   }
 }
 
@@ -173,7 +195,7 @@ export default function CustomerBookingsPage() {
       name: "RozgaarSetu",
       description: `Payment for ${job.description}`,
       order_id: razorpayOrder.orderId,
-      handler: async function (response: any) {
+      handler: async function (response: RazorpayPaymentResponse) {
         // Payment successful - verify on backend
         try {
           const verifyRes = await fetch(`/api/jobs/${job.id}`, {

@@ -29,6 +29,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+build.log
+build2.log
+*.log
+
+# stray one-off SQL dumps (real migrations live in prisma/migrations)
+/migration.sql
 
 # env files (can opt-in for committing if needed)
 .env*
