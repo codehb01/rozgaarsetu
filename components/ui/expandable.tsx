@@ -11,6 +11,7 @@ import {
   AnimatePresence,
   HTMLMotionProps,
   TargetAndTransition,
+  Transition,
   motion,
   useMotionValue,
   useSpring,
@@ -144,6 +145,7 @@ const Expandable = React.forwardRef<HTMLDivElement, ExpandableProps>(
     );
   }
 );
+Expandable.displayName = "Expandable";
 
 // Simplify animation types
 type AnimationPreset = {
@@ -218,7 +220,7 @@ interface AnimationProps {
   initial?: TargetAndTransition;
   animate?: TargetAndTransition;
   exit?: TargetAndTransition;
-  transition?: any;
+  transition?: Transition;
 }
 
 // Inside ExpandableContent component
@@ -347,6 +349,7 @@ const ExpandableContent = React.forwardRef<
     );
   }
 );
+ExpandableContent.displayName = "ExpandableContent";
 
 interface ExpandableCardProps {
   children: ReactNode;

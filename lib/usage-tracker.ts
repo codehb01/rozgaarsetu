@@ -18,7 +18,7 @@ export class UsageTracker {
     _clerkUserId: string,
     _action: "booking" | "lead"
   ) {
-    return { canPerform: true, needsUpgrade: false } as any;
+    return { canPerform: true, needsUpgrade: false };
   }
 }
 

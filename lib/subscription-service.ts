@@ -12,7 +12,13 @@ export class SubscriptionService {
   }
 
   static async canPerformAction(_userId: string, _action: "booking" | "lead") {
-    return { canPerform: true, currentUsage: 0, limit: Infinity, needsUpgrade: false, planType: "FREE" } as any;
+    return {
+      canPerform: true,
+      currentUsage: 0,
+      limit: Infinity,
+      needsUpgrade: false,
+      planType: "FREE" as const,
+    };
   }
 
   static async incrementUsage(_userId: string, _action: string) {
@@ -28,6 +34,6 @@ export class SubscriptionService {
   }
 
   static async getDashboardStats() {
-    return { planType: null } as any;
+    return { planType: null as string | null };
   }
 }
