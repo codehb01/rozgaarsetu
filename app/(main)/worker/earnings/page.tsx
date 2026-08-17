@@ -278,7 +278,7 @@ export default function WorkerEarningsPage() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {data.jobs.map((job: any, index: number) => (
+                      {data.jobs.map((job: { id: string; description: string; charge: number; date: string; customer: string }, index: number) => (
                         <motion.div
                           key={job.id}
                           initial={{ opacity: 0, x: -20 }}
