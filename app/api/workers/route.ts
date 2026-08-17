@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { distanceKm } from "@/lib/location";
-import { sendSuccess, withErrorHandling } from "@/lib/api-response";
+import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 type SearchParams = {
   q?: string | null;
@@ -66,6 +67,9 @@ function matchesKeyword(q: string, worker: WorkerForSearch): boolean {
 }
 
 export const GET = withErrorHandling(async (req: NextRequest) => {
+  const rl = checkRateLimit(req);
+  if (!rl.success) return sendError("Too many requests", "RATE_LIMIT_EXCEEDED", 429);
+
   const url = new URL(req.url);
   const sp: SearchParams = {
     q: url.searchParams.get("q"),
