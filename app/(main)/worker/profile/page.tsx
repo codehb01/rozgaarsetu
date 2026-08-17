@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useSaveWorkerProfileMutation } from "@/hooks/api/use-worker";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -117,6 +118,7 @@ export default function WorkerProfilePage() {
   const [customSkill, setCustomSkill] = useState("");
   const [customQualification, setCustomQualification] = useState("");
   const [fetchingLocation, setFetchingLocation] = useState(false);
+  const { mutateAsync: saveProfile } = useSaveWorkerProfileMutation();
 
   // Helper function to safely get image URL from potentially stringified JSON
   const parseImageUrl = (imageField: string | null | undefined): string | null => {
@@ -270,38 +272,25 @@ export default function WorkerProfilePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch("/api/worker/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          bio: editedProfile.bio,
-          skilledIn: editedProfile.skilledIn,
-          qualification: editedProfile.qualification,
-          yearsExperience: editedProfile.yearsExperience,
-          hourlyRate: editedProfile.hourlyRate,
-          minimumFee: editedProfile.minimumFee,
-          address: editedProfile.address,
-          city: editedProfile.city,
-          state: editedProfile.state,
-          postalCode: editedProfile.postalCode,
-          country: editedProfile.country,
-        }),
+      const result = await saveProfile({
+        bio: editedProfile.bio,
+        skilledIn: editedProfile.skilledIn,
+        qualification: editedProfile.qualification,
+        yearsExperience: editedProfile.yearsExperience,
+        hourlyRate: editedProfile.hourlyRate,
+        minimumFee: editedProfile.minimumFee,
+        address: editedProfile.address,
+        city: editedProfile.city,
+        state: editedProfile.state,
+        postalCode: editedProfile.postalCode,
+        country: editedProfile.country,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to save profile");
-      }
-
-      const result = await response.json();
-      
       // Update the profile data with the saved data
       if (data) {
         data.workerProfile = result.profile;
       }
-      
+
       setIsEditing(false);
       await loadProfile();
     } catch (e) {

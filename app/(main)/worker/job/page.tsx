@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ScrollList from "@/components/ui/scroll-list";
+import { useJobsQuery, useJobMutation } from "@/hooks/api/use-jobs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiCalendar,
@@ -46,8 +47,10 @@ type Job = {
 type Tab = "NEW" | "PREVIOUS";
 
 export default function WorkerJobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: jobsData, isLoading: loading } = useJobsQuery("worker");
+  const jobs: Job[] = jobsData?.jobs || [];
+  const { mutateAsync: mutateJob } = useJobMutation();
+  
   const [tab, setTab] = useState<Tab>("NEW");
   const [acting, setActing] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,42 +67,15 @@ export default function WorkerJobsPage() {
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/worker/jobs", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to load jobs");
-      const data = await res.json();
-      setJobs(data.jobs || []);
-    } catch (e) {
-      console.error(e);
-      setJobs([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
-
   const act = async (id: string, action: "ACCEPT" | "CANCEL") => {
     setActing(id);
     try {
-      const res = await fetch(`/api/jobs/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
-      });
-      if (res.ok) {
-        toast.success(
-          action === "ACCEPT" ? "Job accepted successfully!" : "Job cancelled"
-        );
-        await load();
-      } else {
-        const data = await res.json();
-        toast.error(data.error || "Action failed");
-      }
+      await mutateJob({ jobId: id, action: action as any });
+      toast.success(
+        action === "ACCEPT" ? "Job accepted successfully!" : "Job cancelled"
+      );
+    } catch (e: any) {
+      toast.error(e.message || "Action failed");
     } finally {
       setActing(null);
     }
@@ -188,32 +164,25 @@ export default function WorkerJobsPage() {
       const photoUrl = await uploadPhoto(photoFile);
 
       // Send START action with proof
-      const res = await fetch(`/api/jobs/${jobId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "START",
+      await mutateJob({
+        jobId,
+        action: "START" as any,
+        data: {
           startProofPhoto: photoUrl,
           startProofGpsLat: gpsCoords.lat,
           startProofGpsLng: gpsCoords.lng,
-        }),
+        }
       });
 
-      if (res.ok) {
-        toast.success("Work started successfully!");
-        // Reset modal state
-        setStartWorkJobId(null);
-        setPhotoFile(null);
-        setPhotoPreview(null);
-        setGpsCoords(null);
-        await load();
-      } else {
-        const data = await res.json();
-        toast.error(data.error || "Failed to start work");
-      }
-    } catch (error) {
+      toast.success("Work started successfully!");
+      // Reset modal state
+      setStartWorkJobId(null);
+      setPhotoFile(null);
+      setPhotoPreview(null);
+      setGpsCoords(null);
+    } catch (error: any) {
       console.error("Start work error:", error);
-      toast.error("Failed to start work. Please try again.");
+      toast.error(error.message || "Failed to start work. Please try again.");
     } finally {
       setActing(null);
     }

@@ -1,5 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+type WorkerProfile = {
+  id: string;
+  userId: string;
+  skills?: string;
+  bio?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+};
+
 export function useWorkerProfileQuery() {
   return useQuery({
     queryKey: ["workerProfile"],
@@ -15,13 +25,35 @@ export function useUpdateWorkerProfileMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Partial<WorkerProfile>) => {
       const res = await fetch("/api/worker/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update worker profile");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workerProfile"] });
+    },
+  });
+}
+
+export function useSaveWorkerProfileMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: Partial<WorkerProfile>) => {
+      const res = await fetch("/api/worker/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to save profile");
+      }
       return res.json();
     },
     onSuccess: () => {

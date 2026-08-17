@@ -22,7 +22,7 @@ export function useJobMutation() {
     }: {
       jobId: string;
       action: "accept" | "start" | "complete" | "cancel";
-      data?: any;
+      data?: Record<string, unknown>;
     }) => {
       const res = await fetch(`/api/jobs/${jobId}`, {
         method: "PATCH",
