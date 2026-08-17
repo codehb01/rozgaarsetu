@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { protectApiRoute } from "@/lib/api-auth";
 import {
   createRazorpayOrder,
   verifyPaymentSignature,
@@ -12,8 +12,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 export const PATCH = withErrorHandling(
   async (_req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    const { userId } = await auth();
-    if (!userId) return sendError("Unauthorized", "UNAUTHORIZED", 401);
+    const { user, response } = await protectApiRoute(_req);
+    if (response) return response;
 
     const body = await _req.json();
     const validation = jobActionSchema.safeParse(body);
@@ -29,9 +29,6 @@ export const PATCH = withErrorHandling(
     
     const { action, startProofPhoto, startProofGpsLat, startProofGpsLng, reason } = validation.data;
 
-    const user = await prisma.user.findUnique({
-      where: { clerkUserId: userId },
-    });
     if (!user) return sendError("User not found", "NOT_FOUND", 404);
 
     const resolvedParams = await params;
@@ -255,8 +252,8 @@ export const PATCH = withErrorHandling(
 // ===========================
 export const POST = withErrorHandling(
   async (_req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
-    const { userId } = await auth();
-    if (!userId) return sendError("Unauthorized", "UNAUTHORIZED", 401);
+    const { user, response } = await protectApiRoute(_req);
+    if (response) return response;
 
     const body = await _req.json();
     const validation = verifyPaymentSchema.safeParse(body);
@@ -272,9 +269,6 @@ export const POST = withErrorHandling(
     
     const { razorpayPaymentId, razorpaySignature } = validation.data;
 
-    const user = await prisma.user.findUnique({
-      where: { clerkUserId: userId },
-    });
     if (!user) return sendError("User not found", "NOT_FOUND", 404);
 
     const resolvedParams = await params;

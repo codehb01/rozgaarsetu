@@ -1,35 +1,14 @@
 import { NextRequest } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
 import { updateCustomerProfileSchema } from "@/lib/api-schemas";
+import { protectCustomerApi } from "@/lib/api-auth";
 
 export const PUT = withErrorHandling(async (req: NextRequest) => {
-  const { userId } = await auth();
+  const { user, response } = await protectCustomerApi(req);
+  if (response) return response;
 
-  if (!userId) {
-    return sendError("Unauthorized", "UNAUTHORIZED", 401);
-  }
-
-  // Get the user from our database
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-    include: { customerProfile: true },
-  });
-
-  if (!user) {
-    return sendError("User not found", "NOT_FOUND", 404);
-  }
-
-  if (user.role !== "CUSTOMER") {
-    return sendError(
-      "Only customers can update customer profile",
-      "FORBIDDEN",
-      403
-    );
-  }
-
-  if (!user.customerProfile) {
+  if (!user?.customerProfile) {
     return sendError("Customer profile not found", "NOT_FOUND", 404);
   }
 

@@ -1,15 +1,12 @@
 import { NextRequest } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
 import { updateWorkerProfileSchema } from "@/lib/api-schemas";
+import { protectWorkerApi } from "@/lib/api-auth";
 
 export const PUT = withErrorHandling(async (req: NextRequest) => {
-  const { userId } = await auth();
-
-  if (!userId) {
-    return sendError("Unauthorized", "UNAUTHORIZED", 401);
-  }
+  const { user, response } = await protectWorkerApi(req);
+  if (response) return response;
 
   const body = await req.json();
   const validation = updateWorkerProfileSchema.safeParse(body);
@@ -36,13 +33,7 @@ export const PUT = withErrorHandling(async (req: NextRequest) => {
     country,
   } = validation.data;
 
-  // Find the user's worker profile
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-    include: { workerProfile: true },
-  });
-
-  if (!user || !user.workerProfile) {
+  if (!user?.workerProfile) {
     return sendError("Worker profile not found", "NOT_FOUND", 404);
   }
 
