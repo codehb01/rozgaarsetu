@@ -3,13 +3,19 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
+      // Cloudinary for user uploads
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "res.cloudinary.com",
       },
+      // Local images
       {
         protocol: "http",
-        hostname: "**",
+        hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "localhost",
       },
     ],
     dangerouslyAllowSVG: true,
