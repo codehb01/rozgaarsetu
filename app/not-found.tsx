@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/back-button";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -22,13 +23,7 @@ export default function NotFound() {
               Go home
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            onClick={() => window.history.back()}
-            className="border-gray-300 dark:border-gray-600 w-full sm:w-auto"
-          >
-            Go back
-          </Button>
+          <BackButton />
         </div>
       </div>
     </div>
