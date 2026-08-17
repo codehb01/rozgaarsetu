@@ -318,8 +318,7 @@ export default function WorkerProfilePage() {
     try {
       // TODO: Implement actual file upload and project creation API
       // For now, just show a message
-      console.log("Adding project:", newWork);
-      
+
       // Simulate upload
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -1126,15 +1125,9 @@ export default function WorkerProfilePage() {
                     {profile.previousWorks && profile.previousWorks.length > 0 ? (
                       <div className="grid md:grid-cols-2 gap-4">
                         {profile.previousWorks.map((work, index) => {
-                          // Debug: log the raw image data
-                          console.log('Work:', work.title);
-                          console.log('Raw images array:', work.images);
-                          console.log('First image:', work.images?.[0]);
-                          
-                          const imageUrl = work.images && work.images.length > 0 
-                            ? parseImageUrl(work.images[0]) 
+                          const imageUrl = work.images && work.images.length > 0
+                            ? parseImageUrl(work.images[0])
                             : null;
-                          console.log('Parsed image URL:', imageUrl);
                           
                           return (
                             <motion.div
