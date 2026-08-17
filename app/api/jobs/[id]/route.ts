@@ -1,33 +1,38 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import {
   createRazorpayOrder,
   verifyPaymentSignature,
 } from "@/lib/razorpay-service";
+import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
+import { jobActionSchema, verifyPaymentSchema } from "@/lib/api-schemas";
 
-export async function PATCH(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export const PATCH = withErrorHandling(
+  async (_req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     const { userId } = await auth();
-    if (!userId)
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId) return sendError("Unauthorized", "UNAUTHORIZED", 401);
 
     const body = await _req.json();
-    const { action } = body || {};
-
-    // Valid actions: ACCEPT, START, COMPLETE, CANCEL
-    if (!["ACCEPT", "START", "COMPLETE", "CANCEL"].includes(action)) {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    const validation = jobActionSchema.safeParse(body);
+    
+    if (!validation.success) {
+      return sendError(
+        "Invalid request",
+        "VALIDATION_ERROR",
+        400,
+        validation.error.flatten().fieldErrors
+      );
     }
+    
+    const { action, startProofPhoto, startProofGpsLat, startProofGpsLng, reason } = validation.data;
 
     const user = await prisma.user.findUnique({
       where: { clerkUserId: userId },
     });
-    if (!user)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user) return sendError("User not found", "NOT_FOUND", 404);
 
     const resolvedParams = await params;
     const job = await prisma.job.findUnique({
@@ -37,37 +42,25 @@ export async function PATCH(
         worker: true,
       },
     });
-    if (!job)
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    if (!job) return sendError("Job not found", "NOT_FOUND", 404);
 
     // ===========================
     // ACTION: ACCEPT (Worker only)
-    // Transition: PENDING → ACCEPTED
     // ===========================
     if (action === "ACCEPT") {
-      // Authorization: Only assigned worker can accept
       if (user.role !== "WORKER" || job.workerId !== user.id) {
-        return NextResponse.json(
-          { error: "Only the assigned worker can accept this job" },
-          { status: 403 }
-        );
+        return sendError("Only the assigned worker can accept this job", "FORBIDDEN", 403);
       }
 
-      // State validation: Must be PENDING
       if (job.status !== "PENDING") {
-        return NextResponse.json(
-          { error: "Only pending jobs can be accepted" },
-          { status: 400 }
-        );
+        return sendError("Only pending jobs can be accepted", "INVALID_STATE", 400);
       }
 
-      // Update job status
       const updated = await prisma.job.update({
         where: { id: job.id },
         data: { status: "ACCEPTED" },
       });
 
-      // Log state transition
       await prisma.jobLog.create({
         data: {
           jobId: job.id,
@@ -78,60 +71,39 @@ export async function PATCH(
         },
       });
 
-      return NextResponse.json({ success: true, job: updated });
+      return sendSuccess({ job: updated });
     }
 
     // ===========================
     // ACTION: START (Worker only)
-    // Transition: ACCEPTED → IN_PROGRESS
-    // Requires: Photo proof + GPS coordinates
     // ===========================
     if (action === "START") {
-      // Authorization: Only assigned worker can start
       if (user.role !== "WORKER" || job.workerId !== user.id) {
-        return NextResponse.json(
-          { error: "Only the assigned worker can start this job" },
-          { status: 403 }
-        );
+        return sendError("Only the assigned worker can start this job", "FORBIDDEN", 403);
       }
 
-      // State validation: Must be ACCEPTED
       if (job.status !== "ACCEPTED") {
-        return NextResponse.json(
-          { error: "Only accepted jobs can be started" },
-          { status: 400 }
+        return sendError("Only accepted jobs can be started", "INVALID_STATE", 400);
+      }
+
+      if (!startProofPhoto || startProofGpsLat === undefined || startProofGpsLng === undefined) {
+        return sendError(
+          "Proof of work required",
+          "VALIDATION_ERROR",
+          400,
+          { message: "Photo and GPS location are mandatory to start work" }
         );
       }
 
-      // Proof validation: Photo + GPS required
-      const { startProofPhoto, startProofGpsLat, startProofGpsLng } = body;
-
-      if (!startProofPhoto || !startProofGpsLat || !startProofGpsLng) {
-        return NextResponse.json(
-          {
-            error: "Proof of work required",
-            message: "Photo and GPS location are mandatory to start work",
-          },
-          { status: 400 }
-        );
-      }
-
-      // Validate GPS coordinates
       if (
-        typeof startProofGpsLat !== "number" ||
-        typeof startProofGpsLng !== "number" ||
         startProofGpsLat < -90 ||
         startProofGpsLat > 90 ||
         startProofGpsLng < -180 ||
         startProofGpsLng > 180
       ) {
-        return NextResponse.json(
-          { error: "Invalid GPS coordinates" },
-          { status: 400 }
-        );
+        return sendError("Invalid GPS coordinates", "VALIDATION_ERROR", 400);
       }
 
-      // Update job with proof and transition to IN_PROGRESS
       const updated = await prisma.job.update({
         where: { id: job.id },
         data: {
@@ -143,7 +115,6 @@ export async function PATCH(
         },
       });
 
-      // Log state transition
       await prisma.jobLog.create({
         data: {
           jobId: job.id,
@@ -158,40 +129,27 @@ export async function PATCH(
         },
       });
 
-      return NextResponse.json({ success: true, job: updated });
+      return sendSuccess({ job: updated });
     }
 
     // ===========================
     // ACTION: COMPLETE (Customer only)
-    // Transition: IN_PROGRESS → Create Razorpay order
-    // Returns: Razorpay order details for payment modal
     // ===========================
     if (action === "COMPLETE") {
-      // Authorization: Only customer can mark complete
       if (user.role !== "CUSTOMER" || job.customerId !== user.id) {
-        return NextResponse.json(
-          { error: "Only the customer can complete this job" },
-          { status: 403 }
-        );
+        return sendError("Only the customer can complete this job", "FORBIDDEN", 403);
       }
 
-      // State validation: Must be IN_PROGRESS
       if (job.status !== "IN_PROGRESS") {
-        return NextResponse.json(
-          { error: "Only in-progress jobs can be completed" },
-          { status: 400 }
-        );
+        return sendError("Only in-progress jobs can be completed", "INVALID_STATE", 400);
       }
 
-      // Check if Razorpay order already exists
       if (job.razorpayOrderId) {
-        // Allow retry with existing order - don't block
-        return NextResponse.json({
-          success: true,
+        return sendSuccess({
           requiresPayment: true,
           razorpayOrder: {
             orderId: job.razorpayOrderId,
-            amount: job.charge * 100, // Convert to paise
+            amount: job.charge * 100,
             currency: "INR",
             keyId: process.env.RAZORPAY_KEY_ID,
           },
@@ -200,7 +158,6 @@ export async function PATCH(
         });
       }
 
-      // Create Razorpay order
       const razorpayOrder = await createRazorpayOrder(
         job.id,
         job.charge,
@@ -208,7 +165,6 @@ export async function PATCH(
         job.customer.phone
       );
 
-      // Update job with Razorpay order details
       const updated = await prisma.job.update({
         where: { id: job.id },
         data: {
@@ -217,12 +173,11 @@ export async function PATCH(
         },
       });
 
-      // Log payment initiation
       await prisma.jobLog.create({
         data: {
           jobId: job.id,
           fromStatus: "IN_PROGRESS",
-          toStatus: "IN_PROGRESS", // Status doesn't change yet
+          toStatus: "IN_PROGRESS",
           action: "PAYMENT_INITIATED",
           performedBy: user.id,
           metadata: {
@@ -232,9 +187,7 @@ export async function PATCH(
         },
       });
 
-      // Return Razorpay order for frontend payment modal
-      return NextResponse.json({
-        success: true,
+      return sendSuccess({
         requiresPayment: true,
         razorpayOrder: {
           orderId: razorpayOrder.id,
@@ -248,51 +201,34 @@ export async function PATCH(
 
     // ===========================
     // ACTION: CANCEL (Customer or Worker)
-    // Transition: PENDING/ACCEPTED → CANCELLED
-    // Blocked: Cannot cancel if IN_PROGRESS
     // ===========================
     if (action === "CANCEL") {
-      // Authorization: Customer or worker can cancel
       const isAuthorized =
         (user.role === "CUSTOMER" && job.customerId === user.id) ||
         (user.role === "WORKER" && job.workerId === user.id);
 
       if (!isAuthorized) {
-        return NextResponse.json(
-          { error: "You are not authorized to cancel this job" },
-          { status: 403 }
-        );
+        return sendError("You are not authorized to cancel this job", "FORBIDDEN", 403);
       }
 
-      // State validation: Cannot cancel IN_PROGRESS jobs (anti-fraud)
       if (job.status === "IN_PROGRESS") {
-        return NextResponse.json(
-          {
-            error: "Cannot cancel in-progress jobs",
-            message:
-              "Work has already started. Please complete the job and make payment.",
-          },
-          { status: 400 }
+        return sendError(
+          "Cannot cancel in-progress jobs",
+          "INVALID_STATE",
+          400,
+          { message: "Work has already started. Please complete the job and make payment." }
         );
       }
 
-      // State validation: Can only cancel PENDING or ACCEPTED
       if (job.status !== "PENDING" && job.status !== "ACCEPTED") {
-        return NextResponse.json(
-          { error: "Job cannot be cancelled at this stage" },
-          { status: 400 }
-        );
+        return sendError("Job cannot be cancelled at this stage", "INVALID_STATE", 400);
       }
 
-      const { reason } = body;
-
-      // Update job status
       const updated = await prisma.job.update({
         where: { id: job.id },
         data: { status: "CANCELLED" },
       });
 
-      // Log cancellation
       await prisma.jobLog.create({
         data: {
           jobId: job.id,
@@ -307,79 +243,58 @@ export async function PATCH(
         },
       });
 
-      return NextResponse.json({ success: true, job: updated });
+      return sendSuccess({ job: updated });
     }
 
-    return NextResponse.json({ error: "Unhandled action" }, { status: 400 });
-  } catch (err) {
-    console.error("PATCH /api/jobs/[id] error", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return sendError("Unhandled action", "INVALID_ACTION", 400);
   }
-}
+);
 
 // ===========================
 // POST: Payment Verification
-// Called after customer completes Razorpay payment
 // ===========================
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+export const POST = withErrorHandling(
+  async (_req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     const { userId } = await auth();
-    if (!userId)
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId) return sendError("Unauthorized", "UNAUTHORIZED", 401);
 
     const body = await _req.json();
-    const { razorpayPaymentId, razorpaySignature } = body;
-
-    if (!razorpayPaymentId || !razorpaySignature) {
-      return NextResponse.json(
-        { error: "Missing payment verification data" },
-        { status: 400 }
+    const validation = verifyPaymentSchema.safeParse(body);
+    
+    if (!validation.success) {
+      return sendError(
+        "Invalid request",
+        "VALIDATION_ERROR",
+        400,
+        validation.error.flatten().fieldErrors
       );
     }
+    
+    const { razorpayPaymentId, razorpaySignature } = validation.data;
 
     const user = await prisma.user.findUnique({
       where: { clerkUserId: userId },
     });
-    if (!user)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user) return sendError("User not found", "NOT_FOUND", 404);
 
     const resolvedParams = await params;
     const job = await prisma.job.findUnique({
       where: { id: resolvedParams.id },
     });
-    if (!job)
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+    if (!job) return sendError("Job not found", "NOT_FOUND", 404);
 
-    // Authorization: Only customer can verify payment
     if (user.role !== "CUSTOMER" || job.customerId !== user.id) {
-      return NextResponse.json(
-        { error: "Only the customer can verify payment" },
-        { status: 403 }
-      );
+      return sendError("Only the customer can verify payment", "FORBIDDEN", 403);
     }
 
-    // Validate job state
     if (job.status !== "IN_PROGRESS") {
-      return NextResponse.json(
-        { error: "Job must be in-progress for payment" },
-        { status: 400 }
-      );
+      return sendError("Job must be in-progress for payment", "INVALID_STATE", 400);
     }
 
     if (!job.razorpayOrderId) {
-      return NextResponse.json(
-        { error: "No payment order found" },
-        { status: 400 }
-      );
+      return sendError("No payment order found", "INVALID_STATE", 400);
     }
 
-    // Verify Razorpay signature
     const isValid = verifyPaymentSignature(
       job.razorpayOrderId,
       razorpayPaymentId,
@@ -387,13 +302,9 @@ export async function POST(
     );
 
     if (!isValid) {
-      return NextResponse.json(
-        { error: "Payment verification failed" },
-        { status: 400 }
-      );
+      return sendError("Payment verification failed", "PAYMENT_FAILED", 400);
     }
 
-    // Update job: Mark as COMPLETED with payment details
     const updated = await prisma.job.update({
       where: { id: job.id },
       data: {
@@ -405,7 +316,6 @@ export async function POST(
       },
     });
 
-    // Create transaction record
     await prisma.transaction.create({
       data: {
         userId: job.customerId,
@@ -415,7 +325,6 @@ export async function POST(
       },
     });
 
-    // Log job completion
     await prisma.jobLog.create({
       data: {
         jobId: job.id,
@@ -432,16 +341,9 @@ export async function POST(
       },
     });
 
-    return NextResponse.json({
-      success: true,
+    return sendSuccess({
       job: updated,
       message: "Payment verified and job completed successfully",
     });
-  } catch (err) {
-    console.error("POST /api/jobs/[id] payment verification error", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
   }
-}
+);

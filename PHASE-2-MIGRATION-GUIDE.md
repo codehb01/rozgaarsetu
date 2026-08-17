@@ -173,3 +173,59 @@ Each PR should compile and pass CI before merging to `development`.
 - ✅ No raw `NextResponse.json()` calls
 - ❌ Don't add try/catch (withErrorHandling handles it)
 - ❌ Don't add manual error responses (use sendError)
+
+---
+
+## 🎓 Interview/Placement Guide: Understanding the API Workflow
+
+If you're explaining this project in an interview, here is a simple breakdown of how our API architecture works, why we made these Phase 2 changes, and how the data flows from start to finish.
+
+### 1. What We Did (The "Why" and "How")
+
+**The Problem (Before Phase 2):**
+Initially, every API route was built independently. If an error occurred, developers had to manually write `try { ... } catch { return NextResponse.json(...) }`. Validation was done manually using simple `if (!body.field)` checks. This led to:
+- **Inconsistent Error Messages:** Some APIs returned `{ error: "..." }`, others `{ message: "..." }`.
+- **Code Duplication:** Repeating `try/catch` everywhere.
+- **Fragile Validation:** Manual `if` checks are prone to missing edge cases.
+
+**The Solution (What we did in Phase 2):**
+We introduced a **Standardized API Layer**. 
+- **How:** We created a higher-order wrapper function `withErrorHandling` that automatically wraps every API request in a `try/catch`. 
+- **How:** We built `sendSuccess` and `sendError` helpers so every API always returns the exact same JSON structure.
+- **How:** We used **Zod** (`api-schemas.ts`) to strictly validate incoming data before the main logic even runs.
+
+### 2. How to Build This Workflow From Scratch
+
+If a developer were to build this backend flow from scratch, they would follow these layers:
+
+1. **The Request Layer (Next.js Route Handlers):** You create standard Next.js API routes (e.g., `app/api/jobs/route.ts`).
+2. **The Authentication Layer:** Use Clerk (`auth()`) to verify *who* is making the request.
+3. **The Validation Layer (Zod):** Pass the incoming JSON body through a Zod schema to ensure it has the correct data types.
+4. **The Business Logic Layer (Prisma):** Talk to the Postgres database to create, read, update, or delete records.
+5. **The Response Layer:** Return a standardized JSON response back to the frontend.
+
+### 3. The Core Data Flow (Step-by-Step)
+
+Here is exactly how data flows through our API files when a user makes a request (e.g., creating a job):
+
+1. **Client Request:** 
+   The frontend sends a POST request with JSON data (like job details) to `/api/jobs`.
+
+2. **The Wrapper Catch-All (`lib/api-response.ts`):** 
+   The request enters our `withErrorHandling` function. If the server crashes at any point, this wrapper catches it and prevents a raw 500 error page, returning a clean JSON error instead.
+
+3. **Authentication (`app/api/jobs/route.ts`):** 
+   The route calls `protectCustomerApi(req)`. It talks to Clerk to ensure the user is logged in and verifies in the database that their role is `CUSTOMER`.
+
+4. **Validation (`lib/api-schemas.ts`):** 
+   The route calls `createJobSchema.safeParse(body)`. Zod checks if `charge` is a positive number, `workerId` exists, etc. If it fails, we instantly return `sendError` with exactly what fields were missing.
+
+5. **Database Operation (`lib/prisma.ts`):** 
+   We use Prisma ORM to insert the new Job into the Postgres database. We also create a `JobLog` to keep an audit trail of the action.
+
+6. **Standardized Response (`lib/api-response.ts`):** 
+   Finally, we call `sendSuccess({ job }, 201)`. The frontend receives `{ success: true, data: { job: ... } }`.
+
+### 4. Summary for Interviews
+
+> "In this project, I implemented a robust, type-safe API architecture using Next.js Route Handlers, Prisma ORM, and Zod validation. To ensure high maintainability, I centralized the API response and error-handling logic into a reusable wrapper pattern. This eliminated redundant `try/catch` blocks across 19 API endpoints, guaranteed a consistent JSON contract for the frontend, and abstracted authentication and validation into clean, separate layers."
