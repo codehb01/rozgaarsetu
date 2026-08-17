@@ -37,21 +37,20 @@ export function sendError(
 }
 
 /**
- * Wrapper for API routes that adds consistent error handling
+ * Wrapper for API routes that adds consistent error handling.
+ * Supports both simple routes (req only) and dynamic routes (req + context).
  */
 export function withErrorHandling(
-  handler: (req: NextRequest) => Promise<NextResponse>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handler: (req: NextRequest, context: any) => Promise<NextResponse>
 ) {
-  return async (req: NextRequest) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return async (req: NextRequest, context: any) => {
     try {
-      return await handler(req);
+      return await handler(req, context);
     } catch (error) {
       console.error("[API Error]", error);
-      return sendError(
-        "Internal server error",
-        "INTERNAL_ERROR",
-        500
-      );
+      return sendError("Internal server error", "INTERNAL_ERROR", 500);
     }
   };
 }

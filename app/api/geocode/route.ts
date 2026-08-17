@@ -1,19 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { geocodeFreeOSM } from "@/lib/geocoding";
+import { sendSuccess, withErrorHandling } from "@/lib/api-response";
 
-export async function GET(req: Request) {
+export const GET = withErrorHandling(async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const q = searchParams.get("q") || "";
   if (!q.trim()) {
-    return NextResponse.json({ results: [] });
+    return sendSuccess({ results: [] });
   }
-  try {
-    const results = await geocodeFreeOSM(q);
-    return NextResponse.json({ results });
-  } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "geocode failed" },
-      { status: 500 }
-    );
-  }
-}
+  const results = await geocodeFreeOSM(q);
+  return sendSuccess({ results });
+});
