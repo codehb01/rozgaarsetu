@@ -87,10 +87,12 @@ type RazorpayOrder = {
 };
 
 export default function CustomerBookingsPage() {
-  const { data: jobsData, isLoading: loading } = useJobsQuery("customer");
+  const { data: jobsData, isLoading: loading, refetch } = useJobsQuery("customer");
   const jobs: Job[] = jobsData?.jobs || [];
   const { mutateAsync: mutateJob } = useJobMutation();
   const queryClient = useQueryClient();
+
+  const load = () => refetch();
 
   const [tab, setTab] = useState<Tab>("ONGOING");
   const [acting, setActing] = useState<string | null>(null);

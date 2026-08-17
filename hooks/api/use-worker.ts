@@ -1,13 +1,25 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 type WorkerProfile = {
-  id: string;
-  userId: string;
-  skills?: string;
-  bio?: string;
+  id?: string;
+  userId?: string;
+  skilledIn?: string[];
+  qualification?: string | null;
+  certificates?: string[];
+  aadharNumber?: string;
+  yearsExperience?: number | null;
+  profilePic?: string | null;
+  bio?: string | null;
+  address?: string;
   city?: string;
   state?: string;
   country?: string;
+  postalCode?: string;
+  availableAreas?: string[];
+  latitude?: number | null;
+  longitude?: number | null;
+  hourlyRate?: number | null;
+  minimumFee?: number | null;
 };
 
 export function useWorkerProfileQuery() {

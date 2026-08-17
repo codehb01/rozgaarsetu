@@ -211,14 +211,6 @@ function SearchPageContent() {
         "Tip: Set a location or use 'Use my location' to get nearest results."
       );
     }
-    fetchWorkers({
-      q,
-      category,
-      location,
-      sortBy,
-      lat: coords?.lat,
-      lng: coords?.lng,
-    });
   };
 
   const onCategoryClick = (cat: string) => {
@@ -387,7 +379,11 @@ function SearchPageContent() {
                 {CATEGORIES.map((cat) => {
                   const active = cat === category;
                   // use client-side computed counts from fetched workers
-                  const count = categoryCounts[cat] ?? 0;
+                  const count = workers.filter((w: Worker) => {
+                    if (cat === "All") return true;
+                    const category = w.workerProfile?.category || w.workerProfile?.jobCategory;
+                    return category?.toLowerCase() === cat.toLowerCase();
+                  }).length;
                   return (
                     <motion.button
                       key={cat}

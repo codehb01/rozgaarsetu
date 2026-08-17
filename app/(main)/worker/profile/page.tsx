@@ -273,11 +273,11 @@ export default function WorkerProfilePage() {
     setSaving(true);
     try {
       const result = await saveProfile({
-        bio: editedProfile.bio,
-        skilledIn: editedProfile.skilledIn,
-        qualification: editedProfile.qualification,
-        yearsExperience: editedProfile.yearsExperience,
-        hourlyRate: editedProfile.hourlyRate,
+        bio: editedProfile.bio ?? undefined,
+        skilledIn: editedProfile.skilledIn ?? undefined,
+        qualification: editedProfile.qualification ?? undefined,
+        yearsExperience: editedProfile.yearsExperience ?? undefined,
+        hourlyRate: editedProfile.hourlyRate ?? undefined,
         minimumFee: editedProfile.minimumFee,
         address: editedProfile.address,
         city: editedProfile.city,

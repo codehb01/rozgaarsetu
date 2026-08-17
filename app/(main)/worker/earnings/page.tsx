@@ -30,7 +30,7 @@ type EarningsData = {
 };
 
 export default function WorkerEarningsPage() {
-  const { data, isLoading: loading } = useWorkerEarningsQuery();
+  const { data, isLoading: loading, refetch } = useWorkerEarningsQuery();
 
   // Skeleton loader component
   const SkeletonCard = () => (
@@ -137,7 +137,7 @@ export default function WorkerEarningsPage() {
                 There was an error loading your earnings. Please try again.
               </p>
               <button
-                onClick={load}
+                onClick={() => refetch()}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 Retry
@@ -278,7 +278,7 @@ export default function WorkerEarningsPage() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {data.jobs.map((job, index) => (
+                      {data.jobs.map((job: any, index: number) => (
                         <motion.div
                           key={job.id}
                           initial={{ opacity: 0, x: -20 }}
