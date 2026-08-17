@@ -26,6 +26,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
     "@tabler/icons-react": "^3.35.0",
+    "@tanstack/react-query": "^5.101.4",
     "canvas-confetti": "^1.9.3",
     "chrono-node": "^2.9.0",
     "class-variance-authority": "^0.7.1",
