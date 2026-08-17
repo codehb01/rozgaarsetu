@@ -11,10 +11,8 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error for monitoring
     if (process.env.NODE_ENV === "production") {
-      // Send to error tracking service (e.g., Sentry)
-      // captureException(error);
+      // Send to error tracking service
     }
   }, [error]);
 
@@ -26,12 +24,12 @@ export default function Error({
             Something went wrong
           </h2>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
-            We're sorry, but something unexpected happened. Our team has been notified.
+            Sorry, but something unexpected occurred. Our team has been notified.
           </p>
           {process.env.NODE_ENV === "development" && (
             <details className="mb-4 text-left">
               <summary className="cursor-pointer text-xs text-gray-500 dark:text-gray-400">
-                Error details (dev only)
+                Error details
               </summary>
               <pre className="mt-2 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs overflow-auto max-h-32">
                 {error.message}
