@@ -1,24 +1,19 @@
 import { NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
 import { protectWorkerApi } from "@/lib/api-auth";
-import { sendSuccess, withErrorHandling } from "@/lib/api-response";
-import type { User } from "@prisma/client";
+import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
+import { getWorkerJobs } from "@/lib/services/worker-service";
+import { canAccessWorkerProtectedRoutes } from "@/lib/access/worker-access";
 
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { user, response } = await protectWorkerApi(request);
   if (response) return response;
 
-  const worker = user as User;
+  if (!user) return sendError("Unauthorized", "UNAUTHORIZED", 401);
 
-  const jobs = await prisma.job.findMany({
-    where: { workerId: worker.id },
-    orderBy: { createdAt: "desc" },
-    include: {
-      customer: { select: { name: true } },
-      review: { select: { rating: true, comment: true } },
-    },
-    take: 50,
-  });
+  const access = canAccessWorkerProtectedRoutes(user);
+  if (!access.allowed) return sendError(access.error, "FORBIDDEN", access.status);
+
+  const jobs = await getWorkerJobs(user.id);
 
   return sendSuccess({ jobs });
 });

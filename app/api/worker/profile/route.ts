@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
 import { updateWorkerProfileSchema } from "@/lib/api-schemas";
 import { protectWorkerApi } from "@/lib/api-auth";
+import { updateWorkerProfile } from "@/lib/services/worker-service";
+import { canUpdateWorkerProfile } from "@/lib/access/worker-access";
 
 export const PUT = withErrorHandling(async (req: NextRequest) => {
   const { user, response } = await protectWorkerApi(req);
@@ -33,39 +35,16 @@ export const PUT = withErrorHandling(async (req: NextRequest) => {
     country,
   } = validation.data;
 
-  if (!user?.workerProfile) {
-    return sendError("Worker profile not found", "NOT_FOUND", 404);
+  if (!user) {
+    return sendError("Unauthorized", "UNAUTHORIZED", 401);
   }
 
-  // Update the worker profile
-  const updatedProfile = await prisma.workerProfile.update({
-    where: { id: user.workerProfile.id },
-    data: {
-      bio: bio ?? undefined,
-      skilledIn,
-      qualification: qualification ?? undefined,
-      yearsExperience: yearsExperience ? parseInt(String(yearsExperience)) : undefined,
-      hourlyRate: hourlyRate ? parseFloat(String(hourlyRate)) : undefined,
-      minimumFee: minimumFee ? parseFloat(String(minimumFee)) : undefined,
-      address: address ?? undefined,
-      city: city ?? undefined,
-      state: state ?? undefined,
-      postalCode: postalCode ?? undefined,
-      country: country ?? undefined,
-    },
-    include: {
-      previousWorks: {
-        orderBy: { createdAt: "desc" },
-      },
-      user: {
-        select: {
-          name: true,
-          email: true,
-          phone: true,
-        },
-      },
-    },
-  });
+  const access = canUpdateWorkerProfile(user);
+  if (!access.allowed) {
+    return sendError(access.error, "FORBIDDEN", access.status);
+  }
+
+  const updatedProfile = await updateWorkerProfile(user.workerProfile!.id, validation.data);
 
   return sendSuccess({ profile: updatedProfile });
 });
