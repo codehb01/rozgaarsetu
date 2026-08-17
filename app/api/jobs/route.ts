@@ -1,16 +1,23 @@
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { protectCustomerApi } from "@/lib/api-auth";
-import { calculateFees } from "@/lib/razorpay-service";
 import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
 import { createJobSchema } from "@/lib/api-schemas";
-import type { User } from "@prisma/client";
+import { canCreateJob } from "@/lib/access/job-access";
+import { createJob } from "@/lib/services/job-service";
 
 export const POST = withErrorHandling(async (req: NextRequest) => {
   const { user, response } = await protectCustomerApi(req);
   if (response) return response;
 
-  const customer = user as User;
+  if (!user) {
+    return sendError("Unauthorized", "UNAUTHORIZED", 401);
+  }
+
+  const access = canCreateJob(user);
+  if (!access.allowed) {
+    return sendError(access.error, "FORBIDDEN", access.status);
+  }
 
   const body = await req.json();
   const validation = createJobSchema.safeParse(body);
@@ -31,11 +38,6 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
     return sendError("Invalid datetime", "VALIDATION_ERROR", 400);
   }
 
-  // Split into date and time DateTime values
-  const date = new Date(dt);
-  date.setHours(0, 0, 0, 0);
-  const time = dt; // store the exact requested time as DateTime
-
   // Validate worker exists and is role WORKER
   const worker = await prisma.user.findUnique({ where: { id: workerId } });
 
@@ -52,43 +54,15 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
     );
   }
 
-  // Calculate platform fees and worker earnings
-  const { platformFee, workerEarnings } = calculateFees(charge);
-
-  // Create job with payment tracking fields
-  const job = await prisma.job.create({
-    data: {
-      customerId: customer.id,
-      workerId: worker.id,
-      description,
-      details: details || null,
-      date,
-      time,
-      location,
-      charge,
-      status: "PENDING",
-      platformFee,
-      workerEarnings,
-      paymentStatus: "PENDING",
-    },
-  });
-
-  // Create audit log for job creation
-  await prisma.jobLog.create({
-    data: {
-      jobId: job.id,
-      fromStatus: null,
-      toStatus: "PENDING",
-      action: "JOB_CREATED",
-      performedBy: customer.id,
-      metadata: {
-        charge,
-        platformFee,
-        workerEarnings,
-        location,
-      },
-    },
-  });
+  const job = await createJob(
+    user.id,
+    worker.id,
+    description,
+    details,
+    datetime,
+    location,
+    charge
+  );
 
   return sendSuccess({ job }, 201);
 });

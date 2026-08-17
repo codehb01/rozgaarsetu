@@ -110,10 +110,10 @@ app/api/
 
 Do this **one entity at a time**, starting with `jobs` (it's your most impressive/complex flow — booking lifecycle + payments — so it's the best interview story):
 
-- [ ] Move authorization checks (e.g. "only the assigned worker can mark a job started") into `lib/access/job-access.ts` as pure functions like `canTransitionJobStatus(user, job, action)`.
-- [ ] Move the actual Prisma queries + state-transition logic out of `app/api/jobs/[id]/route.ts` into `lib/services/job-service.ts`, marked with `import "server-only"`.
-- [ ] The route file becomes: validate request (Phase 2's zod schema) → call `job-service` function → `sendSuccess`/`sendError`. Nothing else.
-- [ ] Repeat for `worker`, then `customer`, then `reviews`. Leave `JobPosting`/`JobApplication` alone for now — flag it as "unused/half-built" and decide later whether to finish or remove it (don't refactor dead code).
+- [x] Move authorization checks (e.g. "only the assigned worker can mark a job started") into `lib/access/job-access.ts` as pure functions like `canTransitionJobStatus(user, job, action)`.
+- [x] Move the actual Prisma queries + state-transition logic out of `app/api/jobs/[id]/route.ts` into `lib/services/job-service.ts`, marked with `import "server-only"`.
+- [x] The route file becomes: validate request (Phase 2's zod schema) → call `job-service` function → `sendSuccess`/`sendError`. Nothing else.
+- [x] Repeat for `worker`, then `customer`, then `reviews`. Leave `JobPosting`/`JobApplication` alone for now — flag it as "unused/half-built" and decide later whether to finish or remove it (don't refactor dead code).
 
 **Why this order:** you already have your best logic in `app/api/jobs/[id]/route.ts` — moving it into testable, framework-independent functions is the single best "system design" story you can tell, and Phase 1's tests let you prove nothing broke.
 
