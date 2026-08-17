@@ -1,651 +1,320 @@
-# RozgaarSetu
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js&logoColor=white" alt="Next.js 15"/>
+  <img src="https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License"/>
+</p>
 
-A comprehensive platform connecting skilled workers with customers for various services across India. Built with modern web technologies to provide a seamless experience for both service providers and seekers.
+<p align="center">
+  <b>RozgaarSetu</b> — A full-stack job marketplace connecting skilled workers with customers across India.
+</p>
+
+<p align="center">
+  One unified platform for service discovery, booking, payment, and reviews with role-based access for workers and customers.
+</p>
 
 ---
 
-## Table of Contents
+## Contents
 
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Screenshots](#screenshots)
-- [Technology Stack](#technology-stack)
+- [What is RozgaarSetu?](#what-is-rozgaarsetu)
+- [Core Features](#core-features)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
 - [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Environment Configuration](#environment-configuration)
-- [Database Setup](#database-setup)
-- [Payment Integration](#payment-integration)
+- [Project Structure](#project-structure)
+- [Environment Setup](#environment-setup)
+- [API Endpoints](#api-endpoints)
+- [Development](#development)
 - [Deployment](#deployment)
-- [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 - [License](#license)
 
 ---
 
-## Overview
+## What is RozgaarSetu?
 
-RozgaarSetu is a full-stack web application designed to bridge the gap between skilled workers and customers seeking services. The platform provides:
+RozgaarSetu is a **full-stack job marketplace** that brings together service providers (workers) and service seekers (customers) on a single platform. It handles the complete job lifecycle—from discovery and booking through payment and reviews—with secure authentication, payment processing, and location-based search.
 
-- **For Workers**: Profile creation, job applications, earnings tracking, and portfolio management
-- **For Customers**: Service search, worker booking, payment processing, and review system
-- **Secure Payments**: Integrated Razorpay payment gateway with verification
-- **Location-based Search**: Find workers near you using GPS and geocoding
-- **Real-time Updates**: Track job status from booking to completion
+**For Workers**: Create profiles, showcase portfolios, manage incoming jobs, track earnings, and build reputation.
 
-<!-- Add hero/landing page screenshot here -->
+**For Customers**: Search workers by skill and location, book services, pay securely, leave reviews, and track job status.
 
-![Landing Page](./docs/images/landing-page.png)
+**For the Platform**: Enforced input validation, graceful error handling, environment validation at startup, and restricted image sources for security.
 
 ---
 
-## Key Features
+## Core Features
 
-### Worker Features
-
-- **Profile Management**: Create detailed profiles with skills, experience, and certifications
-- **Portfolio Showcase**: Upload previous work images to attract customers
-- **Job Dashboard**: View and manage incoming job requests
-- **Earnings Tracker**: Monitor completed jobs and payment history
-- **Location Services**: Set service areas and availability zones
-
-<!-- Add worker dashboard screenshot here -->
-
-![Worker Dashboard](./docs/images/worker-dashboard.png)
-
-### Customer Features
-
-- **Advanced Search**: Find workers by skill, location, and ratings
-- **Booking System**: Create detailed job requests with schedules
-- **Payment Integration**: Secure online payments via Razorpay
-- **Review & Ratings**: Rate workers after job completion
-- **Booking Management**: Track all your bookings in one place
-
-<!-- Add customer dashboard screenshot here -->
-
-![Customer Dashboard](./docs/images/customer-dashboard.png)
-
-### Platform Features
-
-- **Multi-step Onboarding**: Guided registration for workers and customers
-- **Role-based Access**: Separate interfaces and permissions for workers and customers
-- **Responsive Design**: Fully functional on desktop, tablet, and mobile devices
-- **Authentication**: Secure user authentication with Clerk
-- **Image Storage**: Cloudinary integration for profile and portfolio images
-- **Job Lifecycle Management**: Complete workflow from job creation to completion with proof of work
-
-<!-- Add mobile responsive screenshots here -->
-
-![Mobile Views](./docs/images/mobile-responsive.png)
+| Area | What it does |
+|---|---|
+| **Authentication** | Clerk-based secure auth with role-based access (Worker/Customer) |
+| **Job Booking** | Create requests with date, time, location, charge; accept/start/complete workflow |
+| **Worker Search** | Filter by skill, location, ratings; distance calculation using GPS |
+| **Profiles** | Detailed worker portfolios with skills, experience, certifications, and previous work |
+| **Payments** | Razorpay integration with order creation, signature verification, and automatic status updates |
+| **Reviews & Ratings** | Post-completion feedback system for quality control |
+| **Image Storage** | Cloudinary for profile pics, portfolios, and work proofs |
+| **Responsive Design** | Works on desktop, tablet, and mobile with Tailwind CSS |
+| **Location Services** | Nominatim (OpenStreetMap) geocoding + reverse-geocoding for address lookup |
 
 ---
 
-## Screenshots
+## Tech Stack
 
-### Onboarding Process
-
-<!-- Add onboarding flow screenshots here -->
-
-![Onboarding Flow](./docs/images/onboarding-process.png)
-
-### Search & Booking
-
-<!-- Add search and booking screenshots here -->
-
-![Search Workers](./docs/images/search-booking.png)
-
-### Payment Flow
-
-<!-- Add payment process screenshots here -->
-
-![Payment Process](./docs/images/payment-flow.png)
-
-### Job Management
-
-<!-- Add job tracking screenshots here -->
-
-![Job Tracking](./docs/images/job-management.png)
+| Layer | Technology |
+|---|---|
+| **Frontend** | Next.js 15 · TypeScript · Tailwind CSS · shadcn/ui · React Query |
+| **Backend** | Next.js API Routes · Zod validation · Custom middleware (auth, rate-limit, cache, error handling) |
+| **Database** | Prisma ORM · PostgreSQL |
+| **Auth** | Clerk |
+| **Storage** | Cloudinary (images) |
+| **Payments** | Razorpay |
+| **DevOps** | Vercel · GitHub Actions · TypeScript type checking |
 
 ---
 
-## Technology Stack
+## Quick Start
 
-### Frontend
+### Prerequisites
 
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Form Management**: React Hook Form
-- **Validation**: Zod Schema Validation
-- **State Management**: React Hooks
+- Node.js 18+ · npm/yarn/pnpm · Git
+- Accounts: Clerk · Neon.tech (PostgreSQL) · Cloudinary · Razorpay
 
-### Backend
+### Install & Run
 
-- **Runtime**: Node.js
-- **API**: Next.js API Routes
-- **Database ORM**: Prisma
-- **Authentication**: Clerk
-- **File Storage**: Cloudinary
-- **Payment Gateway**: Razorpay
+```bash
+# Clone and install
+git clone https://github.com/yourusername/rozgaarsetu.git
+cd rozgaarsetu
+npm install
 
-### Database
+# Set up environment
+cp .env.example .env.local
+# Edit .env.local with your API keys (see "Environment Setup" below)
 
-- **Database**: PostgreSQL
-- **Hosting**: Neon.tech (Serverless PostgreSQL)
-- **Migration Tool**: Prisma Migrate
+# Initialize database
+npx prisma db push
 
-### DevOps & Deployment
+# Start dev server
+npm run dev
+```
 
-- **Hosting**: Vercel
-- **CI/CD**: Vercel Git Integration
-- **Monitoring**: Vercel Analytics
-- **Version Control**: Git/GitHub
-
-### Third-party Services
-
-- **Geocoding**: OpenStreetMap Nominatim API
-- **Maps**: OpenStreetMap
-- **Email**: Clerk Email Service
-- **SMS**: (To be integrated)
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## Architecture
 
-### System Architecture
+### Request Flow
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                         Client Layer                         │
-│  (Next.js Frontend - React Components, Tailwind CSS)        │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      Application Layer                       │
-│         (Next.js API Routes, Server Components)             │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-       ┌─────────────┼─────────────┐
-       ▼             ▼              ▼
-┌──────────┐  ┌──────────┐  ┌──────────┐
-│  Clerk   │  │Cloudinary│  │ Razorpay │
-│  (Auth)  │  │ (Images) │  │(Payments)│
-└──────────┘  └──────────┘  └──────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
-│                       Data Layer                             │
-│         (Prisma ORM + PostgreSQL on Neon.tech)              │
-└─────────────────────────────────────────────────────────────┘
+Client (Next.js Frontend)
+    ↓
+Middleware chain
+  → Request ID logging
+  → Clerk authentication
+  → Rate limiting (Redis)
+  → Response caching (Redis)
+  → Guardrail evaluation
+    ↓
+API Routes (handlers)
+  → Zod schema validation
+  → Access control (can this user do this?)
+  → Business logic (services)
+  → Prisma queries
+    ↓
+PostgreSQL (data persistence)
+
+Side integrations:
+  → Clerk (auth tokens)
+  → Cloudinary (image uploads)
+  → Razorpay (payment orders + verification)
+  → Nominatim (geocoding)
 ```
 
-### Database Schema
-
-**Core Models:**
-
-- `User`: Authentication and profile data
-- `WorkerProfile`: Worker-specific information (skills, experience, rates)
-- `CustomerProfile`: Customer-specific information (address, preferences)
-- `Job`: Job postings and bookings
-- `Review`: Customer reviews and ratings
-- `Transaction`: Payment and earnings records
-- `PreviousWork`: Worker portfolio items
-
----
-
-## Getting Started
-
-### Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Node.js** 18.0 or higher
-- **npm** or **yarn** or **pnpm**
-- **Git**
-
-You'll also need accounts for:
-
-- [Clerk](https://clerk.com) - Authentication
-- [Neon.tech](https://neon.tech) - Database hosting
-- [Cloudinary](https://cloudinary.com) - Image storage
-- [Razorpay](https://razorpay.com) - Payment processing
-
-### Installation
-
-1. **Clone the repository**
-
-```bash
-git clone https://github.com/yourusername/rozgaarsetu.git
-cd rozgaarsetu
-```
-
-2. **Install dependencies**
-
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-3. **Set up environment variables**
-
-Create a `.env.local` file in the root directory:
-
-```bash
-cp .env.example .env.local
-```
-
-See [Environment Configuration](#environment-configuration) section for detailed setup.
-
-4. **Initialize the database**
-
-```bash
-npx prisma generate
-npx prisma db push
-```
-
-5. **Run the development server**
-
-```bash
-npm run dev
-```
-
-6. **Open your browser**
-
-Navigate to [http://localhost:3000](http://localhost:3000)
-
----
-
-## Environment Configuration
-
-Create a `.env.local` file with the following variables:
-
-```env
-# Database (Neon.tech PostgreSQL)
-DATABASE_URL="postgresql://username:password@host/database?sslmode=require"
-
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_xxxxxxxxxxxx"
-CLERK_SECRET_KEY="sk_test_xxxxxxxxxxxx"
-NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
-NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
-
-# Cloudinary (Image Storage)
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"
-CLOUDINARY_API_KEY="your_api_key"
-CLOUDINARY_API_SECRET="your_api_secret"
-
-# Razorpay (Payment Gateway)
-RAZORPAY_KEY_ID="rzp_test_xxxxxxxxxxxx"
-RAZORPAY_KEY_SECRET="your_razorpay_secret"
-
-# Application URL
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-
-# Geocoding (OpenStreetMap Nominatim)
-NOMINATIM_USER_AGENT="RozgaarSetu/1.0 (contact: your-email@example.com)"
-```
-
-### Environment Variables Explanation
-
-| Variable                            | Description                                 | Required |
-| ----------------------------------- | ------------------------------------------- | -------- |
-| `DATABASE_URL`                      | PostgreSQL connection string from Neon.tech | Yes      |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key (client-side)         | Yes      |
-| `CLERK_SECRET_KEY`                  | Clerk secret key (server-side)              | Yes      |
-| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Your Cloudinary cloud name                  | Yes      |
-| `CLOUDINARY_API_KEY`                | Cloudinary API key                          | Yes      |
-| `CLOUDINARY_API_SECRET`             | Cloudinary API secret                       | Yes      |
-| `RAZORPAY_KEY_ID`                   | Razorpay key ID (test or live)              | Yes      |
-| `RAZORPAY_KEY_SECRET`               | Razorpay key secret                         | Yes      |
-| `NEXT_PUBLIC_APP_URL`               | Your application URL                        | Yes      |
-| `NOMINATIM_USER_AGENT`              | User agent for geocoding requests           | Yes      |
-
----
-
-## Database Setup
-
-### Schema Overview
-
-The application uses Prisma ORM with PostgreSQL. Key models include:
-
-- **User**: Core user model linked to Clerk authentication
-- **WorkerProfile**: Extended profile for service providers
-- **CustomerProfile**: Extended profile for service seekers
-- **Job**: Job postings with status tracking
-- **Review**: Rating and feedback system
-- **Transaction**: Financial records
-- **JobLog**: Audit trail for job state changes
-
-### Running Migrations
-
-For development:
-
-```bash
-npx prisma migrate dev --name descriptive_name
-```
-
-For production:
-
-```bash
-npx prisma migrate deploy
-```
-
-### Database Seeding (Optional)
-
-```bash
-npx prisma db seed
-```
-
-### Viewing Database
-
-```bash
-npx prisma studio
-```
-
-This opens a GUI at [http://localhost:5555](http://localhost:5555) to view and edit data.
-
----
-
-## Payment Integration
-
-### Razorpay Setup
-
-1. **Create a Razorpay Account**
-
-   - Sign up at [Razorpay Dashboard](https://dashboard.razorpay.com)
-   - Complete KYC verification for live mode
-
-2. **Get API Keys**
-
-   - For testing: Use test mode keys (`rzp_test_...`)
-   - For production: Use live mode keys (`rzp_live_...`)
-
-3. **Configure Environment**
-
-   ```env
-   RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxx
-   RAZORPAY_KEY_SECRET=your_secret_key
-   ```
-
-4. **Test Payment Flow**
-   - Use Razorpay test cards: `4111 1111 1111 1111`
-   - CVV: Any 3 digits
-   - Expiry: Any future date
-
-### Payment Features
-
-- Order creation with job details
-- Payment verification with signature validation
-- Automatic status updates on success
-- Platform fee calculation (10% of job charge)
-- Worker earnings tracking
-- Transaction history
-
----
-
-## Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. **Connect Repository**
-
-   - Go to [Vercel Dashboard](https://vercel.com)
-   - Import your Git repository
-   - Vercel auto-detects Next.js configuration
-
-2. **Configure Environment Variables**
-
-   - Add all environment variables from `.env.local`
-   - Set appropriate values for production
-   - Use live keys for Razorpay, Clerk, etc.
-
-3. **Configure Build Settings**
-
-   ```json
-   {
-     "buildCommand": "prisma generate && next build",
-     "outputDirectory": ".next",
-     "installCommand": "npm install"
-   }
-   ```
-
-4. **Deploy**
-
-   - Push to your main branch
-   - Vercel automatically deploys
-   - Each commit triggers a new deployment
-
-5. **Custom Domain (Optional)**
-   - Add your domain in Vercel dashboard
-   - Update DNS records as instructed
-   - SSL certificates are auto-generated
-
-### Post-Deployment Checklist
-
-- [ ] Run database migrations: `npx prisma migrate deploy`
-- [ ] Verify environment variables are set correctly
-- [ ] Test authentication flow with Clerk
-- [ ] Test payment integration with Razorpay
-- [ ] Verify image uploads to Cloudinary
-- [ ] Test on multiple devices (mobile, tablet, desktop)
-- [ ] Monitor logs for errors
-- [ ] Set up monitoring and alerts
-
-### Alternative Deployment Options
-
-- **Railway**: Similar to Vercel, supports PostgreSQL
-- **Render**: Good for full-stack apps
-- **AWS/Azure/GCP**: For enterprise deployments
-- **Docker**: Containerized deployment
-
----
-
-## API Documentation
-
-### Authentication Endpoints
-
-All API routes require Clerk authentication unless specified.
-
-### Jobs API
-
-**Create Job**
-
-```
-POST /api/jobs
-Content-Type: application/json
-
-{
-  "description": "Need plumber for kitchen sink",
-  "details": "Leak in kitchen sink, urgent",
-  "date": "2025-11-01T10:00:00Z",
-  "location": "123 Main St, Mumbai",
-  "charge": 500,
-  "workerId": "worker-uuid"
-}
-```
-
-**Get Jobs**
-
-```
-GET /api/jobs
-Query params: ?status=PENDING&role=CUSTOMER
-```
-
-**Update Job Status**
-
-```
-PATCH /api/jobs/[id]
-{
-  "action": "ACCEPT" | "START" | "COMPLETE" | "CANCEL"
-}
-```
-
-### Workers API
-
-**Search Workers**
-
-```
-GET /api/workers
-Query params: ?skill=plumber&city=Mumbai&lat=19.0760&lng=72.8777
-```
-
-**Get Worker Profile**
-
-```
-GET /api/workers/[id]
-```
-
-### Reviews API
-
-**Create Review**
-
-```
-POST /api/reviews
-{
-  "jobId": "job-uuid",
-  "rating": 5,
-  "comment": "Excellent work!"
-}
-```
-
-### Payment API
-
-**Create Payment Order**
-
-```
-PATCH /api/jobs/[id]
-{
-  "action": "COMPLETE"
-}
-```
-
-**Verify Payment**
-
-```
-POST /api/jobs/[id]
-{
-  "razorpayPaymentId": "pay_xxxxx",
-  "razorpaySignature": "signature"
-}
-```
-
----
-
-## Location and Geocoding
-
-The application uses OpenStreetMap Nominatim API for geocoding services:
-
-- **Search API**: Convert addresses to coordinates
-- **Reverse Geocode**: Convert coordinates to addresses
-- **Caching**: In-memory cache with 10-minute TTL
-- **Rate Limiting**: 1 request per second per endpoint
-- **Compliance**: Proper User-Agent headers as per OSM policy
-
-Configure the following in `.env.local`:
-
-```env
-NEXT_PUBLIC_APP_URL="https://your-domain.com"
-NOMINATIM_USER_AGENT="RozgaarSetu/1.0 (contact: admin@your-domain.com)"
-```
-
-For production with high traffic, consider:
-
-- Self-hosted Nominatim instance
-- Commercial geocoding services (Google Maps, Mapbox)
-- Redis-based centralized rate limiting
+### Core Models
+
+- **User** — Clerk sync + local profile (name, email, phone, role)
+- **WorkerProfile** — Skills, experience, rates, location, portfolio
+- **CustomerProfile** — Address, service preferences
+- **Job** — Booking with status (PENDING → ACCEPTED → IN_PROGRESS → COMPLETED)
+- **Review** — Ratings and feedback post-completion
+- **Transaction** — Payment records with earnings split
 
 ---
 
 ## Project Structure
 
 ```
-rozgaarsetu/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Authentication pages
-│   │   ├── sign-in/
-│   │   └── sign-up/
-│   ├── (main)/                   # Main application
-│   │   ├── customer/             # Customer pages
-│   │   ├── worker/               # Worker pages
-│   │   └── onboarding/           # Onboarding flow
-│   ├── api/                      # API routes
-│   │   ├── jobs/
-│   │   ├── workers/
-│   │   ├── reviews/
-│   │   └── user/
-│   ├── globals.css               # Global styles
-│   └── layout.tsx                # Root layout
-├── components/                   # React components
-│   ├── ui/                       # shadcn/ui components
-│   ├── header.tsx
-│   ├── footer.tsx
-│   └── ...
-├── lib/                          # Utility functions
-│   ├── prisma.ts                 # Prisma client
-│   ├── utils.ts                  # Helper functions
-│   └── schema.ts                 # Zod schemas
-├── prisma/                       # Database
-│   ├── schema.prisma             # Prisma schema
-│   └── migrations/               # Migration files
-├── public/                       # Static assets
-├── .env.local                    # Environment variables
-├── next.config.ts                # Next.js configuration
-├── tailwind.config.ts            # Tailwind configuration
-├── tsconfig.json                 # TypeScript configuration
-└── package.json                  # Dependencies
+app/
+  ├── (auth)/              # Sign-in / sign-up pages
+  ├── (main)/
+  │   ├── customer/        # Customer dashboard, profile, search, bookings
+  │   ├── worker/          # Worker dashboard, profile, job management, earnings
+  │   └── onboarding/      # Multi-step setup for both roles
+  ├── api/                 # REST endpoints
+  │   ├── jobs/
+  │   ├── workers/
+  │   ├── reviews/
+  │   ├── customer/
+  │   ├── worker/
+  │   └── user/
+  ├── error.tsx            # Error boundary
+  ├── not-found.tsx        # 404 page
+  └── layout.tsx
+
+components/
+  ├── ui/                  # shadcn components (button, card, input, etc.)
+  ├── customer/            # Customer-specific UI
+  ├── worker/              # Worker-specific UI
+  └── [others]
+
+hooks/
+  ├── api/                 # React Query hooks (useJobsQuery, useWorkersSearchQuery, etc.)
+  └── use-location.ts
+
+lib/
+  ├── access/              # Authorization checks (can-X functions)
+  ├── services/            # Business logic (job-service, worker-service, etc.)
+  ├── api-auth.ts          # Auth helpers
+  ├── api-response.ts      # Response formatting
+  ├── env.ts               # Environment validation at startup
+  ├── schema.ts            # Zod schemas with constraints
+  ├── geocoding.ts         # Address ↔ coordinates
+  ├── razorpay-service.ts  # Payment helper
+  └── [utils]
+
+prisma/
+  ├── schema.prisma        # Data models
+  └── migrations/
+
+public/                    # Static assets
 ```
+
+---
+
+## Environment Setup
+
+Create `.env.local` (or use `.env.example` as template):
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@neon.tech/db?sslmode=require"
+
+# Clerk Auth
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
+
+# Cloudinary Images
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your-cloud"
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
+
+# Razorpay Payments
+NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_test_..."
+RAZORPAY_KEY_SECRET="..."
+
+# Geocoding
+NEXT_PUBLIC_NOMINATIM_URL="https://nominatim.openstreetmap.org"
+```
+
+All variables are validated on startup — missing or invalid values fail fast with clear error messages.
+
+---
+
+## API Endpoints
+
+All endpoints require Clerk authentication via `Authorization: Bearer <token>` header.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/jobs` | Create job |
+| GET | `/api/jobs` | List jobs (filtered by role/status) |
+| PATCH | `/api/jobs/[id]` | Update job status (accept/start/complete/cancel) |
+| GET | `/api/workers` | Search workers (by skill, location, lat/lng) |
+| GET | `/api/worker/profile` | Get current worker profile |
+| PATCH | `/api/worker/profile` | Update profile |
+| GET | `/api/worker/earnings` | Earnings summary |
+| GET | `/api/customer/profile` | Get customer profile |
+| PATCH | `/api/customer/profile` | Update customer address |
+| POST | `/api/reviews` | Submit job review |
+| GET | `/health` | Liveness probe |
+
+---
+
+## Development
+
+### Commands
+
+```bash
+# Linting (with errors fail the build)
+npm run lint
+
+# Type checking
+npx tsc --noEmit
+
+# Build
+npm run build
+
+# Format with Prettier
+npm run format
+
+# Database studio (GUI)
+npx prisma studio
+```
+
+### Code Style
+
+- **TypeScript**: No `any` types; use proper typing
+- **Validation**: All user input validated with Zod before use
+- **API Responses**: Consistent shape via `lib/api-response.ts`
+- **Error Handling**: Try/catch with `withErrorHandling` middleware
+- **Constraints**: Input lengths, number ranges, coordinate bounds all enforced in schemas
+
+---
+
+## Deployment
+
+### To Vercel (Recommended)
+
+1. Connect your GitHub repo in [Vercel Dashboard](https://vercel.com)
+2. Add environment variables (from `.env.local`)
+3. Vercel auto-detects Next.js configuration and deploys on push
+4. Run migrations: `npx prisma migrate deploy`
+
+### Pre-deployment Checklist
+
+- [ ] Environment variables set in Vercel project
+- [ ] Database migrations run (`npx prisma migrate deploy`)
+- [ ] Clerk production keys configured
+- [ ] Razorpay live (or test) keys set
+- [ ] Cloudinary API keys valid
+- [ ] GitHub Actions CI passing (lint, build, type check)
 
 ---
 
 ## Contributing
 
-We welcome contributions to RozgaarSetu! Please follow these guidelines:
+1. Fork the repo
+2. Create feature branch: `git checkout -b feature/your-feature`
+3. Make changes and commit: `git commit -m "feat: description"`
+4. Push: `git push origin feature/your-feature`
+5. Open a pull request
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Submit a pull request
+### Code Requirements
 
-### Development Guidelines
-
-- Follow TypeScript best practices
-- Use ESLint and Prettier for code formatting
-- Write meaningful commit messages
-- Add comments for complex logic
-- Test thoroughly before submitting PR
-- Test thoroughly before submitting PR
+- Changes pass `npm run lint` and `npx tsc --noEmit`
+- No `any` types; proper TypeScript
+- Input validated with Zod
+- PR description includes what/why/how
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — See [LICENSE](LICENSE) for details.
 
 ---
 
-## Support
-
-For issues, questions, or contributions:
-
-- **GitHub Issues**: [Report a bug](https://github.com/yourusername/rozgaarsetu/issues)
-- **Email**: support@rozgaarsetu.com
-- **Documentation**: [Wiki](https://github.com/yourusername/rozgaarsetu/wiki)
-
----
-
-## Acknowledgments
-
-- Next.js team for the amazing framework
-- Vercel for hosting and deployment
-- Clerk for authentication services
-- shadcn for the beautiful UI components
-- OpenStreetMap contributors for geocoding data
-
----
-
-**Built with ❤️ for connecting workers and customers across India**
+**Connecting skilled workers with customers across India.**
