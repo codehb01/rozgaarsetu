@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState, useRef, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useWorkersSearchQuery } from "@/hooks/api/use-workers-search";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -136,105 +137,41 @@ function SearchPageContent() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [locMenuOpen]);
-  const [loading, setLoading] = useState(false);
-  const [workers, setWorkers] = useState<Worker[]>([]);
 
-  // Compute counts per category from the currently fetched workers (client-side)
-  const categoryCounts = useMemo(() => {
-    const map: Record<string, number> = {};
-    for (const c of CATEGORIES) map[c] = 0;
-    for (const w of workers) {
-      // infer normalized category strings from common worker fields
-      const wCatRaw =
-        w.workerProfile?.category ?? w.workerProfile?.jobCategory ?? null;
-      const skills: string[] = w.workerProfile?.skilledIn ?? [];
+  // React Query: reactive search — refetches automatically when params change
+  const { data: searchData, isFetching: searchLoading } = useWorkersSearchQuery({
+    q,
+    category,
+    location,
+    sortBy,
+    lat: coords?.lat,
+    lng: coords?.lng,
+  });
 
-      // count 'All'
-      map["All"] = (map["All"] || 0) + 1;
-
-      if (wCatRaw && typeof wCatRaw === "string") {
-        const norm = wCatRaw.trim().toLowerCase();
-        for (const c of CATEGORIES) {
-          if (c.toLowerCase() === norm) map[c] = (map[c] || 0) + 1;
-        }
-      }
-
-      // also try matching against skilledIn entries (some workers list skills instead of category)
-      if (Array.isArray(skills) && skills.length > 0) {
-        for (const s of skills) {
-          const normS = String(s).trim().toLowerCase();
-          for (const c of CATEGORIES) {
-            if (c.toLowerCase() === normS) map[c] = (map[c] || 0) + 1;
-          }
-        }
-      }
+  // Normalize possible distance fields from the API to `distanceKm`
+  const normalize = (
+    w: Worker & {
+      distance_km?: number;
+      distance?: number;
+      distanceInKm?: number;
+      distance_in_km?: number;
     }
-    return map;
-  }, [workers]);
+  ): Worker => ({
+    ...w,
+    distanceKm:
+      w.distanceKm ??
+      w.distance_km ??
+      w.distance ??
+      w.distanceInKm ??
+      w.distance_in_km ??
+      null,
+  });
 
-  const fetchWorkers = async (opts?: {
-    q?: string;
-    category?: string;
-    location?: string;
-    sortBy?: string;
-    lat?: number;
-    lng?: number;
-  }) => {
-    const qs = new URLSearchParams();
-    if (opts?.q) qs.set("q", opts.q);
-    if (opts?.location) qs.set("location", opts.location);
-    if (opts?.lat) qs.set("lat", String(opts.lat));
-    if (opts?.lng) qs.set("lng", String(opts.lng));
-    if (opts?.category && opts.category !== "All")
-      qs.set("category", opts.category.toLowerCase());
-    if (opts?.sortBy && opts.sortBy !== "relevance")
-      qs.set("sort", opts.sortBy);
-    qs.set("limit", "30");
-
-    const url = `/api/workers?${qs.toString()}`;
-    setLoading(true);
-    try {
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch workers");
-      const data = await res.json();
-      // Normalize possible distance fields from the API to `distanceKm`
-      const normalize = (
-        w: Worker & {
-          distance_km?: number;
-          distance?: number;
-          distanceInKm?: number;
-          distance_in_km?: number;
-        }
-      ): Worker => ({
-        ...w,
-        distanceKm:
-          w.distanceKm ??
-          w.distance_km ??
-          w.distance ??
-          w.distanceInKm ??
-          w.distance_in_km ??
-          null,
-      });
-      setWorkers((data.workers || []).map(normalize));
-    } catch (e) {
-      console.error(e);
-      setWorkers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Refetch when category, sort or coords change (coords will be populated after geolocation completes)
-  useEffect(() => {
-    fetchWorkers({
-      q,
-      category,
-      location,
-      sortBy,
-      lat: coords?.lat,
-      lng: coords?.lng,
-    });
-  }, [category, sortBy, coords]);
+  const workers = useMemo(
+    () => (searchData?.workers || []).map(normalize),
+    [searchData]
+  );
+  const loading = searchLoading;
 
   // Reflect browser geolocation into input once fetched
   useEffect(() => {
@@ -274,14 +211,6 @@ function SearchPageContent() {
         "Tip: Set a location or use 'Use my location' to get nearest results."
       );
     }
-    fetchWorkers({
-      q,
-      category,
-      location,
-      sortBy,
-      lat: coords?.lat,
-      lng: coords?.lng,
-    });
   };
 
   const onCategoryClick = (cat: string) => {
@@ -450,7 +379,11 @@ function SearchPageContent() {
                 {CATEGORIES.map((cat) => {
                   const active = cat === category;
                   // use client-side computed counts from fetched workers
-                  const count = categoryCounts[cat] ?? 0;
+                  const count = workers.filter((w: Worker) => {
+                    if (cat === "All") return true;
+                    const category = w.workerProfile?.category || w.workerProfile?.jobCategory;
+                    return category?.toLowerCase() === cat.toLowerCase();
+                  }).length;
                   return (
                     <motion.button
                       key={cat}

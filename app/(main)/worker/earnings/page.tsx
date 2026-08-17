@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWorkerEarningsQuery } from "@/hooks/api/use-worker";
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 import {
   FiDollarSign,
@@ -30,27 +30,7 @@ type EarningsData = {
 };
 
 export default function WorkerEarningsPage() {
-  const [data, setData] = useState<EarningsData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const load = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/worker/earnings", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to load earnings");
-      const result = await res.json();
-      setData(result);
-    } catch (e) {
-      console.error(e);
-      setData(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
+  const { data, isLoading: loading, refetch } = useWorkerEarningsQuery();
 
   // Skeleton loader component
   const SkeletonCard = () => (
@@ -157,7 +137,7 @@ export default function WorkerEarningsPage() {
                 There was an error loading your earnings. Please try again.
               </p>
               <button
-                onClick={load}
+                onClick={() => refetch()}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 Retry
@@ -298,7 +278,7 @@ export default function WorkerEarningsPage() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {data.jobs.map((job, index) => (
+                      {data.jobs.map((job: { id: string; description: string; charge: number; date: string; customer: string }, index: number) => (
                         <motion.div
                           key={job.id}
                           initial={{ opacity: 0, x: -20 }}

@@ -8,6 +8,8 @@ import { ReviewDialog } from "@/components/review-dialog";
 import ScrollList from "@/components/ui/scroll-list";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useJobsQuery, useJobMutation } from "@/hooks/api/use-jobs";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   FiCalendar,
   FiMapPin,
@@ -85,8 +87,13 @@ type RazorpayOrder = {
 };
 
 export default function CustomerBookingsPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: jobsData, isLoading: loading, refetch } = useJobsQuery("customer");
+  const jobs: Job[] = jobsData?.jobs || [];
+  const { mutateAsync: mutateJob } = useJobMutation();
+  const queryClient = useQueryClient();
+
+  const load = () => refetch();
+
   const [tab, setTab] = useState<Tab>("ONGOING");
   const [acting, setActing] = useState<string | null>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
@@ -106,25 +113,6 @@ export default function CustomerBookingsPage() {
     setReviewJobId(jobId);
     setReviewOpen(true);
   };
-
-  const load = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/customer/jobs", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to load jobs");
-      const data = await res.json();
-      setJobs(data.jobs || []);
-    } catch (e) {
-      console.error(e);
-      setJobs([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
 
   // Filter and search logic
   const ongoing = jobs.filter(
@@ -150,30 +138,17 @@ export default function CustomerBookingsPage() {
     setPaymentJobId(id);
     try {
       // Step 1: Create Razorpay order
-      const res = await fetch(`/api/jobs/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "COMPLETE" }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        toast.error(data.error || "Failed to initiate payment");
-        return;
-      }
-
-      const data = await res.json();
+      const data = await mutateJob({ jobId: id, action: "complete" });
 
       if (data.requiresPayment && data.razorpayOrder) {
         setRazorpayOrder(data.razorpayOrder);
         toast.info("Opening payment gateway...");
       } else {
         toast.success("Job completed successfully!");
-        await load();
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Complete job error:", error);
-      toast.error("Failed to initiate payment");
+      toast.error(error instanceof Error ? error.message : "Failed to initiate payment");
     } finally {
       setActing(null);
     }
@@ -211,7 +186,7 @@ export default function CustomerBookingsPage() {
             toast.success("Payment successful! Job completed.");
             setPaymentJobId(null);
             setRazorpayOrder(null);
-            await load();
+            queryClient.invalidateQueries({ queryKey: ["jobs"] });
           } else {
             const data = await verifyRes.json();
             toast.error(data.error || "Payment verification failed");

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useSaveCustomerProfileMutation } from "@/hooks/api/use-customer";
+import { useJobsQuery } from "@/hooks/api/use-jobs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,8 +80,12 @@ export default function CustomerProfilePage() {
     "overview"
   );
   const [fetchingLocation, setFetchingLocation] = useState(false);
-  const [bookings, setBookings] = useState<Job[]>([]);
   const [bookingsLoading, setBookingsLoading] = useState(false);
+
+  // React Query: fetch bookings lazily when tab is "bookings"
+  const { data: bookingsData } = useJobsQuery("customer");
+  const bookings: Job[] = bookingsData?.jobs || [];
+  const { mutateAsync: saveProfile } = useSaveCustomerProfileMutation();
 
   const handleGetCurrentLocation = async () => {
     setFetchingLocation(true);
@@ -152,12 +158,6 @@ export default function CustomerProfilePage() {
     loadProfile();
   }, []);
 
-  useEffect(() => {
-    if (activeTab === "bookings" && bookings.length === 0 && !bookingsLoading) {
-      loadBookings();
-    }
-  }, [activeTab, bookings.length, bookingsLoading]);
-
   const loadProfile = async () => {
     setLoading(true);
     try {
@@ -177,44 +177,16 @@ export default function CustomerProfilePage() {
     }
   };
 
-  const loadBookings = async () => {
-    setBookingsLoading(true);
-    try {
-      const res = await fetch("/api/customer/jobs", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to load bookings");
-      const data = await res.json();
-      setBookings(data.jobs || []);
-    } catch (e) {
-      console.error("Error loading bookings:", e);
-      setBookings([]);
-    } finally {
-      setBookingsLoading(false);
-    }
-  };
-
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch("/api/customer/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          address: editedProfile.address,
-          city: editedProfile.city,
-          state: editedProfile.state,
-          postalCode: editedProfile.postalCode,
-          country: editedProfile.country,
-        }),
+      const result = await saveProfile({
+        address: editedProfile.address,
+        city: editedProfile.city,
+        state: editedProfile.state,
+        postalCode: editedProfile.postalCode,
+        country: editedProfile.country,
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to save profile");
-      }
-
-      const result = await response.json();
 
       // Update the profile data with the saved data
       if (data) {
