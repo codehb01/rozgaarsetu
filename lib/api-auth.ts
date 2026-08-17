@@ -1,20 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getCurrentUser } from "@/app/api/actions/onboarding";
+import { sendError } from "./api-response";
+import { User } from "@prisma/client";
 
 export type UserRole = "CUSTOMER" | "WORKER";
+
+// Using Awaited<ReturnType<typeof getCurrentUser>> handles the full include structure properly
+export type AuthenticatedUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 
 export async function protectApiRoute(
   request: NextRequest,
   requiredRole?: UserRole
-): Promise<{ user: unknown; response?: NextResponse }> {
+): Promise<{ user: AuthenticatedUser | null; response?: NextResponse }> {
   try {
     const { userId } = await auth();
 
     if (!userId) {
       return {
         user: null,
-        response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+        response: sendError("Unauthorized", "UNAUTHORIZED", 401),
       };
     }
 
@@ -23,10 +28,7 @@ export async function protectApiRoute(
     if (!user) {
       return {
         user: null,
-        response: NextResponse.json(
-          { error: "User not found" },
-          { status: 404 }
-        ),
+        response: sendError("User not found", "USER_NOT_FOUND", 404),
       };
     }
 
@@ -34,12 +36,11 @@ export async function protectApiRoute(
     if (requiredRole && user.role !== requiredRole) {
       return {
         user: null,
-        response: NextResponse.json(
-          {
-            error: `Access denied. ${requiredRole} role required.`,
-            userRole: user.role,
-          },
-          { status: 403 }
+        response: sendError(
+          `Access denied. ${requiredRole} role required.`,
+          "FORBIDDEN",
+          403,
+          { userRole: user.role }
         ),
       };
     }
@@ -49,10 +50,7 @@ export async function protectApiRoute(
     console.error("API route protection error:", error);
     return {
       user: null,
-      response: NextResponse.json(
-        { error: "Internal server error" },
-        { status: 500 }
-      ),
+      response: sendError("Internal server error", "INTERNAL_ERROR", 500),
     };
   }
 }

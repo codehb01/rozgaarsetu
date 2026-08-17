@@ -82,11 +82,11 @@ What was actually done, on branch `feat/cicd-and-cleanup`:
 
 Do this **one route at a time**, on its own small PR, so nothing breaks all at once:
 
-- [ ] Create one shared response helper, e.g. `lib/api-response.ts`, exporting `sendSuccess(data, status?)` and `sendError(message, code, status)` — small wrappers over `NextResponse.json`. This replaces the current copy-pasted `{ error: "..." }` objects with one consistent shape everywhere.
-- [ ] Create one shared error-handling wrapper, e.g. `withErrorHandling(handler)`, that wraps a route handler in try/catch and returns a standard 500 response on unexpected errors — replacing the repeated try/catch blocks.
-- [ ] For every route under `app/api/`, replace manual field checks (`if (!workerId || !description...)`) with a `zod` schema + `.safeParse()`. You already have `lib/schema.ts` for forms — extend it with server-side request schemas (can live in the same file or a new `lib/schema/api/*.ts`).
-- [ ] Replace every hand-rolled `auth()` + `prisma.user.findUnique` + role-check block with the existing `lib/api-auth.ts` helpers (`protectCustomerApi`/`protectWorkerApi`). Fix the `unknown` cast issue while you're here by giving these helpers a proper generic return type instead of `unknown`.
-- [ ] Add basic rate limiting (e.g. `@upstash/ratelimit` with Redis, or a simple in-memory limiter for now) to the public routes: `/api/geocode`, `/api/reverse-geocode`, `/api/workers`.
+- [x] Create one shared response helper, e.g. `lib/api-response.ts`, exporting `sendSuccess(data, status?)` and `sendError(message, code, status)` — small wrappers over `NextResponse.json`. This replaces the current copy-pasted `{ error: "..." }` objects with one consistent shape everywhere.
+- [x] Create one shared error-handling wrapper, e.g. `withErrorHandling(handler)`, that wraps a route handler in try/catch and returns a standard 500 response on unexpected errors — replacing the repeated try/catch blocks.
+- [x] For every route under `app/api/`, replace manual field checks (`if (!workerId || !description...)`) with a `zod` schema + `.safeParse()`. You already have `lib/schema.ts` for forms — extend it with server-side request schemas (can live in the same file or a new `lib/schema/api/*.ts`).
+- [x] Replace every hand-rolled `auth()` + `prisma.user.findUnique` + role-check block with the existing `lib/api-auth.ts` helpers (`protectCustomerApi`/`protectWorkerApi`). Fix the `unknown` cast issue while you're here by giving these helpers a proper generic return type instead of `unknown`.
+- [x] Add basic rate limiting (e.g. `@upstash/ratelimit` with Redis, or a simple in-memory limiter for now) to the public routes: `/api/geocode`, `/api/reverse-geocode`, `/api/workers`.
 
 **Why this order:** this fixes the most commonly-asked interview question ("how do you keep 19 API routes consistent?") without moving a single file — you're changing the *inside* of each route, not its location.
 
