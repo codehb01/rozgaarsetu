@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
 import prisma from "@/lib/prisma";
 import { distanceKm } from "@/lib/location";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateWorkerProfile(workerProfileId: string, data: any) {
   return await prisma.workerProfile.update({
     where: { id: workerProfileId },
@@ -180,7 +180,7 @@ export async function searchWorkers(sp: {
         WHERE u."role" = 'WORKER'
         ORDER BY distance_km ASC
         LIMIT ${limit}
-      `) as Array<Record<string, unknown>>;
+      `) as Array<any>;
 
       const mapped = rows.map((r) => ({
         id: r.id,
@@ -225,7 +225,7 @@ export async function searchWorkers(sp: {
       workerProfile: true,
     },
     take: 200,
-  })) as Array<Record<string, unknown>>;
+  })) as Array<any>;
 
   const withDistances = workersRaw.map((w) => {
     const wp = w.workerProfile || {};
