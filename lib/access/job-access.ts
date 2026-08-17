@@ -3,6 +3,7 @@ import { AuthenticatedUser } from "@/lib/api-auth";
 
 export type AccessResult = 
   | { allowed: true } 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { allowed: false; error: string; status: number; details?: any };
 
 export function canCreateJob(user: AuthenticatedUser): AccessResult {

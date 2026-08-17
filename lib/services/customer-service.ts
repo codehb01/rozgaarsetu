@@ -1,6 +1,7 @@
 import "server-only";
 import prisma from "@/lib/prisma";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateCustomerProfile(customerProfileId: string, data: any) {
   return await prisma.customerProfile.update({
     where: { id: customerProfileId },

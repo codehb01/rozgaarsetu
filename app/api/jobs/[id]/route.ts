@@ -83,7 +83,7 @@ export const PATCH = withErrorHandling(
       const access = canCompleteJob(user, job);
       if (!access.allowed) return sendError(access.error, "FORBIDDEN", access.status);
       
-      // cast job as required by the service layer, since we requested includeCustomerWorker = true
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await initiatePaymentForJobCompletion(job as any, user.id);
       return sendSuccess(result);
     }
