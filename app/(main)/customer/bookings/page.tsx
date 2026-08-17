@@ -136,7 +136,7 @@ export default function CustomerBookingsPage() {
     setPaymentJobId(id);
     try {
       // Step 1: Create Razorpay order
-      const data = await mutateJob({ jobId: id, action: "COMPLETE" as any });
+      const data = await mutateJob({ jobId: id, action: "complete" });
 
       if (data.requiresPayment && data.razorpayOrder) {
         setRazorpayOrder(data.razorpayOrder);
@@ -144,9 +144,9 @@ export default function CustomerBookingsPage() {
       } else {
         toast.success("Job completed successfully!");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Complete job error:", error);
-      toast.error(error.message || "Failed to initiate payment");
+      toast.error(error instanceof Error ? error.message : "Failed to initiate payment");
     } finally {
       setActing(null);
     }

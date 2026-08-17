@@ -67,15 +67,15 @@ export default function WorkerJobsPage() {
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const act = async (id: string, action: "ACCEPT" | "CANCEL") => {
+  const act = async (id: string, action: "accept" | "cancel") => {
     setActing(id);
     try {
-      await mutateJob({ jobId: id, action: action as any });
+      await mutateJob({ jobId: id, action: action as "accept" | "cancel" });
       toast.success(
-        action === "ACCEPT" ? "Job accepted successfully!" : "Job cancelled"
+        action === "accept" ? "Job accepted successfully!" : "Job cancelled"
       );
-    } catch (e: any) {
-      toast.error(e.message || "Action failed");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Action failed");
     } finally {
       setActing(null);
     }
@@ -166,7 +166,7 @@ export default function WorkerJobsPage() {
       // Send START action with proof
       await mutateJob({
         jobId,
-        action: "START" as any,
+        action: "start",
         data: {
           startProofPhoto: photoUrl,
           startProofGpsLat: gpsCoords.lat,
@@ -180,9 +180,9 @@ export default function WorkerJobsPage() {
       setPhotoFile(null);
       setPhotoPreview(null);
       setGpsCoords(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Start work error:", error);
-      toast.error(error.message || "Failed to start work. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Failed to start work. Please try again.");
     } finally {
       setActing(null);
     }
@@ -777,7 +777,7 @@ export default function WorkerJobsPage() {
                       >
                         <Button
                           disabled={acting === j.id}
-                          onClick={() => act(j.id, "ACCEPT")}
+                          onClick={() => act(j.id, "accept")}
                           className="bg-green-600 hover:bg-green-500 text-white flex-1"
                         >
                           {acting === j.id ? "Processing..." : "Accept"}
@@ -785,7 +785,7 @@ export default function WorkerJobsPage() {
                       </ClickSpark>
                       <Button
                         disabled={acting === j.id}
-                        onClick={() => act(j.id, "CANCEL")}
+                        onClick={() => act(j.id, "cancel")}
                         className="bg-red-600 hover:bg-red-500 text-white flex-1"
                       >
                         {acting === j.id ? "Processing..." : "Cancel"}
@@ -1000,14 +1000,14 @@ export default function WorkerJobsPage() {
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 flex gap-2">
                       <Button
                         disabled={acting === j.id}
-                        onClick={() => act(j.id, "ACCEPT")}
+                        onClick={() => act(j.id, "accept")}
                         className="bg-green-600 hover:bg-green-500 text-white flex-1"
                       >
                         {acting === j.id ? "Processing..." : "Accept"}
                       </Button>
                       <Button
                         disabled={acting === j.id}
-                        onClick={() => act(j.id, "CANCEL")}
+                        onClick={() => act(j.id, "cancel")}
                         className="bg-red-600 hover:bg-red-500 text-white flex-1"
                       >
                         {acting === j.id ? "Processing..." : "Cancel"}
