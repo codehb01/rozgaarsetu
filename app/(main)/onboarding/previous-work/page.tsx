@@ -130,6 +130,7 @@ type PreviousWork = {
   clientRating?: number;
   beforeImage?: File[];
   afterImage?: File[];
+  imageUrl?: string;
 };
 
 export default function PreviousWorkPage() {

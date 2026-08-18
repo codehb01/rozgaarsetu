@@ -28,7 +28,8 @@ export function useWorkerProfileQuery() {
     queryFn: async () => {
       const res = await fetch("/api/worker/profile");
       if (!res.ok) throw new Error("Failed to fetch worker profile");
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
   });
 }
@@ -44,7 +45,8 @@ export function useUpdateWorkerProfileMutation() {
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update worker profile");
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workerProfile"] });
@@ -66,7 +68,8 @@ export function useSaveWorkerProfileMutation() {
         const err = await res.json();
         throw new Error(err.error || "Failed to save profile");
       }
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workerProfile"] });
@@ -80,7 +83,8 @@ export function useWorkerEarningsQuery() {
     queryFn: async () => {
       const res = await fetch("/api/worker/earnings");
       if (!res.ok) throw new Error("Failed to fetch worker earnings");
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
   });
 }

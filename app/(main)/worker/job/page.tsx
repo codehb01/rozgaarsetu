@@ -143,7 +143,11 @@ export default function WorkerJobsPage() {
     }
 
     const data = await res.json();
-    return data.url;
+    const url = data?.data?.url;
+    if (!url) {
+      throw new Error("Photo upload succeeded but no URL was returned");
+    }
+    return url;
   };
 
   // Start work with proof

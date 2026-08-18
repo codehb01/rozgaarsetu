@@ -11,7 +11,8 @@ export function useCreateReviewMutation() {
         body: JSON.stringify({ jobId, rating, comment }),
       });
       if (!res.ok) throw new Error("Failed to submit review");
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["jobs"] }); // Typically updating a review updates the job state
