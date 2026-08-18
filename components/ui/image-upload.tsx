@@ -46,8 +46,12 @@ export function ImageUpload({
       const data = await response.json();
 
       if (response.ok) {
-        onChange(data.url);
-        setUrlInput(data.url);
+        const url = data?.data?.url;
+        if (!url) {
+          throw new Error("Upload succeeded but no URL returned");
+        }
+        onChange(url);
+        setUrlInput(url);
         setImageError(false);
       } else {
         console.error("Upload failed:", data.error);

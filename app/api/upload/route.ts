@@ -5,7 +5,9 @@ import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
 
 // Configuration
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloud_name:
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
@@ -17,6 +19,20 @@ interface CloudinaryUploadResult {
 }
 
 export const POST = withErrorHandling(async (request: NextRequest) => {
+  const cloudName =
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+  if (!cloudName || !apiKey || !apiSecret) {
+    return sendError(
+      "Cloudinary is not configured. Please set CLOUDINARY_CLOUD_NAME (or NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME), CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.",
+      "UPLOAD_CONFIG_MISSING",
+      500
+    );
+  }
+
   const { userId } = await auth();
   if (!userId) {
     return sendError("Unauthorized", "UNAUTHORIZED", 401);

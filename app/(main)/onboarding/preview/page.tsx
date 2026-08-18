@@ -174,7 +174,7 @@ type WorkerDetails = {
   yearsExperience: number;
   hourlyRate: number;
   minimumFee: number;
-  profilePic?: File[];
+  profilePic?: string | File[];
   bio?: string;
   address: string;
   city: string;
@@ -195,7 +195,7 @@ type PreviousWork = {
   id: string;
   title: string;
   description: string;
-  images: File[];
+  images?: File[];
   category?: string;
   dateCompleted?: string;
   duration?: string;
@@ -525,9 +525,10 @@ export default function PreviewPage() {
                               <div className="relative overflow-hidden rounded-lg mb-4">
                                 <WorkImage
                                   src={
-                                    work.images && work.images.length > 0
+                                    work.imageUrl ||
+                                    (work.images && work.images.length > 0
                                       ? work.images
-                                      : work.imageUrl || ""
+                                      : "")
                                   }
                                   alt={work.title}
                                   className="w-full h-40 object-cover rounded-lg transform group-hover:scale-110 transition-transform duration-300"

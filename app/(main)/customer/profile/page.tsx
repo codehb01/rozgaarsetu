@@ -75,10 +75,10 @@ export default function CustomerProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editedProfile, setEditedProfile] = useState<Partial<CustomerProfile>>(
-    {}
+    {},
   );
   const [activeTab, setActiveTab] = useState<"overview" | "bookings">(
-    "overview"
+    "overview",
   );
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const [bookingsLoading, setBookingsLoading] = useState(false);
@@ -101,14 +101,14 @@ export default function CustomerProfilePage() {
       const position = await new Promise<GeolocationPosition>(
         (resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
-        }
+        },
       );
 
       const { latitude, longitude } = position.coords;
 
       // Reverse geocode to get address
       const response = await fetch(
-        `/api/reverse-geocode?lat=${latitude}&lng=${longitude}`
+        `/api/reverse-geocode?lat=${latitude}&lng=${longitude}`,
       );
 
       if (!response.ok) {
@@ -116,7 +116,7 @@ export default function CustomerProfilePage() {
       }
 
       const data = await response.json();
-      const result = data.result;
+      const result = data?.data?.result;
 
       if (!result) {
         throw new Error("No address found for this location");
@@ -137,7 +137,7 @@ export default function CustomerProfilePage() {
         switch (error.code) {
           case error.PERMISSION_DENIED:
             alert(
-              "Location permission denied. Please enable location access in your browser settings."
+              "Location permission denied. Please enable location access in your browser settings.",
             );
             break;
           case error.POSITION_UNAVAILABLE:
@@ -744,8 +744,8 @@ export default function CustomerProfilePage() {
                                       booking.status === "COMPLETED"
                                         ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                                         : booking.status === "PENDING"
-                                        ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                                        : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                                          ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
+                                          : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
                                     }`}
                                   >
                                     {booking.status}
@@ -761,7 +761,7 @@ export default function CustomerProfilePage() {
                                 <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                   Booked on{" "}
                                   {new Date(
-                                    booking.createdAt
+                                    booking.createdAt,
                                   ).toLocaleDateString()}
                                 </div>
                                 <div className="flex gap-2">
