@@ -45,10 +45,19 @@ const parseDateTime = (str: Date | string) => {
   return parseDate(String(str))
 }
 
-export default function SmartDateTimePicker({ value, onChange, className, required, id, name }: any) {
-  // props are flexible because callers expect (id,name,value,onChange,...) signature
+type SmartDateTimePickerFieldProps = {
+  value?: Date
+  onChange?: (date: Date) => void
+  className?: string
+  required?: boolean
+  id?: string
+  name?: string
+}
+
+export default function SmartDateTimePicker({ value, onChange, className, id, name }: SmartDateTimePickerFieldProps) {
+  // `required` accepted for form-field compatibility with callers, not used internally
   const val: Date | undefined = value instanceof Date ? value : undefined
-  const onValueChange: (d: Date) => void = (onChange as any) || ((d: Date) => {})
+  const onValueChange: (d: Date) => void = onChange ?? (() => {})
 
   const [open, setOpen] = React.useState(false)
   const [inputValue, setInputValue] = React.useState<string>(val ? formatDateTime(val) : "")
@@ -131,7 +140,7 @@ export default function SmartDateTimePicker({ value, onChange, className, requir
           onChange={(e) => setInputValue(e.currentTarget.value)}
           onBlur={(e) => handleParse(e.currentTarget.value)}
         />
-        <button type="button" onClick={() => setOpen((s) => !s)} className={buttonVariants({ variant: 'outline', size: 'icon' }) as any}>
+        <button type="button" onClick={() => setOpen((s) => !s)} className={buttonVariants({ variant: 'outline', size: 'icon' })}>
           <CalendarIcon className="size-4" />
         </button>
       </div>

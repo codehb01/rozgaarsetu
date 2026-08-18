@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import L from "leaflet";
 import { useRef } from "react";
 
+// Leaflet's own types don't expose this — we stash the marker layer group
+// on the map instance so we can remove it before redrawing markers.
+type MapWithMarkerLayer = L.Map & { _markerLayer?: L.LayerGroup };
+
 type Worker = {
   id: string;
   name?: string | null;
@@ -80,7 +84,7 @@ export default function MapPreview({
   height?: number;
 }) {
   useLeafletCss();
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef<MapWithMarkerLayer | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const markerMapRef = useRef<Map<string, L.Marker>>(new Map());
@@ -165,7 +169,7 @@ export default function MapPreview({
     }
 
     // clear existing markers
-    const existingLayer = (mapRef.current as any)._markerLayer;
+    const existingLayer = mapRef.current._markerLayer;
     if (existingLayer) {
       try {
         mapRef.current.removeLayer(existingLayer);
@@ -208,10 +212,8 @@ export default function MapPreview({
       // open popup on hover
       marker.on("mouseover", () => marker.openPopup());
       // when the popup opens, attach listeners to the popup element so leaving the popup closes it
-      marker.on("popupopen", (e: any) => {
-        const popupEl =
-          e.popup &&
-          (e.popup.getElement ? e.popup.getElement() : e.popup._container);
+      marker.on("popupopen", (e: L.PopupEvent) => {
+        const popupEl = e.popup?.getElement();
         // highlight the corresponding worker card
         try {
           const card = document.querySelector(`[data-worker-id="${mk.id}"]`);
@@ -327,13 +329,13 @@ export default function MapPreview({
         markerMapRef.current.set(mk.id, marker);
       } catch (err) {}
     }
-    markerGroup.addTo(mapRef.current as L.Map);
+    markerGroup.addTo(mapRef.current);
     // store reference so we can remove later
-    (mapRef.current as any)._markerLayer = markerGroup;
+    mapRef.current._markerLayer = markerGroup;
 
     // set view to centerPoint
     try {
-      (mapRef.current as any).setView(
+      mapRef.current.setView(
         [centerPoint.lat, centerPoint.lng],
         zoom,
         { animate: true }

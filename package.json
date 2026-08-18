@@ -7,6 +7,9 @@
     "build": "prisma generate && next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -23,6 +26,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
     "@tabler/icons-react": "^3.35.0",
+    "@tanstack/react-query": "^5.101.4",
     "canvas-confetti": "^1.9.3",
     "chrono-node": "^2.9.0",
     "class-variance-authority": "^0.7.1",
@@ -55,11 +59,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "prisma": "^6.15.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.7",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

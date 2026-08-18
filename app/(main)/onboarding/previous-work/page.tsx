@@ -130,11 +130,13 @@ type PreviousWork = {
   clientRating?: number;
   beforeImage?: File[];
   afterImage?: File[];
+  imageUrl?: string;
 };
 
 export default function PreviousWorkPage() {
   const router = useRouter();
   const [previousWorks, setPreviousWorks] = useState<PreviousWork[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingWork, setEditingWork] = useState<PreviousWork | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -155,12 +157,31 @@ export default function PreviousWorkPage() {
     afterImage: [] as File[],
   });
 
-  const addWork = () => {
-    if (newWork.title.trim() && newWork.images.length > 0) {
+  const addWork = async () => {
+    if (!newWork.title.trim() || newWork.images.length === 0) return;
+
+    setIsUploading(true);
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", newWork.images[0]);
+      uploadFormData.append("type", "work");
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok) {
+        throw new Error(uploadData?.error || "Work image upload failed");
+      }
+
       const work: PreviousWork = {
         id: Date.now().toString(),
         ...newWork,
+        imageUrl: uploadData?.data?.url,
       };
+
       setPreviousWorks([...previousWorks, work]);
       setNewWork({
         title: "",
@@ -176,6 +197,11 @@ export default function PreviousWorkPage() {
         afterImage: [],
       });
       setShowAddForm(false);
+    } catch (error) {
+      console.error("Error uploading project image:", error);
+      alert(error instanceof Error ? error.message : "Image upload failed");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -530,11 +556,13 @@ export default function PreviousWorkPage() {
                       <Button
                         onClick={addWork}
                         disabled={
-                          !newWork.title.trim() || newWork.images.length === 0
+                          !newWork.title.trim() ||
+                          newWork.images.length === 0 ||
+                          isUploading
                         }
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
-                        Add Project
+                        {isUploading ? "Uploading..." : "Add Project"}
                       </Button>
                     </div>
                   </CardContent>

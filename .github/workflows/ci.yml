@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master, development]
+  push:
+    branches: [master, development]
+
+jobs:
+  lint-typecheck-build:
+    runs-on: ubuntu-latest
+    env:
+      # Build-time placeholders. Real secrets, if you want a fully accurate
+      # build check, can be added under Settings > Secrets and variables > Actions
+      # with the same names — these are used as a fallback only.
+      DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://user:password@localhost:5432/db' }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY || 'sk_test_placeholder' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build

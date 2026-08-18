@@ -1,30 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
 import { protectWorkerApi } from "@/lib/api-auth";
-import type { User } from "@prisma/client";
+import { sendSuccess, sendError, withErrorHandling } from "@/lib/api-response";
+import { getWorkerJobs } from "@/lib/services/worker-service";
+import { canAccessWorkerProtectedRoutes } from "@/lib/access/worker-access";
 
-export async function GET(request: NextRequest) {
-  try {
-    const { user, response } = await protectWorkerApi(request);
-    if (response) return response;
+export const GET = withErrorHandling(async (request: NextRequest) => {
+  const { user, response } = await protectWorkerApi(request);
+  if (response) return response;
 
-    const worker = user as User;
-    const jobs = await prisma.job.findMany({
-      where: { workerId: worker.id },
-      orderBy: { createdAt: "desc" },
-      include: {
-        customer: { select: { name: true } },
-        review: { select: { rating: true, comment: true } },
-      },
-      take: 50,
-    });
+  if (!user) return sendError("Unauthorized", "UNAUTHORIZED", 401);
 
-    return NextResponse.json({ jobs });
-  } catch (err) {
-    console.error("GET /api/worker/jobs error", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
-}
+  const access = canAccessWorkerProtectedRoutes(user);
+  if (!access.allowed) return sendError(access.error, "FORBIDDEN", access.status);
+
+  const jobs = await getWorkerJobs(user.id);
+
+  return sendSuccess({ jobs });
+});

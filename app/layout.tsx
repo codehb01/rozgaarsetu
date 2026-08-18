@@ -17,6 +17,8 @@ import {
 import { Toaster } from "sonner";
 import ConditionalFooter from "@/components/conditional-footer";
 
+import { QueryProvider } from "@/components/providers/query-provider";
+
 const inter = Inter({ subsets: ["latin"] });
 
 const geistSans = Geist({
@@ -81,23 +83,25 @@ export default function RootLayout({
           socialButtonsVariant: "blockButton"
         }
       }}>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className}`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {/* Header on all pages for UI consistency */}
-            <ConditionalHeader />
-            <main className="min-h-screen">{children}</main>
-            <Toaster richColors />
-            {/* Conditional footer - hidden on customer/worker dashboards */}
-            <ConditionalFooter />
-          </ThemeProvider>
-        </body>
-      </html>
+      <QueryProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body className={`${inter.className}`}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {/* Header on all pages for UI consistency */}
+              <ConditionalHeader />
+              <main className="min-h-screen">{children}</main>
+              <Toaster richColors />
+              {/* Conditional footer - hidden on customer/worker dashboards */}
+              <ConditionalFooter />
+            </ThemeProvider>
+          </body>
+        </html>
+      </QueryProvider>
     </ClerkProvider>
   );
 }
