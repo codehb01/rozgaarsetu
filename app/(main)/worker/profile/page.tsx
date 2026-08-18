@@ -54,9 +54,21 @@ const qualificationOptions = [
 
 // Popular skills from onboarding
 const popularSkills = [
-  "Plumbing", "Electrical", "Carpentry", "Painting", "Cleaning",
-  "Gardening", "AC Repair", "Appliance Repair", "Masonry", "Welding",
-  "Roofing", "Flooring", "Pest Control", "Moving", "Handyman"
+  "Plumbing",
+  "Electrical",
+  "Carpentry",
+  "Painting",
+  "Cleaning",
+  "Gardening",
+  "AC Repair",
+  "Appliance Repair",
+  "Masonry",
+  "Welding",
+  "Roofing",
+  "Flooring",
+  "Pest Control",
+  "Moving",
+  "Handyman",
 ];
 
 type WorkerProfile = {
@@ -106,8 +118,12 @@ export default function WorkerProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [editedProfile, setEditedProfile] = useState<Partial<WorkerProfile>>({});
-  const [activeTab, setActiveTab] = useState<"overview" | "portfolio" | "reviews">("overview");
+  const [editedProfile, setEditedProfile] = useState<Partial<WorkerProfile>>(
+    {},
+  );
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "portfolio" | "reviews"
+  >("overview");
   const [showAddForm, setShowAddForm] = useState(false);
   const [newWork, setNewWork] = useState({
     title: "",
@@ -122,12 +138,14 @@ export default function WorkerProfilePage() {
   const { mutateAsync: saveProfile } = useSaveWorkerProfileMutation();
 
   // Helper function to safely get image URL from potentially stringified JSON
-  const parseImageUrl = (imageField: string | null | undefined): string | null => {
+  const parseImageUrl = (
+    imageField: string | null | undefined,
+  ): string | null => {
     if (!imageField) return null;
-    
+
     try {
       // Check if it's a JSON string
-      if (imageField.startsWith('[') || imageField.startsWith('{')) {
+      if (imageField.startsWith("[") || imageField.startsWith("{")) {
         const parsed = JSON.parse(imageField);
         // Handle array format: [{"preview": "blob:..."}]
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -143,7 +161,11 @@ export default function WorkerProfilePage() {
       return imageField;
     } catch {
       // If parsing fails, return the original string if it looks like a URL
-      if (imageField.startsWith('http://') || imageField.startsWith('https://') || imageField.startsWith('/')) {
+      if (
+        imageField.startsWith("http://") ||
+        imageField.startsWith("https://") ||
+        imageField.startsWith("/")
+      ) {
         return imageField;
       }
       return null;
@@ -157,13 +179,19 @@ export default function WorkerProfilePage() {
   const addSkill = (skill: string) => {
     const currentSkills = editedProfile.skilledIn || [];
     if (!currentSkills.includes(skill)) {
-      setEditedProfile({ ...editedProfile, skilledIn: [...currentSkills, skill] });
+      setEditedProfile({
+        ...editedProfile,
+        skilledIn: [...currentSkills, skill],
+      });
     }
   };
 
   const removeSkill = (skill: string) => {
     const currentSkills = editedProfile.skilledIn || [];
-    setEditedProfile({ ...editedProfile, skilledIn: currentSkills.filter(s => s !== skill) });
+    setEditedProfile({
+      ...editedProfile,
+      skilledIn: currentSkills.filter((s) => s !== skill),
+    });
   };
 
   const addCustomSkill = () => {
@@ -177,8 +205,11 @@ export default function WorkerProfilePage() {
     if (value === "other") {
       // User will enter custom qualification
     } else {
-      const option = qualificationOptions.find(opt => opt.value === value);
-      setEditedProfile({ ...editedProfile, qualification: option?.label || value });
+      const option = qualificationOptions.find((opt) => opt.value === value);
+      setEditedProfile({
+        ...editedProfile,
+        qualification: option?.label || value,
+      });
     }
   };
 
@@ -192,15 +223,17 @@ export default function WorkerProfilePage() {
       }
 
       // Get current position
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        },
+      );
 
       const { latitude, longitude } = position.coords;
 
       // Reverse geocode to get address
       const response = await fetch(
-        `/api/reverse-geocode?lat=${latitude}&lng=${longitude}`
+        `/api/reverse-geocode?lat=${latitude}&lng=${longitude}`,
       );
 
       if (!response.ok) {
@@ -208,7 +241,7 @@ export default function WorkerProfilePage() {
       }
 
       const data = await response.json();
-      const result = data.result;
+      const result = data?.data?.result;
 
       if (!result) {
         throw new Error("No address found for this location");
@@ -230,7 +263,9 @@ export default function WorkerProfilePage() {
       if (error instanceof GeolocationPositionError) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            alert("Location permission denied. Please enable location access in your browser settings.");
+            alert(
+              "Location permission denied. Please enable location access in your browser settings.",
+            );
             break;
           case error.POSITION_UNAVAILABLE:
             alert("Location information unavailable.");
@@ -296,7 +331,11 @@ export default function WorkerProfilePage() {
       await loadProfile();
     } catch (e) {
       console.error("Failed to save profile:", e);
-      alert(e instanceof Error ? e.message : "Failed to save profile. Please try again.");
+      alert(
+        e instanceof Error
+          ? e.message
+          : "Failed to save profile. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
@@ -321,8 +360,8 @@ export default function WorkerProfilePage() {
       // For now, just show a message
 
       // Simulate upload
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Reset form
       setNewWork({
         title: "",
@@ -331,11 +370,13 @@ export default function WorkerProfilePage() {
         location: "",
       });
       setShowAddForm(false);
-      
+
       // Reload profile to show new project
       await loadProfile();
-      
-      alert("Project added successfully! Note: Full implementation requires file upload API.");
+
+      alert(
+        "Project added successfully! Note: Full implementation requires file upload API.",
+      );
     } catch (error) {
       console.error("Error adding project:", error);
       alert("Failed to add project");
@@ -389,7 +430,10 @@ export default function WorkerProfilePage() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Please complete your onboarding to view your profile.
             </p>
-            <Button onClick={() => router.push("/onboarding")} className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={() => router.push("/onboarding")}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               Complete Onboarding
             </Button>
           </div>
@@ -460,7 +504,11 @@ export default function WorkerProfilePage() {
                   <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center border-4 border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-gray-900">
                     {parseImageUrl(profile.profilePic) || user?.imageUrl ? (
                       <Image
-                        src={parseImageUrl(profile.profilePic) || user?.imageUrl || ""}
+                        src={
+                          parseImageUrl(profile.profilePic) ||
+                          user?.imageUrl ||
+                          ""
+                        }
                         alt={data.name}
                         width={128}
                         height={128}
@@ -468,19 +516,33 @@ export default function WorkerProfilePage() {
                         onError={(e) => {
                           // Show initials avatar on error
                           const target = e.currentTarget;
-                          target.style.display = 'none';
+                          target.style.display = "none";
                           const parent = target.parentElement;
-                          if (parent && !parent.querySelector('.initials-avatar')) {
-                            const initialsDiv = document.createElement('div');
-                            initialsDiv.className = 'initials-avatar text-blue-500 dark:text-blue-400 text-4xl font-bold flex items-center justify-center w-full h-full';
-                            initialsDiv.textContent = data.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+                          if (
+                            parent &&
+                            !parent.querySelector(".initials-avatar")
+                          ) {
+                            const initialsDiv = document.createElement("div");
+                            initialsDiv.className =
+                              "initials-avatar text-blue-500 dark:text-blue-400 text-4xl font-bold flex items-center justify-center w-full h-full";
+                            initialsDiv.textContent = data.name
+                              .split(" ")
+                              .map((n: string) => n[0])
+                              .join("")
+                              .toUpperCase()
+                              .slice(0, 2);
                             parent.appendChild(initialsDiv);
                           }
                         }}
                       />
                     ) : (
                       <div className="text-blue-500 dark:text-blue-400 text-4xl font-bold">
-                        {data.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+                        {data.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)}
                       </div>
                     )}
                   </div>
@@ -514,7 +576,7 @@ export default function WorkerProfilePage() {
                     </span>
                   </div>
 
-                  {data.phone && !data.phone.startsWith('no-phone-') && (
+                  {data.phone && !data.phone.startsWith("no-phone-") && (
                     <div className="flex items-center gap-3 text-sm">
                       <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                         <FiPhone className="h-4 w-4 text-gray-600 dark:text-gray-400" />
@@ -598,7 +660,10 @@ export default function WorkerProfilePage() {
                       <Textarea
                         value={editedProfile.bio || ""}
                         onChange={(e) =>
-                          setEditedProfile({ ...editedProfile, bio: e.target.value })
+                          setEditedProfile({
+                            ...editedProfile,
+                            bio: e.target.value,
+                          })
                         }
                         placeholder="Tell customers about yourself and your work..."
                         className="min-h-32 bg-gray-50 dark:bg-black"
@@ -606,7 +671,8 @@ export default function WorkerProfilePage() {
                       />
                     ) : (
                       <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {profile.bio || "No bio added yet. Click 'Edit Profile' to add one."}
+                        {profile.bio ||
+                          "No bio added yet. Click 'Edit Profile' to add one."}
                       </p>
                     )}
                   </Card>
@@ -626,22 +692,26 @@ export default function WorkerProfilePage() {
                           {popularSkills.map((skill, index) => (
                             <Badge
                               key={skill}
-                              variant={(editedProfile.skilledIn || []).includes(skill) ? "default" : "outline"}
+                              variant={
+                                (editedProfile.skilledIn || []).includes(skill)
+                                  ? "default"
+                                  : "outline"
+                              }
                               className={`cursor-pointer w-full justify-center py-2 px-3 transition-all duration-200 ${
                                 (editedProfile.skilledIn || []).includes(skill)
                                   ? "bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
                                   : "hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                               }`}
-                              onClick={() => 
+                              onClick={() =>
                                 (editedProfile.skilledIn || []).includes(skill)
-                                  ? removeSkill(skill) 
+                                  ? removeSkill(skill)
                                   : addSkill(skill)
                               }
                             >
                               {skill}
-                              {(editedProfile.skilledIn || []).includes(skill) && (
-                                <FiX className="h-3 w-3 ml-1" />
-                              )}
+                              {(editedProfile.skilledIn || []).includes(
+                                skill,
+                              ) && <FiX className="h-3 w-3 ml-1" />}
                             </Badge>
                           ))}
                         </div>
@@ -652,7 +722,9 @@ export default function WorkerProfilePage() {
                             placeholder="Add custom skill"
                             value={customSkill}
                             onChange={(e) => setCustomSkill(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && addCustomSkill()}
+                            onKeyPress={(e) =>
+                              e.key === "Enter" && addCustomSkill()
+                            }
                             className="bg-gray-50 dark:bg-black"
                           />
                           <Button
@@ -669,7 +741,8 @@ export default function WorkerProfilePage() {
                         {(editedProfile.skilledIn || []).length > 0 && (
                           <div className="mt-4 p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/50 dark:border-purple-400/20">
                             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                              Selected skills ({(editedProfile.skilledIn || []).length}):
+                              Selected skills (
+                              {(editedProfile.skilledIn || []).length}):
                             </p>
                             <div className="flex flex-wrap gap-2">
                               {(editedProfile.skilledIn || []).map((skill) => (
@@ -679,8 +752,8 @@ export default function WorkerProfilePage() {
                                   className="bg-purple-600 text-white hover:bg-purple-700"
                                 >
                                   {skill}
-                                  <FiX 
-                                    className="h-3 w-3 ml-1 cursor-pointer" 
+                                  <FiX
+                                    className="h-3 w-3 ml-1 cursor-pointer"
                                     onClick={() => removeSkill(skill)}
                                   />
                                 </Badge>
@@ -781,15 +854,22 @@ export default function WorkerProfilePage() {
                             items={qualificationOptions}
                             selected={editedProfile.qualification || ""}
                             onSelect={handleQualificationChange}
-                            label={editedProfile.qualification || "Select qualification"}
+                            label={
+                              editedProfile.qualification ||
+                              "Select qualification"
+                            }
                           />
-                          
-                          {editedProfile.qualification === "Other (Enter Manually)" && (
+
+                          {editedProfile.qualification ===
+                            "Other (Enter Manually)" && (
                             <Input
                               value={customQualification}
                               onChange={(e) => {
                                 setCustomQualification(e.target.value);
-                                setEditedProfile({ ...editedProfile, qualification: e.target.value });
+                                setEditedProfile({
+                                  ...editedProfile,
+                                  qualification: e.target.value,
+                                });
                               }}
                               placeholder="Enter your qualification"
                               className="bg-gray-50 dark:bg-black"
@@ -850,8 +930,12 @@ export default function WorkerProfilePage() {
                           size="sm"
                           className="flex items-center gap-2"
                         >
-                          <FiNavigation className={`h-4 w-4 ${fetchingLocation ? 'animate-spin' : ''}`} />
-                          {fetchingLocation ? "Getting location..." : "Use Current Location"}
+                          <FiNavigation
+                            className={`h-4 w-4 ${fetchingLocation ? "animate-spin" : ""}`}
+                          />
+                          {fetchingLocation
+                            ? "Getting location..."
+                            : "Use Current Location"}
                         </Button>
                       )}
                     </div>
@@ -874,7 +958,7 @@ export default function WorkerProfilePage() {
                             rows={2}
                           />
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -892,7 +976,7 @@ export default function WorkerProfilePage() {
                               className="bg-gray-50 dark:bg-black"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               State
@@ -910,7 +994,7 @@ export default function WorkerProfilePage() {
                             />
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -928,7 +1012,7 @@ export default function WorkerProfilePage() {
                               className="bg-gray-50 dark:bg-black"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                               Country
@@ -976,11 +1060,16 @@ export default function WorkerProfilePage() {
                           Previous Work
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          {profile.previousWorks?.length || 0} projects completed
+                          {profile.previousWorks?.length || 0} projects
+                          completed
                         </p>
                       </div>
-                      <ClickSpark sparkColor="#60a5fa" sparkCount={10} sparkRadius={20}>
-                        <Button 
+                      <ClickSpark
+                        sparkColor="#60a5fa"
+                        sparkCount={10}
+                        sparkRadius={20}
+                      >
+                        <Button
                           onClick={() => setShowAddForm(true)}
                           className="bg-blue-600 hover:bg-blue-700"
                         >
@@ -1031,7 +1120,12 @@ export default function WorkerProfilePage() {
                                 <Input
                                   placeholder="e.g., Kitchen Renovation"
                                   value={newWork.title}
-                                  onChange={(e) => setNewWork({ ...newWork, title: e.target.value })}
+                                  onChange={(e) =>
+                                    setNewWork({
+                                      ...newWork,
+                                      title: e.target.value,
+                                    })
+                                  }
                                   className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
                                 />
                               </div>
@@ -1044,7 +1138,12 @@ export default function WorkerProfilePage() {
                                 <Input
                                   placeholder="e.g., Andheri, Mumbai"
                                   value={newWork.location}
-                                  onChange={(e) => setNewWork({ ...newWork, location: e.target.value })}
+                                  onChange={(e) =>
+                                    setNewWork({
+                                      ...newWork,
+                                      location: e.target.value,
+                                    })
+                                  }
                                   className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
                                 />
                               </div>
@@ -1057,10 +1156,16 @@ export default function WorkerProfilePage() {
                                 <FileDropzone
                                   accept="image/*"
                                   maxSize={5 * 1024 * 1024}
-                                  onChange={(file) => setNewWork({ ...newWork, images: file ? [file] : [] })}
+                                  onChange={(file) =>
+                                    setNewWork({
+                                      ...newWork,
+                                      images: file ? [file] : [],
+                                    })
+                                  }
                                 />
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Upload an image to showcase your work (max 5MB)
+                                  Upload an image to showcase your work (max
+                                  5MB)
                                 </p>
                               </div>
 
@@ -1072,7 +1177,12 @@ export default function WorkerProfilePage() {
                                 <Textarea
                                   placeholder="Describe the work you did, challenges faced, materials used..."
                                   value={newWork.description}
-                                  onChange={(e) => setNewWork({ ...newWork, description: e.target.value })}
+                                  onChange={(e) =>
+                                    setNewWork({
+                                      ...newWork,
+                                      description: e.target.value,
+                                    })
+                                  }
                                   className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 min-h-24"
                                   rows={4}
                                 />
@@ -1095,10 +1205,18 @@ export default function WorkerProfilePage() {
                               >
                                 Cancel
                               </Button>
-                              <ClickSpark sparkColor="#60a5fa" sparkCount={12} sparkRadius={25}>
+                              <ClickSpark
+                                sparkColor="#60a5fa"
+                                sparkCount={12}
+                                sparkRadius={25}
+                              >
                                 <Button
                                   onClick={handleAddProject}
-                                  disabled={uploadingProject || !newWork.title.trim() || newWork.images.length === 0}
+                                  disabled={
+                                    uploadingProject ||
+                                    !newWork.title.trim() ||
+                                    newWork.images.length === 0
+                                  }
                                   className="bg-blue-600 hover:bg-blue-700"
                                 >
                                   {uploadingProject ? (
@@ -1123,13 +1241,15 @@ export default function WorkerProfilePage() {
 
                   {/* Portfolio Grid */}
                   <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    {profile.previousWorks && profile.previousWorks.length > 0 ? (
+                    {profile.previousWorks &&
+                    profile.previousWorks.length > 0 ? (
                       <div className="grid md:grid-cols-2 gap-4">
                         {profile.previousWorks.map((work, index) => {
-                          const imageUrl = work.images && work.images.length > 0
-                            ? parseImageUrl(work.images[0])
-                            : null;
-                          
+                          const imageUrl =
+                            work.images && work.images.length > 0
+                              ? parseImageUrl(work.images[0])
+                              : null;
+
                           return (
                             <motion.div
                               key={work.id}
@@ -1147,10 +1267,12 @@ export default function WorkerProfilePage() {
                                     className="object-cover"
                                     onError={(e) => {
                                       // Show fallback icon on error
-                                      e.currentTarget.style.display = 'none';
-                                      const parent = e.currentTarget.parentElement;
+                                      e.currentTarget.style.display = "none";
+                                      const parent =
+                                        e.currentTarget.parentElement;
                                       if (parent) {
-                                        parent.innerHTML = '<div class="flex flex-col items-center justify-center h-full"><svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><p class="text-xs text-gray-500 mt-2">Image unavailable</p></div>';
+                                        parent.innerHTML =
+                                          '<div class="flex flex-col items-center justify-center h-full"><svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg><p class="text-xs text-gray-500 mt-2">Image unavailable</p></div>';
                                       }
                                     }}
                                   />
@@ -1158,7 +1280,9 @@ export default function WorkerProfilePage() {
                               ) : (
                                 <div className="aspect-video bg-gray-100 dark:bg-gray-700 flex flex-col items-center justify-center gap-2">
                                   <FiImage className="h-12 w-12 text-gray-400" />
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">No image stored</p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    No image stored
+                                  </p>
                                 </div>
                               )}
                               <div className="p-4">
@@ -1185,7 +1309,8 @@ export default function WorkerProfilePage() {
                       <div className="text-center py-12">
                         <FiImage className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                         <p className="text-gray-600 dark:text-gray-400">
-                          No projects added yet. Add your work to showcase your expertise.
+                          No projects added yet. Add your work to showcase your
+                          expertise.
                         </p>
                       </div>
                     )}
@@ -1210,7 +1335,8 @@ export default function WorkerProfilePage() {
                     <div className="text-center py-12">
                       <FiStar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-600 dark:text-gray-400">
-                        No reviews yet. Complete jobs to receive customer feedback.
+                        No reviews yet. Complete jobs to receive customer
+                        feedback.
                       </p>
                     </div>
                   </Card>

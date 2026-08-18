@@ -43,7 +43,7 @@ interface WorkerFormData {
   yearsExperience: number;
   hourlyRate: number;
   minimumFee: number;
-  profilePic: File[];
+  profilePic: File[] | string;
   bio: string;
   address: string;
   city: string;
@@ -335,8 +335,34 @@ export default function WorkerDetailsPage() {
     setIsLoading(true);
 
     try {
+      let profilePicUrl: string | undefined;
+
+      if (Array.isArray(data.profilePic) && data.profilePic.length > 0) {
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", data.profilePic[0]);
+        uploadFormData.append("type", "profile");
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) {
+          throw new Error(uploadData?.error || "Profile image upload failed");
+        }
+
+        profilePicUrl = uploadData?.data?.url;
+      }
+
+      const dataToStore = {
+        ...data,
+        profilePic: profilePicUrl ||
+          (typeof data.profilePic === "string" ? data.profilePic : undefined),
+      };
+
       // Store form data in sessionStorage for later use
-      sessionStorage.setItem("workerDetails", JSON.stringify(data));
+      sessionStorage.setItem("workerDetails", JSON.stringify(dataToStore));
 
       // Navigate to previous work page
       router.push("/onboarding/previous-work");

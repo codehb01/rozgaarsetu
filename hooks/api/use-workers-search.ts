@@ -28,7 +28,8 @@ export function useWorkersSearchQuery(params: WorkersSearchParams) {
       const url = `/api/workers?${qs.toString()}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch workers");
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? { workers: [], count: 0 };
     },
     staleTime: 30 * 1000, // 30 seconds for search results
   });

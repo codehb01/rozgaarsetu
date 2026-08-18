@@ -16,7 +16,8 @@ export function useCustomerProfileQuery() {
     queryFn: async () => {
       const res = await fetch("/api/customer/profile");
       if (!res.ok) throw new Error("Failed to fetch customer profile");
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
   });
 }
@@ -32,7 +33,8 @@ export function useUpdateCustomerProfileMutation() {
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update customer profile");
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customerProfile"] });
@@ -54,7 +56,8 @@ export function useSaveCustomerProfileMutation() {
         const err = await res.json();
         throw new Error(err.error || "Failed to save profile");
       }
-      return res.json();
+      const payload = await res.json();
+      return payload?.data ?? payload;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customerProfile"] });
