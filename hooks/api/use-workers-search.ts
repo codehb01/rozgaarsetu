@@ -34,3 +34,26 @@ export function useWorkersSearchQuery(params: WorkersSearchParams) {
     staleTime: 30 * 1000, // 30 seconds for search results
   });
 }
+
+export function useWorkersCategoryCounts(params: Omit<WorkersSearchParams, 'category'>) {
+  const { q, location, lat, lng } = params;
+
+  return useQuery({
+    queryKey: ["workers-all-for-counts", q, location, lat, lng],
+    queryFn: async () => {
+      const qs = new URLSearchParams();
+      if (q) qs.set("q", q);
+      if (location) qs.set("location", location);
+      if (lat) qs.set("lat", String(lat));
+      if (lng) qs.set("lng", String(lng));
+      qs.set("limit", "200");
+
+      const url = `/api/workers?${qs.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch workers");
+      const payload = await res.json();
+      return payload?.data?.workers ?? [];
+    },
+    staleTime: 30 * 1000,
+  });
+}

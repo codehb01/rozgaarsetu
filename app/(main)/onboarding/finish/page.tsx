@@ -78,17 +78,17 @@ export default function FinishPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-          <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <div className="text-muted-foreground">Loading...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Success Header */}
@@ -108,7 +108,7 @@ export default function FinishPage() {
                   type: "spring",
                   bounce: 0.6,
                 }}
-                className="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/30"
+                className="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-green-500/30"
               >
                 <CheckCircle className="h-12 w-12 md:h-14 md:w-14 text-white" />
               </motion.div>
@@ -127,7 +127,7 @@ export default function FinishPage() {
                       top: `${10 + (i % 2) * 80}%`,
                     }}
                   >
-                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-emerald-400" />
+                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
                   </motion.div>
                 ))}
               </div>
@@ -137,7 +137,7 @@ export default function FinishPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4"
             >
               Welcome to RozgaarSetu! 🎉
             </motion.h1>
@@ -146,7 +146,7 @@ export default function FinishPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.5 }}
-              className="text-lg md:text-xl text-emerald-600 dark:text-emerald-400 font-semibold mb-2"
+              className="text-lg md:text-xl text-green-600 dark:text-green-400 font-semibold mb-2"
             >
               Profile Created Successfully!
             </motion.p>
@@ -155,7 +155,7 @@ export default function FinishPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.5 }}
-              className="text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+              className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto"
             >
               {userRole === "WORKER"
                 ? "You're now ready to receive job requests from customers and start earning!"
@@ -169,28 +169,28 @@ export default function FinishPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            <Card className="border-2 border-gray-200/60 dark:border-gray-800/60 bg-white/80 dark:bg-black/80 backdrop-blur-sm shadow-xl mb-8">
+            <Card className="border border-border bg-card backdrop-blur-sm shadow-xl mb-8">
               <CardContent className="p-6 md:p-8">
                 <div className="flex items-center gap-4 md:gap-6 mb-6">
                   <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ delay: 1, duration: 0.5, type: "spring" }}
-                    className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 dark:from-emerald-500/10 dark:to-emerald-600/10 rounded-2xl flex items-center justify-center border-2 border-emerald-200 dark:border-emerald-800"
+                    className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-green-500/20 to-green-600/20 dark:from-green-500/10 dark:to-green-600/10 rounded-2xl flex items-center justify-center border-2 border-green-200 dark:border-green-800"
                   >
                     {userRole === "WORKER" ? (
-                      <Briefcase className="h-8 w-8 md:h-10 md:w-10 text-emerald-600 dark:text-emerald-400" />
+                      <Briefcase className="h-8 w-8 md:h-10 md:w-10 text-green-600 dark:text-green-400" />
                     ) : (
-                      <User className="h-8 w-8 md:h-10 md:w-10 text-emerald-600 dark:text-emerald-400" />
+                      <User className="h-8 w-8 md:h-10 md:w-10 text-green-600 dark:text-green-400" />
                     )}
                   </motion.div>
                   <div className="flex-1">
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-xl md:text-2xl font-bold text-foreground">
                       {userRole === "WORKER"
                         ? "Worker Profile"
                         : "Customer Profile"}
                     </h3>
-                    <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                    <p className="text-green-600 dark:text-green-400 font-semibold">
                       Profile setup completed ✓
                     </p>
                   </div>
@@ -200,8 +200,8 @@ export default function FinishPage() {
                     transition={{ delay: 1.2, duration: 0.3 }}
                     className="flex-shrink-0"
                   >
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
-                      <CheckCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                      <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
                     </div>
                   </motion.div>
                 </div>
@@ -223,14 +223,14 @@ export default function FinishPage() {
                             delay: 1.3 + index * 0.1,
                             duration: 0.3,
                           }}
-                          className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700"
+                          className="flex items-center justify-between py-3 border-b border-border"
                         >
-                          <span className="text-gray-600 dark:text-gray-400">
+                          <span className="text-muted-foreground">
                             {item}
                           </span>
                           <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-500" />
-                            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-green-600 dark:text-green-400 font-medium">
                               Completed
                             </span>
                           </div>
@@ -252,14 +252,14 @@ export default function FinishPage() {
                             delay: 1.3 + index * 0.1,
                             duration: 0.3,
                           }}
-                          className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700"
+                          className="flex items-center justify-between py-3 border-b border-border"
                         >
-                          <span className="text-gray-600 dark:text-gray-400">
+                          <span className="text-muted-foreground">
                             {item}
                           </span>
                           <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-500" />
-                            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-green-600 dark:text-green-400 font-medium">
                               Completed
                             </span>
                           </div>
@@ -273,17 +273,17 @@ export default function FinishPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.7, duration: 0.5 }}
-                  className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-400/20 rounded-xl p-5 md:p-6"
+                  className="bg-green-50/50 dark:bg-green-950/20 border border-green-200/50 dark:border-green-400/20 rounded-xl p-5 md:p-6"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center">
-                      <Star className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center">
+                      <Star className="h-4 w-4 text-green-600 dark:text-green-400" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-bold text-emerald-900 dark:text-emerald-100 mb-2">
+                      <h4 className="font-bold text-green-900 dark:text-green-100 mb-2">
                         What&apos;s Next?
                       </h4>
-                      <p className="text-sm md:text-base text-emerald-700 dark:text-emerald-300 leading-relaxed">
+                      <p className="text-sm md:text-base text-green-700 dark:text-green-300 leading-relaxed">
                         {userRole === "WORKER"
                           ? "Complete your profile by adding a professional photo and start receiving job requests. You can update your pricing and availability anytime from your dashboard."
                           : "Browse our skilled professionals by category or search for specific services. You can book services, track job progress, and leave reviews for completed work."}
@@ -306,16 +306,16 @@ export default function FinishPage() {
               <Button
                 onClick={handleGoToDashboard}
                 size="lg"
-                className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white px-8 md:px-12 py-3 md:py-4 text-base md:text-lg font-semibold shadow-xl shadow-emerald-500/30 dark:shadow-emerald-500/20 transition-all duration-300 hover:scale-105"
+                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-8 md:px-12 py-3 md:py-4 text-base md:text-lg font-semibold shadow-xl shadow-green-500/30 dark:shadow-green-500/20 transition-all duration-300 hover:scale-105"
               >
                 Go to Dashboard
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </ClickSpark>
 
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Need help getting started?{" "}
-              <span className="text-emerald-600 dark:text-emerald-400 cursor-pointer hover:underline font-medium">
+              <span className="text-green-600 dark:text-green-400 cursor-pointer hover:underline font-medium">
                 Check out our guide
               </span>
             </p>

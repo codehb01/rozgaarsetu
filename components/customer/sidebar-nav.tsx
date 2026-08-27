@@ -146,7 +146,7 @@ const ToggleClose = ({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.125 }}
-            className="text-xs font-medium text-gray-500 dark:text-gray-400"
+            className="text-xs font-medium text-muted-foreground"
           >
             Collapse
           </motion.span>
@@ -186,13 +186,13 @@ export function CustomerSidebar({
   return (
     <motion.nav
       layout
-      className="fixed left-0 top-0 h-full shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-black flex flex-col overflow-hidden z-40"
+      className="fixed left-0 top-0 h-full shrink-0 border-r border-border bg-background flex flex-col overflow-hidden z-40"
       style={{
         width: isOpen ? "256px" : "fit-content",
       }}
     >
       {/* Brand Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-border">
         {isOpen ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -207,7 +207,7 @@ export function CustomerSidebar({
                 className="w-8 h-8 object-contain filter brightness-0 dark:brightness-100 dark:invert"
               />
             </Link>
-            <span className="font-semibold text-gray-900 dark:text-white tracking-tight">
+            <span className="font-semibold text-foreground tracking-tight">
               RozgaarSetu
             </span>
           </motion.div>
@@ -250,7 +250,7 @@ export function CustomerSidebar({
       </div>
 
       {/* Secondary Navigation */}
-      <div className="space-y-2 px-3 border-t border-gray-200 dark:border-gray-700 pt-4 pb-4 overflow-hidden">
+      <div className="space-y-2 px-3 border-t border-border pt-4 pb-4 overflow-hidden">
         {secondaryNavigation.map((item) => (
           <Option
             key={item.name}
@@ -267,7 +267,7 @@ export function CustomerSidebar({
           <motion.button
             layout
             onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
-            className="relative flex h-10 w-full items-center rounded-md transition-colors text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="relative flex h-10 w-full items-center rounded-md transition-colors text-muted-foreground hover:bg-muted"
           >
             <motion.div
               layout
@@ -291,7 +291,7 @@ export function CustomerSidebar({
       </div>
 
       {/* User Profile Section */}
-      <div className="px-2 py-3 border-t border-gray-200 dark:border-gray-700 mb-2">
+      <div className="px-2 py-3 border-t border-border mb-2">
         <SignedIn>
           {isOpen ? (
             <motion.div

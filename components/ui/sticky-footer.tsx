@@ -14,9 +14,9 @@ export function StickyFooter({
   return (
     <div
       className="relative"
-      style={{ 
+      style={{
         height: heightValue,
-        clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" 
+        clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)"
       }}
       {...props}
     >
