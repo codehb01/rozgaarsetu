@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useWorkerEarningsQuery } from "@/hooks/api/use-worker";
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 import {
-  FiDollarSign,
   FiTrendingUp,
   FiTrendingDown,
   FiCalendar,
@@ -15,6 +14,7 @@ import {
   FiActivity,
   FiClock,
 } from "react-icons/fi";
+import { IndianRupee } from "lucide-react";
 
 type EarningsData = {
   total: number;
@@ -37,9 +37,9 @@ export default function WorkerEarningsPage() {
   const SkeletonCard = () => (
     <Card className="p-6 animate-pulse">
       <div className="space-y-3">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
+        <div className="h-4 bg-muted dark:bg-muted rounded w-24"></div>
+        <div className="h-8 bg-muted dark:bg-muted rounded w-32"></div>
+        <div className="h-3 bg-muted dark:bg-muted rounded w-28"></div>
       </div>
     </Card>
   );
@@ -51,13 +51,13 @@ export default function WorkerEarningsPage() {
       animate={{ opacity: 1, y: 0 }}
       className="text-center py-16"
     >
-      <div className="h-32 w-32 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
-        <FiBarChart2 className="h-16 w-16 text-gray-400" />
+      <div className="h-32 w-32 mx-auto bg-muted dark:bg-muted rounded-full flex items-center justify-center mb-6">
+        <FiBarChart2 className="h-16 w-16 text-muted-foreground" />
       </div>
-      <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+      <h3 className="text-xl font-medium text-foreground dark:text-foreground mb-2">
         No earnings yet
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+      <p className="text-muted-foreground dark:text-muted-foreground mb-6 max-w-md mx-auto">
         Complete jobs to start earning. Your earnings will be tracked here.
       </p>
     </motion.div>
@@ -74,14 +74,14 @@ export default function WorkerEarningsPage() {
       : "bg-red-50 dark:bg-red-900/20";
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-black">
+    <main className="min-h-screen bg-background dark:bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-semibold text-foreground dark:text-foreground mb-2">
             Earnings Analytics
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground dark:text-muted-foreground">
             Track your income and completed jobs
           </p>
         </div>
@@ -103,18 +103,18 @@ export default function WorkerEarningsPage() {
 
               {/* Job Breakdown Skeleton */}
               <Card className="p-6">
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6"></div>
+                <div className="h-6 bg-muted dark:bg-muted rounded w-48 mb-6"></div>
                 <div className="space-y-4">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div
                       key={i}
-                      className="animate-pulse flex items-center justify-between p-4 rounded-lg bg-gray-100 dark:bg-gray-800"
+                      className="animate-pulse flex items-center justify-between p-4 rounded-lg bg-muted dark:bg-muted"
                     >
                       <div className="flex-1 space-y-2">
-                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                        <div className="h-5 bg-muted dark:bg-muted rounded w-48"></div>
+                        <div className="h-4 bg-muted dark:bg-muted rounded w-32"></div>
                       </div>
-                      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                      <div className="h-6 bg-muted dark:bg-muted rounded w-20"></div>
                     </div>
                   ))}
                 </div>
@@ -131,10 +131,10 @@ export default function WorkerEarningsPage() {
               <div className="h-32 w-32 mx-auto bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-6">
                 <FiActivity className="h-16 w-16 text-red-600 dark:text-red-400" />
               </div>
-              <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-medium text-foreground dark:text-foreground mb-2">
                 Failed to load earnings data
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-muted-foreground dark:text-muted-foreground mb-6">
                 There was an error loading your earnings. Please try again.
               </p>
               <button
@@ -159,21 +159,21 @@ export default function WorkerEarningsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <Card className="p-6 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <Card className="p-6 hover:shadow-lg transition-all duration-200 bg-card dark:bg-card border-border dark:border-border">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground mb-1">
                           Total Earnings
                         </p>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h3 className="text-3xl font-bold text-foreground dark:text-foreground">
                           ₹{data.total.toFixed(2)}
                         </h3>
                       </div>
-                      <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                        <FiDollarSign className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      <div className="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
+                        <IndianRupee className="h-6 w-6 text-green-600 dark:text-green-400" />
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                       All completed jobs
                     </p>
                   </Card>
@@ -185,13 +185,13 @@ export default function WorkerEarningsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <Card className="p-6 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <Card className="p-6 hover:shadow-lg transition-all duration-200 bg-card dark:bg-card border-border dark:border-border">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground mb-1">
                           This Month
                         </p>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h3 className="text-3xl font-bold text-foreground dark:text-foreground">
                           ₹{data.thisMonth.toFixed(2)}
                         </h3>
                       </div>
@@ -199,7 +199,7 @@ export default function WorkerEarningsPage() {
                         <FiCalendar className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                       Current month earnings
                     </p>
                   </Card>
@@ -211,10 +211,10 @@ export default function WorkerEarningsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <Card className="p-6 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <Card className="p-6 hover:shadow-lg transition-all duration-200 bg-card dark:bg-card border-border dark:border-border">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        <p className="text-sm font-medium text-muted-foreground dark:text-muted-foreground mb-1">
                           Monthly Change
                         </p>
                         <div className="flex items-center gap-2">
@@ -244,7 +244,7 @@ export default function WorkerEarningsPage() {
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                       vs last month (₹{data.lastMonth.toFixed(2)})
                     </p>
                   </Card>
@@ -257,19 +257,19 @@ export default function WorkerEarningsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <Card className="p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                <Card className="p-6 bg-card dark:bg-card border-border dark:border-border">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h2 className="text-xl font-semibold text-foreground dark:text-foreground">
                         Job-by-Job Breakdown
                       </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                         {data.jobs.length} completed{" "}
                         {data.jobs.length === 1 ? "job" : "jobs"}
                       </p>
                     </div>
-                    <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                      <FiBarChart2 className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                    <div className="w-10 h-10 rounded-lg bg-muted dark:bg-muted flex items-center justify-center">
+                      <FiBarChart2 className="h-5 w-5 text-muted-foreground dark:text-muted-foreground" />
                     </div>
                   </div>
 
@@ -287,16 +287,16 @@ export default function WorkerEarningsPage() {
                           transition={{ delay: 0.5 + index * 0.05 }}
                           className="group"
                         >
-                          <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600/50 hover:shadow-md hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200">
+                          <div className="flex items-center justify-between p-4 rounded-lg bg-muted dark:bg-muted border border-border dark:border-border hover:shadow-md hover:border-border dark:hover:border-border transition-all duration-200">
                             <div className="flex-1 flex items-start gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
-                                <FiDollarSign className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                              <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
+                                <IndianRupee className="h-5 w-5 text-green-600 dark:text-green-400" />
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-medium text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                <h3 className="font-medium text-foreground dark:text-foreground mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                   {job.description}
                                 </h3>
-                                <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground dark:text-muted-foreground">
                                   <div className="flex items-center gap-1">
                                     <FiUser className="h-3 w-3" />
                                     <span>{job.customer}</span>
@@ -343,7 +343,7 @@ export default function WorkerEarningsPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center">
-                          <FiBarChart2 className="h-6 w-6 text-white" />
+                          <FiBarChart2 className="h-6 w-6 text-foreground" />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-blue-900 dark:text-blue-300">

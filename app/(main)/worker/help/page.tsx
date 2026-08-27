@@ -63,31 +63,31 @@ export default function WorkerHelpPage() {
       {/* Header Section */}
       <div className="space-y-2 text-center">
         <div className="flex justify-center mb-2">
-          <HelpCircle className="h-10 w-10 text-emerald-600 dark:text-emerald-400 mt-20" />
+          <HelpCircle className="h-10 w-10 text-green-600 dark:text-green-400 mt-20" />
         </div>
-        <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-semibold text-foreground tracking-tight">
           Worker Help & Support
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        <p className="text-muted-foreground font-normal max-w-2xl mx-auto">
           Everything you need to know about using RozgaarSetu as a worker — from
           registration to payments and support.
         </p>
       </div>
 
       {/* FAQs Section */}
-      <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-          <UserCheck className="h-5 w-5 mr-2 text-emerald-600 dark:text-emerald-400" />
+      <Card className="p-6 border border-border">
+        <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
+          <UserCheck className="h-5 w-5 mr-2 text-green-600 dark:text-green-400" />
           Common Questions for Workers
         </h2>
 
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
             <AccordionItem key={index} value={`faq-${index}`}>
-              <AccordionTrigger className="text-left text-gray-900 dark:text-gray-100 font-medium">
+              <AccordionTrigger className="text-left text-foreground font-medium">
                 {faq.question}
               </AccordionTrigger>
-              <AccordionContent className="text-gray-600 dark:text-gray-400 text-sm">
+              <AccordionContent className="text-muted-foreground text-sm">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>
@@ -97,37 +97,37 @@ export default function WorkerHelpPage() {
 
       {/* Support Contact Section */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-center">
+        <Card className="p-6 border border-border text-center">
           <Phone className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-3" />
-          <h3 className="font-semibold text-gray-900 dark:text-white">
+          <h3 className="font-semibold text-foreground">
             Call Support
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-            Call us at <span className="font-medium">+91 98765 43210</span>
+          <p className="text-muted-foreground text-sm mt-1">
+            Call us at <span className="font-medium text-foreground">+91 98765 43210</span>
           </p>
         </Card>
 
-        <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-center">
+        <Card className="p-6 border border-border text-center">
           <Mail className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-3" />
-          <h3 className="font-semibold text-gray-900 dark:text-white">
+          <h3 className="font-semibold text-foreground">
             Email Support
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Write to us at{" "}
-            <span className="font-medium">workersupport@rozgaarsetu.com</span>
+            <span className="font-medium text-foreground">workersupport@rozgaarsetu.com</span>
           </p>
         </Card>
 
-        <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-center">
+        <Card className="p-6 border border-border text-center">
           <MessageSquare className="h-8 w-8 text-amber-600 dark:text-amber-400 mx-auto mb-3" />
-          <h3 className="font-semibold text-gray-900 dark:text-white">
+          <h3 className="font-semibold text-foreground">
             Live Chat
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Chat with our RozgaarSetu support team from 9AM – 6PM daily.
           </p>
           <Link href="#">
-            <button className="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm rounded-md transition-all duration-200">
+            <button className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm rounded-lg transition-colors duration-200">
               Start Chat
             </button>
           </Link>
@@ -135,14 +135,14 @@ export default function WorkerHelpPage() {
       </div>
 
       {/* Safety Section */}
-      <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+      <Card className="p-6 border border-border">
         <div className="flex items-start gap-3">
-          <Shield className="h-6 w-6 text-emerald-600 dark:text-emerald-400 mt-1" />
+          <Shield className="h-6 w-6 text-green-600 dark:text-green-400 mt-1" />
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+            <h3 className="font-semibold text-foreground">
               Worker Protection & Safety
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+            <p className="text-muted-foreground text-sm mt-1">
               RozgaarSetu values worker dignity and safety. We verify all
               customers, ensure secure payments, and provide direct support for
               disputes or emergencies. Your data and work records remain fully

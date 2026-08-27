@@ -9,12 +9,10 @@ import { MainMenusGradientCard } from "@/components/eldoraui/animatedcard";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import ShapeHero from "@/components/kokonutui/shape-hero";
-import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import ScrollText from "@/components/kokonutui/scroll-text";
 import TypewriterTitle from "@/components/kokonutui/type-writer";
-import ShimmerText from "@/components/kokonutui/shimmer-text";
-import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { Briefcase, MapPinCheckInside, CheckCircle, Shield } from "lucide-react";
 
 export default function Home() {
   const [isFeaturesLoading, setIsFeaturesLoading] = useState(true);
@@ -274,9 +272,9 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6">
               {/* Card 1 - Find Work */}
-              <div className={cn("p-2 rounded-lg", "md:col-span-3")}>
+              <div>
                 <MainMenusGradientCard
                   title="Find Work"
                   description="Discover opportunities that match your skills and location preferences with our smart matching system."
@@ -284,7 +282,7 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">💼</div>
+                    <Briefcase className="h-12 w-12 text-blue-600 dark:text-blue-400" />
                     <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
                       Opportunity Awaits
                     </div>
@@ -292,25 +290,8 @@ export default function Home() {
                 </MainMenusGradientCard>
               </div>
 
-              {/* Card 2 - Get Paid */}
-              <div className={cn("p-2 rounded-lg", "md:col-span-3")}>
-                <MainMenusGradientCard
-                  title="Get Paid"
-                  description="Secure payments delivered instantly with multiple payment options and transparent pricing."
-                  withArrow={false}
-                  circleSize={300}
-                >
-                  <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">💰</div>
-                    <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-                      Instant Payments
-                    </div>
-                  </div>
-                </MainMenusGradientCard>
-              </div>
-
-              {/* Card 3 - Nearby Connections */}
-              <div className={cn("p-2 rounded-lg", "md:col-span-4")}>
+              {/* Card 2 - Nearby Connections */}
+              <div>
                 <MainMenusGradientCard
                   title="Nearby Connections"
                   description="Connect with workers in your area for quick and efficient hiring with location-based matching."
@@ -318,7 +299,7 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">📍</div>
+                    <MapPinCheckInside className="h-12 w-12 text-purple-600 dark:text-purple-400" />
                     <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">
                       Local Network
                     </div>
@@ -326,25 +307,8 @@ export default function Home() {
                 </MainMenusGradientCard>
               </div>
 
-              {/* Card 4 - Smart Search */}
-              <div className={cn("p-2 rounded-lg", "md:col-span-2")}>
-                <MainMenusGradientCard
-                  title="Smart Search"
-                  description="Advanced location-based matching with AI-powered recommendations for perfect job matches."
-                  withArrow={false}
-                  circleSize={300}
-                >
-                  <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-4xl">🔍</div>
-                    <div className="text-base font-semibold text-orange-600 dark:text-orange-400">
-                      AI-Powered
-                    </div>
-                  </div>
-                </MainMenusGradientCard>
-              </div>
-
-              {/* Card 5 - Verified Profiles */}
-              <div className={cn("p-2 rounded-lg", "md:col-span-2")}>
+              {/* Card 3 - Verified Profiles */}
+              <div>
                 <MainMenusGradientCard
                   title="Verified Profiles"
                   description="Work with trusted professionals. Profiles are verified for identity and skills."
@@ -352,7 +316,7 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-4xl">✅</div>
+                    <CheckCircle className="h-10 w-10 text-sky-600 dark:text-sky-400" />
                     <div className="text-base font-semibold text-sky-600 dark:text-sky-400">
                       Trusted & Verified
                     </div>
@@ -360,8 +324,8 @@ export default function Home() {
                 </MainMenusGradientCard>
               </div>
 
-              {/* Card 6 - Trust & Safety */}
-              <div className={cn("p-2 rounded-lg", "md:col-span-4")}>
+              {/* Card 4 - Trust & Safety */}
+              <div>
                 <MainMenusGradientCard
                   title="Trust & Safety"
                   description="Ratings, reviews, and dispute support ensure a safe experience for everyone."
@@ -369,7 +333,7 @@ export default function Home() {
                   circleSize={300}
                 >
                   <div className="flex flex-col items-center justify-center h-full gap-4">
-                    <div className="text-5xl">🛡️</div>
+                    <Shield className="h-12 w-12 text-teal-600 dark:text-teal-400" />
                     <div className="text-lg font-semibold text-teal-600 dark:text-teal-400">
                       Safe & Reliable
                     </div>
@@ -462,77 +426,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="max-w-6xl mx-auto px-6 py-20">
-          <div className="text-center mb-16">
-            <ShimmerText
-              text="What Workers Say"
-              className="text-5xl font-light mb-4"
-            />
-            <TypewriterEffect
-              words={[
-                { text: "Real" },
-                { text: "stories" },
-                { text: "from" },
-                { text: "our" },
-                {
-                  text: "community",
-                  className: "text-blue-500 dark:text-blue-400",
-                },
-              ]}
-              className="text-xl text-gray-600 dark:text-gray-400"
-              cursorClassName="bg-blue-500"
-            />
-          </div>
-
-          {/* Infinite Moving Testimonials */}
-          <div className="relative">
-            <InfiniteMovingCards
-              items={[
-                {
-                  quote:
-                    "RozgaarSetu changed my life. I found steady work and the payments are always on time.",
-                  name: "Rajesh Kumar",
-                  title: "Electrician",
-                },
-                {
-                  quote:
-                    "The platform is easy to use. I can find work near my home and get paid instantly.",
-                  name: "Priya Sharma",
-                  title: "Cleaner",
-                },
-                {
-                  quote:
-                    "Great platform for contractors. Professional, reliable, and secure payments.",
-                  name: "Amit Singh",
-                  title: "Plumber",
-                },
-                {
-                  quote:
-                    "Finding consistent work was a challenge. RozgaarSetu gave me the stability I needed.",
-                  name: "Deepak Verma",
-                  title: "Painter",
-                },
-                {
-                  quote:
-                    "Excellent support and user-friendly app. I recommend RozgaarSetu to all workers.",
-                  name: "Sunita Devi",
-                  title: "Cook",
-                },
-                {
-                  quote:
-                    "Quick payments, verified customers, and transparent pricing. Much more rewarding.",
-                  name: "Mohammad Ali",
-                  title: "Carpenter",
-                },
-              ]}
-              direction="right"
-              speed="slow"
-              pauseOnHover={true}
-            />
-          </div>
-        </section>
-
         {/* CTA Section - Apple Design System */}
         <section className="relative overflow-hidden">
           {/* Background - solid color matching the rounded corner background */}
@@ -585,15 +478,6 @@ export default function Home() {
                 />
               </div>
 
-              {/* Apple-style subtitle */}
-              <p className="text-xl md:text-2xl font-light text-gray-600 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed mb-12">
-                Join over{" "}
-                <span className="font-medium text-gray-900 dark:text-white">
-                  10,000+ skilled workers
-                </span>{" "}
-                who have already discovered better opportunities and secured
-                their financial future with RozgaarSetu.
-              </p>
 
               {/* Apple-style CTA buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
@@ -605,10 +489,13 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                 </a>
 
-                <button className="group relative inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-gray-500/10 cursor-pointer min-w-[200px]">
-                  <span className="relative z-10">Learn More</span>
+                <a
+                  href="/pricing"
+                  className="group relative inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg hover:shadow-gray-500/10 no-underline min-w-[200px]"
+                >
+                  <span className="relative z-10">View Pricing</span>
                   <div className="absolute inset-0 bg-gray-50 dark:bg-gray-700 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                </button>
+                </a>
               </div>
             </div>
           </div>

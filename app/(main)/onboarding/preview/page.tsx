@@ -305,7 +305,7 @@ export default function PreviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 md:py-10">
         <div className="max-w-5xl mx-auto">
           {/* Header Section */}
@@ -318,7 +318,7 @@ export default function PreviewPage() {
             <Button
               variant="ghost"
               onClick={handleBack}
-              className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-6 hover:bg-white/50 dark:hover:bg-gray-800/50 rounded-xl transition-all"
+              className="text-muted-foreground hover:text-foreground mb-6 hover:bg-muted rounded-xl transition-all"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to {isWorker ? "Previous Work" : "Details"}
@@ -339,7 +339,7 @@ export default function PreviewPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-gray-600 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto"
+                className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto"
               >
                 Review your professional profile before going live
               </motion.p>
@@ -354,7 +354,7 @@ export default function PreviewPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm border-0 shadow-xl rounded-2xl mb-6 overflow-hidden">
+                <Card className="bg-card backdrop-blur-sm border border-border shadow-xl rounded-2xl mb-6 overflow-hidden">
                   <CardContent className="p-6 md:p-10">
                     <div className="flex flex-col md:flex-row gap-6 md:gap-8">
                       {/* Profile Image */}
@@ -385,22 +385,22 @@ export default function PreviewPage() {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.5 }}
                         >
-                          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                             {userName}
                           </h2>
                           {workerDetails.qualification && (
-                            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 mb-3">
+                            <p className="text-base md:text-lg text-muted-foreground mb-3">
                               {workerDetails.qualification}
                             </p>
                           )}
                           <div className="flex flex-col md:flex-row gap-3 justify-center md:justify-start">
-                            <div className="flex items-center justify-center md:justify-start text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center justify-center md:justify-start text-muted-foreground">
                               <MapPin className="h-4 w-4 mr-2 text-blue-600" />
                               <span className="text-sm">
                                 {workerDetails.city}, {workerDetails.state}
                               </span>
                             </div>
-                            <div className="flex items-center justify-center md:justify-start text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center justify-center md:justify-start text-muted-foreground">
                               <Briefcase className="h-4 w-4 mr-2 text-purple-600" />
                               <span className="text-sm">
                                 {workerDetails.yearsExperience} years experience
@@ -416,7 +416,7 @@ export default function PreviewPage() {
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.6 }}
                         >
-                          <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center justify-center md:justify-start gap-2">
+                          <h3 className="text-base md:text-lg font-semibold text-foreground mb-3 flex items-center justify-center md:justify-start gap-2">
                             <Sparkles className="h-5 w-5 text-blue-600" />
                             Skills
                           </h3>
@@ -448,11 +448,11 @@ export default function PreviewPage() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.8 }}
                           >
-                            <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center justify-center md:justify-start gap-2">
+                            <h3 className="text-base md:text-lg font-semibold text-foreground mb-3 flex items-center justify-center md:justify-start gap-2">
                               <User className="h-5 w-5 text-purple-600" />
                               About
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
+                            <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
                               {workerDetails.bio}
                             </p>
                           </motion.div>
@@ -500,9 +500,9 @@ export default function PreviewPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <Card className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm border-0 shadow-xl rounded-2xl mb-6">
+                  <Card className="bg-card backdrop-blur-sm border border-border shadow-xl rounded-2xl mb-6">
                     <CardContent className="p-6 md:p-10">
-                      <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                      <h3 className="text-xl md:text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                         <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                           <Star className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-400" />
                         </div>
@@ -521,7 +521,7 @@ export default function PreviewPage() {
                             whileHover={{ scale: 1.03, y: -5 }}
                             className="group"
                           >
-                            <div className="bg-gray-50 dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-xl transition-all duration-300 h-full">
+                            <div className="bg-muted border border-border rounded-xl p-4 hover:shadow-xl transition-all duration-300 h-full">
                               <div className="relative overflow-hidden rounded-lg mb-4">
                                 <WorkImage
                                   src={
@@ -539,11 +539,11 @@ export default function PreviewPage() {
                                   </Badge>
                                 )}
                               </div>
-                              <h4 className="font-semibold text-gray-900 dark:text-white text-sm mb-2 line-clamp-1">
+                              <h4 className="font-semibold text-foreground text-sm mb-2 line-clamp-1">
                                 {work.title}
                               </h4>
                               {work.description && (
-                                <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 mb-3">
+                                <p className="text-muted-foreground text-xs line-clamp-2 mb-3">
                                   {work.description}
                                 </p>
                               )}
@@ -551,7 +551,7 @@ export default function PreviewPage() {
                                 {work.complexity && (
                                   <Badge
                                     variant="outline"
-                                    className="text-xs border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
+                                    className="text-xs border-gray-300 dark:border-gray-600 text-muted-foreground"
                                   >
                                     {work.complexity}
                                   </Badge>
@@ -559,7 +559,7 @@ export default function PreviewPage() {
                                 {work.duration && (
                                   <Badge
                                     variant="outline"
-                                    className="text-xs border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
+                                    className="text-xs border-gray-300 dark:border-gray-600 text-muted-foreground"
                                   >
                                     <Clock className="h-3 w-3 mr-1" />
                                     {work.duration}
@@ -582,9 +582,9 @@ export default function PreviewPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 }}
                 >
-                  <Card className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm border-0 shadow-xl rounded-2xl mb-6">
+                  <Card className="bg-card backdrop-blur-sm border border-border shadow-xl rounded-2xl mb-6">
                     <CardContent className="p-6 md:p-10">
-                      <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                      <h3 className="text-xl md:text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                         <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                           <MapPin className="h-5 w-5 md:h-6 md:w-6 text-purple-600 dark:text-purple-400" />
                         </div>
@@ -622,7 +622,7 @@ export default function PreviewPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm border-0 shadow-xl rounded-2xl mb-6">
+                <Card className="bg-card backdrop-blur-sm border border-border shadow-xl rounded-2xl mb-6">
                   <CardContent className="p-6 md:p-10">
                     <div className="text-center mb-8">
                       <motion.div
@@ -639,7 +639,7 @@ export default function PreviewPage() {
                       </motion.div>
 
                       <motion.h2
-                        className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4"
+                        className="text-2xl md:text-3xl font-bold text-foreground mb-4"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
@@ -648,7 +648,7 @@ export default function PreviewPage() {
                       </motion.h2>
 
                       <motion.div
-                        className="flex items-center justify-center text-gray-600 dark:text-gray-400 mb-6"
+                        className="flex items-center justify-center text-muted-foreground mb-6"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 }}
@@ -666,11 +666,11 @@ export default function PreviewPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.7 }}
                     >
-                      <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
+                      <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 flex items-center justify-center gap-2">
                         <MapPin className="h-5 w-5 text-purple-600" />
                         Address Information
                       </h3>
-                      <div className="space-y-3 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/30 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                      <div className="space-y-3 text-muted-foreground bg-muted rounded-xl p-6 border border-border">
                         <p className="leading-relaxed text-sm md:text-base">
                           {customerDetails.address}
                         </p>

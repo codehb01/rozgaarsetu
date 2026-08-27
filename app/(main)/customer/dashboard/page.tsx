@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { LabelBadge } from "@/components/ui/label-badge";
 import BookWorkerButton from "@/components/book-worker-button";
 import prisma from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
@@ -107,15 +108,15 @@ export default async function CustomerDashboardPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-semibold text-foreground tracking-tight">
               Welcome back
             </h1>
-            <p className="mt-1 text-gray-600 dark:text-gray-400">
+            <p className="mt-1 text-muted-foreground font-normal">
               Find skilled professionals for your next project
             </p>
           </div>
           <Link href="/customer/search">
-            <Button className="bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white shadow-sm">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
               Browse All Workers
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -124,48 +125,48 @@ export default async function CustomerDashboardPage() {
 
         {/* Quick Stats and Usage Tracker */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+          <Card className="p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Active Bookings
                 </p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                <p className="text-2xl font-semibold text-foreground">
                   2
                 </p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+          <Card className="p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Completed Jobs
                 </p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                <p className="text-2xl font-semibold text-foreground">
                   8
                 </p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+          <Card className="p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Star className="h-6 w-6 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-muted-foreground">
                   Avg Rating Given
                 </p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                <p className="text-2xl font-semibold text-foreground">
                   4.8
                 </p>
               </div>
@@ -180,10 +181,10 @@ export default async function CustomerDashboardPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-semibold text-foreground tracking-tight">
               Browse by Category
             </h2>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-1 text-sm text-muted-foreground font-normal">
               Find professionals by their expertise
             </p>
           </div>
@@ -197,7 +198,7 @@ export default async function CustomerDashboardPage() {
               aria-label={`Browse ${label}s`}
               className="group block"
             >
-              <Card className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200 hover:-translate-y-1">
+              <Card className="p-6 hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200 hover:-translate-y-1">
                 <div className="flex flex-col items-center text-center space-y-3">
                   <div
                     className={`w-12 h-12 rounded-xl ${bgColor} flex items-center justify-center`}
@@ -205,10 +206,10 @@ export default async function CustomerDashboardPage() {
                     <Icon className={`h-6 w-6 ${color}`} />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="font-medium text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {label}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       Available now
                     </p>
                   </div>
@@ -223,24 +224,24 @@ export default async function CustomerDashboardPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-semibold text-foreground tracking-tight">
               Recently Joined
             </h2>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-1 text-sm text-muted-foreground font-normal">
               New professionals on the platform
             </p>
           </div>
           <Link
             href="/customer/search"
-            className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium"
+            className="text-primary hover:text-primary/80 text-sm font-medium"
           >
             View all
           </Link>
         </div>
 
         {workers.length === 0 ? (
-          <Card className="p-8 text-center border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-            <div className="text-gray-500 dark:text-gray-400">
+          <Card className="p-8 text-center">
+            <div className="text-muted-foreground">
               <p className="text-lg font-medium">No workers available</p>
               <p className="text-sm mt-1">
                 Check back later for new professionals
@@ -252,28 +253,28 @@ export default async function CustomerDashboardPage() {
             {workers.map((worker) => (
               <Card
                 key={worker.id}
-                className="p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200"
+                className="p-6 hover:shadow-lg hover:shadow-gray-900/5 dark:hover:shadow-black/20 transition-all duration-200"
               >
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="h-12 w-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <span className="text-lg font-semibold text-gray-600 dark:text-gray-400">
+                    <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center">
+                      <span className="text-lg font-semibold text-muted-foreground">
                         {(worker.name ?? "U").charAt(0).toUpperCase()}
                       </span>
                     </div>
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                    <h3 className="text-lg font-semibold text-foreground truncate">
                       {worker.name ?? "Professional"}
                     </h3>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {worker.workerProfile?.qualification ||
                         "Skilled Professional"}
                     </p>
 
-                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    <div className="flex items-center text-sm text-muted-foreground mt-2">
                       <MapPin className="h-4 w-4 mr-1" />
                       <span className="truncate">
                         {worker.workerProfile?.city || "Location not specified"}
@@ -290,17 +291,14 @@ export default async function CustomerDashboardPage() {
                           {worker.workerProfile.skilledIn
                             .slice(0, 2)
                             .map((skill: string, index: number) => (
-                              <span
-                                key={index}
-                                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700"
-                              >
+                              <LabelBadge key={index}>
                                 {skill}
-                              </span>
+                              </LabelBadge>
                             ))}
                           {worker.workerProfile.skilledIn.length > 2 && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                            <LabelBadge>
                               +{worker.workerProfile.skilledIn.length - 2}
-                            </span>
+                            </LabelBadge>
                           )}
                         </div>
                       )}
@@ -310,7 +308,7 @@ export default async function CustomerDashboardPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="w-full border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          className="w-full"
                         >
                           View Profile
                         </Button>

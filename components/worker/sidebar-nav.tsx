@@ -11,7 +11,6 @@ import { IconType } from "react-icons"
 import {
   FiHome,
   FiBriefcase,
-  FiDollarSign,
   FiUser,
   FiSettings,
   FiHelpCircle,
@@ -22,6 +21,7 @@ import {
   FiSun,
   FiMoon
 } from "react-icons/fi"
+import { IndianRupee } from "lucide-react"
 import { motion } from "framer-motion"
 import { useTheme } from "next-themes"
 import {
@@ -46,7 +46,7 @@ const navigation = [
   {
     name: "Earnings",
     href: "/worker/earnings",
-    icon: FiDollarSign,
+    icon: IndianRupee,
   },
   {
     name: "Profile",

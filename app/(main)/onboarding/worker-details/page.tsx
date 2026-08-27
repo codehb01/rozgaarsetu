@@ -374,7 +374,7 @@ export default function WorkerDetailsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-4">
         <div className="max-w-5xl mx-auto">
           {/* Header with ShimmerText */}
@@ -386,7 +386,7 @@ export default function WorkerDetailsPage() {
             <Button
               variant="ghost"
               onClick={() => router.push("/onboarding")}
-              className="mb-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="mb-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Role Selection
@@ -396,10 +396,10 @@ export default function WorkerDetailsPage() {
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
                 <ShimmerText
                   text="Worker Profile Setup"
-                  className="text-gray-900 dark:text-white"
+                  className="text-foreground"
                 />
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
                 Let&apos;s create your professional profile in just a few steps
               </p>
             </div>
@@ -429,7 +429,7 @@ export default function WorkerDetailsPage() {
                           ? "bg-blue-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20 scale-110"
                           : isCompleted
                           ? "bg-blue-100 dark:bg-blue-950/40 border-2 border-blue-300 dark:border-blue-600"
-                          : "bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700"
+                          : "bg-muted dark:bg-muted border-2 border-border dark:border-border"
                       }
                     `}
                     >
@@ -440,7 +440,7 @@ export default function WorkerDetailsPage() {
                           className={`h-4 w-4 md:h-5 md:w-5 ${
                             isActive
                               ? "text-white"
-                              : "text-gray-500 dark:text-gray-400"
+                              : "text-muted-foreground"
                           }`}
                         />
                       )}
@@ -452,7 +452,7 @@ export default function WorkerDetailsPage() {
                         className={`h-0.5 transition-all duration-300 ${
                           currentStep > step.id
                             ? "bg-blue-500"
-                            : "bg-gray-200 dark:bg-gray-700"
+                            : "bg-border"
                         }`}
                         style={{
                           width: "calc((100vw - 40px - 200px) / 4)",
@@ -474,7 +474,7 @@ export default function WorkerDetailsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="border-2 border-gray-200/60 dark:border-gray-800/60 bg-white/80 dark:bg-black/80 backdrop-blur-sm shadow-xl">
+            <Card className="border border-border bg-card backdrop-blur-sm shadow-xl">
               <CardContent className="p-6 md:p-8">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -487,7 +487,7 @@ export default function WorkerDetailsPage() {
                     {/* Step Badge */}
                     <div className="flex items-center justify-center mb-6">
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50/50 dark:bg-blue-950/30 border border-blue-200/50 dark:border-blue-400/20">
-                        <Sparkles className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                        <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                         <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
                           Step {currentStep} of {steps.length}
                         </span>
@@ -498,10 +498,10 @@ export default function WorkerDetailsPage() {
                     {currentStep === 1 && (
                       <div className="space-y-6">
                         <div className="text-center mb-6">
-                          <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                          <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                             Personal Information
                           </h2>
-                          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+                          <p className="text-sm md:text-base text-muted-foreground">
                             Tell us about your background and experience
                           </p>
                         </div>
@@ -513,7 +513,7 @@ export default function WorkerDetailsPage() {
                             transition={{ delay: 0.1 }}
                             className="space-y-2"
                           >
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <label className="block text-sm font-semibold text-foreground">
                               Aadhar Number
                             </label>
                             <Input
@@ -521,7 +521,7 @@ export default function WorkerDetailsPage() {
                               value={watch("aadharNumber") || ""}
                               onChange={handleAadharChange}
                               maxLength={14}
-                              className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all font-mono tracking-wider"
+                              className="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all font-mono tracking-wider"
                             />
                             {errors.aadharNumber && (
                               <p className="text-red-500 text-xs md:text-sm mt-1">
@@ -544,7 +544,7 @@ export default function WorkerDetailsPage() {
                             transition={{ delay: 0.2 }}
                             className="space-y-2"
                           >
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <label className="block text-sm font-semibold text-foreground">
                               Education
                             </label>
 
@@ -588,7 +588,7 @@ export default function WorkerDetailsPage() {
                                     setCustomQualification(e.target.value);
                                     setValue("qualification", e.target.value);
                                   }}
-                                  className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                  className="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 />
                               </motion.div>
                             )}
@@ -607,7 +607,7 @@ export default function WorkerDetailsPage() {
                           transition={{ delay: 0.3 }}
                           className="space-y-3"
                         >
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                          <label className="block text-sm font-semibold text-foreground">
                             Experience Level
                           </label>
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -635,7 +635,7 @@ export default function WorkerDetailsPage() {
                                     className={`text-sm font-semibold ${
                                       isSelected
                                         ? "text-blue-700 dark:text-blue-300"
-                                        : "text-gray-900 dark:text-white"
+                                        : "text-foreground"
                                     }`}
                                   >
                                     {level.label}
@@ -664,7 +664,7 @@ export default function WorkerDetailsPage() {
                           transition={{ delay: 0.5 }}
                           className="space-y-3"
                         >
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                          <label className="block text-sm font-semibold text-foreground">
                             About Yourself
                           </label>
 
@@ -682,7 +682,7 @@ export default function WorkerDetailsPage() {
 
                           {/* Example Templates */}
                           <div className="space-y-2">
-                            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                            <p className="text-xs font-semibold text-muted-foreground">
                               Examples - Click to use:
                             </p>
                             <div className="space-y-2">
@@ -693,7 +693,7 @@ export default function WorkerDetailsPage() {
                                   onClick={() => setValue("bio", example)}
                                   className="w-full text-left p-2 text-xs bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors"
                                 >
-                                  <span className="text-gray-700 dark:text-gray-300">
+                                  <span className="text-foreground">
                                     {example}
                                   </span>
                                 </button>
@@ -710,7 +710,7 @@ export default function WorkerDetailsPage() {
                                 message: "Please write at least 30 characters",
                               },
                             })}
-                            className="min-h-28 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all resize-none"
+                            className="min-h-28 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all resize-none"
                           />
                           <div className="flex justify-between items-center mt-1">
                             {errors.bio && (
@@ -736,10 +736,10 @@ export default function WorkerDetailsPage() {
                     {currentStep === 2 && (
                       <div className="space-y-6">
                         <div className="text-center mb-6">
-                          <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                          <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                             Skills & Services
                           </h2>
-                          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+                          <p className="text-sm md:text-base text-muted-foreground">
                             What services do you provide?
                           </p>
                         </div>
@@ -749,7 +749,7 @@ export default function WorkerDetailsPage() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.1 }}
                         >
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                          <label className="block text-sm font-semibold text-foreground mb-3">
                             Select your skills
                           </label>
 
@@ -795,7 +795,7 @@ export default function WorkerDetailsPage() {
                               onKeyPress={(e) =>
                                 e.key === "Enter" && addCustomSkill()
                               }
-                              className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                              className="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                             />
                             <Button
                               type="button"
@@ -813,7 +813,7 @@ export default function WorkerDetailsPage() {
                               animate={{ opacity: 1 }}
                               className="mt-4 p-4 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-400/20"
                             >
-                              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                              <p className="text-sm font-semibold text-foreground mb-2">
                                 Selected skills ({selectedSkills.length}):
                               </p>
                               <div className="flex flex-wrap gap-2">
@@ -850,10 +850,10 @@ export default function WorkerDetailsPage() {
                     {currentStep === 3 && (
                       <div className="space-y-6">
                         <div className="text-center mb-6">
-                          <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                          <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                             Set Your Rates
                           </h2>
-                          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+                          <p className="text-sm md:text-base text-muted-foreground">
                             Configure your pricing to attract customers
                           </p>
                         </div>
@@ -865,7 +865,7 @@ export default function WorkerDetailsPage() {
                             transition={{ delay: 0.1 }}
                             className="space-y-2"
                           >
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <label className="block text-sm font-semibold text-foreground">
                               Hourly Rate (₹)
                             </label>
                             <div className="relative">
@@ -877,7 +877,7 @@ export default function WorkerDetailsPage() {
                                 type="number"
                                 step="50"
                                 min="100"
-                                className="h-11 md:h-12 pl-8 pr-3 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                className="h-11 md:h-12 pl-8 pr-3 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 {...register("hourlyRate", {
                                   required: "Hourly rate is required",
                                   min: {
@@ -926,7 +926,7 @@ export default function WorkerDetailsPage() {
                             transition={{ delay: 0.2 }}
                             className="space-y-2"
                           >
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            <label className="block text-sm font-semibold text-foreground">
                               Minimum Job Fee (₹)
                             </label>
                             <div className="relative">
@@ -938,7 +938,7 @@ export default function WorkerDetailsPage() {
                                 type="number"
                                 step="50"
                                 min="200"
-                                className="h-11 md:h-12 pl-8 pr-3 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                className="h-11 md:h-12 pl-8 pr-3 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 {...register("minimumFee", {
                                   required: "Minimum fee is required",
                                   min: {
@@ -1029,10 +1029,10 @@ export default function WorkerDetailsPage() {
                     {currentStep === 4 && (
                       <div className="space-y-6">
                         <div className="text-center mb-6">
-                          <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                          <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                             Service Location
                           </h2>
-                          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+                          <p className="text-sm md:text-base text-muted-foreground">
                             Where do you provide your services?
                           </p>
                         </div>
@@ -1043,7 +1043,7 @@ export default function WorkerDetailsPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
                           >
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-sm font-semibold text-foreground mb-2">
                               Full Address
                             </label>
                             <div className="flex gap-2">
@@ -1053,7 +1053,7 @@ export default function WorkerDetailsPage() {
                                   onChange={(v) => setValue("address", v)}
                                   onSelect={applyGeocode}
                                   placeholder="Street address, building name, etc."
-                                  inputClassName="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                  inputClassName="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 />
                               </div>
                               <Button
@@ -1088,12 +1088,12 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.2 }}
                               className="space-y-2"
                             >
-                              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              <label className="block text-sm font-semibold text-foreground">
                                 City
                               </label>
                               <Input
                                 placeholder="Enter city name"
-                                className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                className="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("city", {
                                   required: "City is required",
                                 })}
@@ -1111,12 +1111,12 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.3 }}
                               className="space-y-2"
                             >
-                              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              <label className="block text-sm font-semibold text-foreground">
                                 State
                               </label>
                               <Input
                                 placeholder="Enter state name"
-                                className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                className="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("state", {
                                   required: "State is required",
                                 })}
@@ -1136,12 +1136,12 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.4 }}
                               className="space-y-2"
                             >
-                              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              <label className="block text-sm font-semibold text-foreground">
                                 Country
                               </label>
                               <Input
                                 placeholder="Enter country"
-                                className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                className="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("country", {
                                   required: "Country is required",
                                 })}
@@ -1159,12 +1159,12 @@ export default function WorkerDetailsPage() {
                               transition={{ delay: 0.5 }}
                               className="space-y-2"
                             >
-                              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              <label className="block text-sm font-semibold text-foreground">
                                 Postal Code
                               </label>
                               <Input
                                 placeholder="Enter postal code"
-                                className="h-11 md:h-12 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 focus:border-blue-500 dark:focus:border-blue-500 transition-all"
+                                className="h-11 md:h-12 border-border bg-card focus:border-blue-500 dark:focus:border-blue-500 transition-all"
                                 {...register("postalCode", {
                                   required: "Postal code is required",
                                 })}
@@ -1183,10 +1183,10 @@ export default function WorkerDetailsPage() {
                     {currentStep === 5 && (
                       <div className="space-y-6">
                         <div className="text-center mb-6">
-                          <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                          <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                             Complete Your Profile
                           </h2>
-                          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+                          <p className="text-sm md:text-base text-muted-foreground">
                             Add a profile picture to build trust
                           </p>
                         </div>
@@ -1197,7 +1197,7 @@ export default function WorkerDetailsPage() {
                           transition={{ delay: 0.1 }}
                           className="space-y-4"
                         >
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
+                          <label className="block text-sm font-semibold text-foreground mb-3 text-center">
                             Profile Picture (Optional)
                           </label>
 
@@ -1261,13 +1261,13 @@ export default function WorkerDetailsPage() {
                 </AnimatePresence>
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between items-center mt-6 md:mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-center mt-6 md:mt-8 pt-6 border-t border-border">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={prevStep}
                     disabled={isFirstStep}
-                    className="border-gray-200 dark:border-gray-700 h-11 md:h-12 px-4 md:px-6"
+                    className="h-11 md:h-12 px-4 md:px-6"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     <span className="hidden sm:inline">Previous</span>

@@ -2,7 +2,6 @@
 
 import { ReactNode } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import CountUp from "@/components/CountUp";
 import { WorkCategoryOrigami } from "@/components/ui/logo-origami";
 import ShimmerText from "@/components/kokonutui/shimmer-text";
 import { motion } from "framer-motion";
@@ -59,28 +58,6 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
                   <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed animate-fade-in-delay">
                     Join thousands of professionals building better futures
                   </p>
-                </div>
-                
-                {/* Stats with CountUp Animation */}
-                <div className="grid grid-cols-3 gap-3 pt-6">
-                  <div className="bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-slate-300/50 dark:border-slate-600/30 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 shadow-sm">
-                    <div className="text-3xl font-semibold text-slate-800 dark:text-white mb-1">
-                      <CountUp to={10} duration={2.5} className="inline" />K+
-                    </div>
-                    <div className="text-xs text-slate-600 dark:text-slate-300 font-medium">Workers</div>
-                  </div>
-                  <div className="bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-slate-300/50 dark:border-slate-600/30 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 shadow-sm">
-                    <div className="text-3xl font-semibold text-slate-800 dark:text-white mb-1">
-                      <CountUp to={50} duration={2.5} className="inline" />K+
-                    </div>
-                    <div className="text-xs text-slate-600 dark:text-slate-300 font-medium">Jobs Done</div>
-                  </div>
-                  <div className="bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-slate-300/50 dark:border-slate-600/30 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 shadow-sm">
-                    <div className="text-3xl font-semibold text-slate-800 dark:text-white mb-1">
-                      <CountUp to={4.9} duration={2.5} className="inline" />★
-                    </div>
-                    <div className="text-xs text-slate-600 dark:text-slate-300 font-medium">Rating</div>
-                  </div>
                 </div>
               </div>
             </motion.div>

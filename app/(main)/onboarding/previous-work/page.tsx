@@ -90,7 +90,7 @@ function WorkPreviewImage({
 
   if (!src || !src.trim() || imageError) {
     return (
-      <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700">
+      <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center border border-border">
         <div className="text-center">
           <Camera className="h-8 w-8 text-gray-400 mx-auto mb-2" />
           <span className="text-gray-500 text-sm">No Image</span>
@@ -230,7 +230,7 @@ export default function PreviousWorkPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -242,17 +242,17 @@ export default function PreviousWorkPage() {
             <Button
               variant="ghost"
               onClick={() => router.push("/onboarding/worker-details")}
-              className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-6"
+              className="text-muted-foreground hover:text-foreground mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Details
             </Button>
 
             <div className="text-center">
-              <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-semibold text-foreground mb-2">
                 Portfolio & Previous Work
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
+              <p className="text-muted-foreground text-lg">
                 Showcase your expertise to build trust with customers
               </p>
             </div>
@@ -263,25 +263,25 @@ export default function PreviousWorkPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="flex flex-col md:flex-row justify-between items-center mb-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl"
+            className="flex flex-col md:flex-row justify-between items-center mb-8 p-6 bg-muted rounded-xl"
           >
             <div className="flex items-center space-x-6 mb-4 md:mb-0">
               <div className="text-center">
-                <div className="text-2xl font-semibold text-gray-900 dark:text-white">
+                <div className="text-2xl font-semibold text-foreground">
                   {previousWorks.length}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-sm text-muted-foreground">
                   Projects
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-semibold text-gray-900 dark:text-white">
+                <div className="text-2xl font-semibold text-foreground">
                   {previousWorks.reduce(
                     (acc, work) => acc + work.images.length,
                     0
                   )}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-sm text-muted-foreground">
                   Photos
                 </div>
               </div>
@@ -289,7 +289,7 @@ export default function PreviousWorkPage() {
 
             <div className="flex items-center space-x-4">
               {/* View Mode Toggle */}
-              <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg p-1 border border-border">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
@@ -367,10 +367,10 @@ export default function PreviousWorkPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="mb-8"
               >
-                <Card className="border border-gray-200 dark:border-gray-700">
+                <Card className="border border-border">
                   <CardContent className="p-6">
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-xl font-semibold text-foreground">
                         Add New Project
                       </h3>
                       <Button
@@ -386,7 +386,7 @@ export default function PreviousWorkPage() {
                       {/* Basic Info */}
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-foreground mb-2">
                             Project Title *
                           </label>
                           <Input
@@ -395,12 +395,12 @@ export default function PreviousWorkPage() {
                             onChange={(e) =>
                               setNewWork({ ...newWork, title: e.target.value })
                             }
-                            className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                            className="bg-card border-border"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-foreground mb-2">
                             Category
                           </label>
                           <select
@@ -411,7 +411,7 @@ export default function PreviousWorkPage() {
                                 category: e.target.value,
                               })
                             }
-                            className="w-full p-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="w-full p-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-foreground"
                           >
                             <option value="">Select category</option>
                             {workCategories.map((category) => (
@@ -423,7 +423,7 @@ export default function PreviousWorkPage() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-foreground mb-2">
                             Complexity Level
                           </label>
                           <div className="grid grid-cols-2 gap-2">
@@ -442,7 +442,7 @@ export default function PreviousWorkPage() {
                                   })
                                 }
                               >
-                                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                <div className="text-sm font-medium text-foreground">
                                   {level.level}
                                 </div>
                                 <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -455,7 +455,7 @@ export default function PreviousWorkPage() {
 
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                               Date Completed
                             </label>
                             <Input
@@ -467,11 +467,11 @@ export default function PreviousWorkPage() {
                                   dateCompleted: e.target.value,
                                 })
                               }
-                              className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                              className="bg-card border-border"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                               Duration
                             </label>
                             <Input
@@ -483,7 +483,7 @@ export default function PreviousWorkPage() {
                                   duration: e.target.value,
                                 })
                               }
-                              className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                              className="bg-card border-border"
                             />
                           </div>
                         </div>
@@ -492,7 +492,7 @@ export default function PreviousWorkPage() {
                       {/* Images and Details */}
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-foreground mb-2">
                             Project Image *
                           </label>
                           <FileDropzone
@@ -511,7 +511,7 @@ export default function PreviousWorkPage() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-foreground mb-2">
                             Description
                           </label>
                           <Textarea
@@ -523,12 +523,12 @@ export default function PreviousWorkPage() {
                                 description: e.target.value,
                               })
                             }
-                            className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 min-h-24"
+                            className="bg-card border-border min-h-24"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-foreground mb-2">
                             Cost Range (Optional)
                           </label>
                           <Input
@@ -540,7 +540,7 @@ export default function PreviousWorkPage() {
                                 costRange: e.target.value,
                               })
                             }
-                            className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                            className="bg-card border-border"
                           />
                         </div>
                       </div>
@@ -594,7 +594,7 @@ export default function PreviousWorkPage() {
                     transition={{ delay: index * 0.1 }}
                     className="group"
                   >
-                    <Card className="border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300">
+                    <Card className="border border-border hover:shadow-lg transition-all duration-300">
                       <CardContent className="p-0">
                         {/* Image */}
                         <div className="relative">
@@ -640,7 +640,7 @@ export default function PreviousWorkPage() {
                         {/* Content */}
                         <div className="p-4">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
+                            <h4 className="font-semibold text-foreground text-lg">
                               {work.title}
                             </h4>
                             {work.category && (
@@ -651,7 +651,7 @@ export default function PreviousWorkPage() {
                           </div>
 
                           {work.description && (
-                            <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
+                            <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
                               {work.description}
                             </p>
                           )}
@@ -708,12 +708,12 @@ export default function PreviousWorkPage() {
               transition={{ delay: 0.3 }}
               className="text-center py-12"
             >
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-8 max-w-md mx-auto">
+              <div className="bg-muted rounded-xl p-8 max-w-md mx-auto">
                 <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   No Projects Yet
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-muted-foreground mb-6">
                   Add your first project to start building your portfolio and
                   attract more customers.
                 </p>
