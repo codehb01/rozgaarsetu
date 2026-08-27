@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState, useRef, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useWorkersSearchQuery } from "@/hooks/api/use-workers-search";
+import { useWorkersSearchQuery, useWorkersCategoryCounts } from "@/hooks/api/use-workers-search";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -148,6 +148,14 @@ function SearchPageContent() {
     lng: coords?.lng,
   });
 
+  // Fetch all workers (without category filter) for counting categories
+  const { data: allWorkers = [] } = useWorkersCategoryCounts({
+    q,
+    location,
+    lat: coords?.lat,
+    lng: coords?.lng,
+  });
+
   // Normalize possible distance fields from the API to `distanceKm`
   const normalize = (
     w: Worker & {
@@ -225,16 +233,16 @@ function SearchPageContent() {
 
   // Mobile-Responsive Skeleton Loader Component
   const SkeletonCard = () => (
-    <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-3 sm:p-4 lg:p-6 animate-pulse">
+    <Card className="p-3 sm:p-4 lg:p-6 animate-pulse">
       <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-        <div className="h-10 w-10 sm:h-12 sm:w-12 lg:h-16 lg:w-16 rounded-xl sm:rounded-2xl bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+        <div className="h-10 w-10 sm:h-12 sm:w-12 lg:h-16 lg:w-16 rounded-xl sm:rounded-2xl bg-muted shrink-0" />
         <div className="flex-1 w-full sm:w-auto">
-          <div className="h-4 sm:h-5 bg-gray-200 dark:bg-gray-700 rounded-lg w-3/4 mb-2" />
-          <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2 sm:mb-3" />
-          <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-3 sm:mb-4" />
+          <div className="h-4 sm:h-5 bg-muted rounded-lg w-3/4 mb-2" />
+          <div className="h-3 sm:h-4 bg-muted rounded w-1/2 mb-2 sm:mb-3" />
+          <div className="h-3 sm:h-4 bg-muted rounded w-2/3 mb-3 sm:mb-4" />
           <div className="flex gap-1 sm:gap-2">
-            <div className="h-6 sm:h-8 lg:h-9 bg-gray-200 dark:bg-gray-700 rounded-lg w-12 sm:w-16" />
-            <div className="h-6 sm:h-8 lg:h-9 bg-gray-200 dark:bg-gray-700 rounded-lg w-16 sm:w-20" />
+            <div className="h-6 sm:h-8 lg:h-9 bg-muted rounded-lg w-12 sm:w-16" />
+            <div className="h-6 sm:h-8 lg:h-9 bg-muted rounded-lg w-16 sm:w-20" />
           </div>
         </div>
       </div>
@@ -242,32 +250,32 @@ function SearchPageContent() {
   );
 
   return (
-    <main className="min-h-screen bg-white dark:bg-black">
+    <main className="min-h-screen bg-background">
       {/* Header Section */}
-      <div className="bg-transparent border-b border-gray-200 dark:border-gray-800">
+      <div className="bg-background border-b border-border">
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
-            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-3xl font-semibold text-foreground mb-2 tracking-tight">
               Find Skilled Workers
             </h1>
-            <p className="text-base text-gray-600 dark:text-gray-400">
+            <p className="text-base text-muted-foreground font-normal">
               Connect with verified professionals in your area
             </p>
           </div>
 
           {/* Enhanced Search + Controls Container */}
-          <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 sm:p-4 shadow-sm">
+          <Card className="p-3 sm:p-4">
             {/* Enhanced Search Form */}
             <form onSubmit={onSubmit} className="w-full">
               <div className="flex flex-col gap-3 mb-4">
                 {/* Single Search Input */}
                 <div className="relative w-full">
-                  <FiSearch className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
+                  <FiSearch className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 sm:h-5 sm:w-5" />
                   <Input
                     placeholder="Search for services, skills..."
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
-                    className="pl-10 sm:pl-12 pr-3 sm:pr-4 h-10 sm:h-12 text-sm sm:text-base bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
+                    className="pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-lg w-full"
                   />
                 </div>
 
@@ -291,7 +299,7 @@ function SearchPageContent() {
                         }
                         setLocMenuOpen(!locMenuOpen);
                       }}
-                      className="w-full sm:w-auto h-10 sm:h-10 px-3 sm:px-4 rounded-full bg-amber-500/15 hover:bg-amber-500/20 text-amber-500 text-xs sm:text-sm inline-flex items-center justify-center sm:justify-start gap-2"
+                      className="w-full sm:w-auto h-10 sm:h-10 px-3 sm:px-4 rounded-lg bg-amber-500/15 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-xs sm:text-sm inline-flex items-center justify-center sm:justify-start gap-2"
                       aria-expanded={locMenuOpen}
                     >
                       <FiMapPin className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 flex-shrink-0" />
@@ -311,11 +319,11 @@ function SearchPageContent() {
                             top: menuPos.top,
                             width: Math.max(240, menuPos.width),
                           }}
-                          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg z-[99999]"
+                          className="bg-card border border-border rounded-lg shadow-lg z-[99999]"
                         >
                           <div className="p-3">
                             <button
-                              className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                              className="w-full text-left px-3 py-2 rounded-md hover:bg-muted transition-colors"
                               onClick={() => {
                                 setLocMenuOpen(false);
                                 if (locCoords) {
@@ -334,8 +342,8 @@ function SearchPageContent() {
                             >
                               Use my current location
                             </button>
-                            <div className="border-t border-gray-100 dark:border-gray-700 my-2" />
-                            <div className="text-sm text-gray-500 mb-2">
+                            <div className="border-t border-border my-2" />
+                            <div className="text-sm text-muted-foreground mb-2">
                               Popular cities
                             </div>
                             {[
@@ -347,7 +355,7 @@ function SearchPageContent() {
                             ].map((city) => (
                               <button
                                 key={city}
-                                className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="w-full text-left px-3 py-2 rounded-md hover:bg-muted transition-colors text-foreground"
                                 onClick={() => {
                                   setLocation(city);
                                   setCoords(null);
@@ -366,7 +374,7 @@ function SearchPageContent() {
                   {/* Search Button */}
                   <Button
                     type="submit"
-                    className="w-full sm:w-auto h-10 px-4 sm:px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-sm transition-all duration-200 hover:shadow-md text-sm sm:text-base"
+                    className="w-full sm:w-auto"
                   >
                     <FiSearch className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     Search
@@ -375,14 +383,14 @@ function SearchPageContent() {
               </div>
 
               {/* Mobile-Responsive Category Pills */}
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 overflow-x-auto pb-2">
+              <div className="flex flex-wrap gap-2 mb-3 overflow-x-auto pb-2">
                 {CATEGORIES.map((cat) => {
                   const active = cat === category;
-                  // use client-side computed counts from fetched workers
-                  const count = workers.filter((w: Worker) => {
+                  // use client-side computed counts from all workers (without category filter)
+                  const count = allWorkers.filter((w: Worker) => {
                     if (cat === "All") return true;
-                    const category = w.workerProfile?.category || w.workerProfile?.jobCategory;
-                    return category?.toLowerCase() === cat.toLowerCase();
+                    const skills = w.workerProfile?.skilledIn || [];
+                    return skills.some((s: string) => s.toLowerCase() === cat.toLowerCase());
                   }).length;
                   return (
                     <motion.button
@@ -390,10 +398,10 @@ function SearchPageContent() {
                       onClick={() => onCategoryClick(cat)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 rounded-full text-xs font-medium transition-all duration-150 whitespace-nowrap ${
+                      className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 whitespace-nowrap ${
                         active
-                          ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm border"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                          ? "bg-card text-foreground shadow-sm border border-border"
+                          : "bg-muted text-muted-foreground hover:bg-muted/80 border border-transparent"
                       }`}
                     >
                       <span className="truncate max-w-[6rem] sm:max-w-[8rem]">
@@ -415,25 +423,25 @@ function SearchPageContent() {
             </form>
 
             {/* Mobile-Responsive Controls Bar */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-2 pt-3 border-t border-border">
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <StaggeredDropDown
                   items={SORT_OPTIONS}
                   selected={sortBy}
                   onSelect={(v) => setSortBy(v)}
                 />
-                <span className="text-xs text-gray-500 ml-auto sm:ml-0">
+                <span className="text-xs text-muted-foreground ml-auto sm:ml-0">
                   {workers.length} workers found
                 </span>
               </div>
 
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 w-full sm:w-auto justify-center sm:justify-start">
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-full sm:w-auto justify-center sm:justify-start">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 ${
+                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 transition-colors ${
                     viewMode === "grid"
-                      ? "bg-white dark:bg-gray-700 shadow-sm"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                   title="Grid View"
                 >
@@ -442,10 +450,10 @@ function SearchPageContent() {
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 ${
+                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 transition-colors ${
                     viewMode === "list"
-                      ? "bg-white dark:bg-gray-700 shadow-sm"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                   title="List View"
                 >
@@ -454,10 +462,10 @@ function SearchPageContent() {
                 </button>
                 <button
                   onClick={() => setViewMode("scroll")}
-                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 ${
+                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 transition-colors ${
                     viewMode === "scroll"
-                      ? "bg-white dark:bg-gray-700 shadow-sm"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                   title="Scroll View"
                 >
@@ -466,10 +474,10 @@ function SearchPageContent() {
                 </button>
                 <button
                   onClick={() => setViewMode("map")}
-                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 ${
+                  className={`p-1.5 sm:p-2 rounded-md flex items-center gap-1 transition-colors ${
                     viewMode === "map"
-                      ? "bg-white dark:bg-gray-700 shadow-sm"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                   title="Map View"
                 >
@@ -478,7 +486,7 @@ function SearchPageContent() {
                 </button>
               </div>
             </div>
-          </div>
+          </Card>
         </section>
       </div>
 
@@ -562,21 +570,21 @@ function SearchPageContent() {
                                   : `${w.distanceKm.toFixed(1)} km`
                                 : "—";
                             return (
-                              <div
+                              <Card
                                 key={w.id}
-                                className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-3 sm:p-4"
+                                className="p-3 sm:p-4 overflow-hidden"
                               >
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                                   {/* Avatar and Name */}
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-sm sm:text-lg font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">
+                                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center text-sm sm:text-lg font-semibold text-muted-foreground shrink-0">
                                       {initial}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+                                      <h3 className="text-sm sm:text-lg font-semibold text-foreground truncate">
                                         {name}
                                       </h3>
-                                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                                      <div className="text-xs text-muted-foreground">
                                         {w.workerProfile?.yearsExperience ?? 0}{" "}
                                         years experience
                                       </div>
@@ -623,7 +631,7 @@ function SearchPageContent() {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              </Card>
                             );
                           }}
                         />
@@ -656,8 +664,8 @@ function SearchPageContent() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.06 }}
                               >
-                                <div
-                                  className={`bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden p-3 sm:p-4 ${
+                                <Card
+                                  className={`p-3 sm:p-4 overflow-hidden ${
                                     viewMode === "list"
                                       ? "hover:shadow-lg transition-shadow"
                                       : ""
@@ -678,14 +686,14 @@ function SearchPageContent() {
                                           : "flex items-center gap-3 flex-1 min-w-0"
                                       }`}
                                     >
-                                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-sm sm:text-lg font-semibold text-gray-700 dark:text-gray-200 flex-shrink-0">
+                                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center text-sm sm:text-lg font-semibold text-muted-foreground shrink-0">
                                         {initial}
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <h3 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+                                        <h3 className="text-sm sm:text-lg font-semibold text-foreground truncate">
                                           {name}
                                         </h3>
-                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                        <div className="text-xs text-muted-foreground">
                                           {worker.workerProfile
                                             ?.yearsExperience ?? 0}{" "}
                                           years experience
@@ -712,7 +720,7 @@ function SearchPageContent() {
                                             <SkillBadge key={s} skill={s} />
                                           ))
                                         ) : (
-                                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                                          <span className="text-xs text-muted-foreground">
                                             No skills listed
                                           </span>
                                         )}
@@ -752,7 +760,7 @@ function SearchPageContent() {
                                       </div>
                                     </div>
                                   </div>
-                                </div>
+                                </Card>
                               </motion.div>
                             );
                           })}
@@ -766,10 +774,10 @@ function SearchPageContent() {
               {/* Map preview (stacked below results) */}
               <div className="w-full mt-4 sm:mt-6">
                 <div className="mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
                     Workers on Map
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     See all workers in your area
                   </p>
                 </div>

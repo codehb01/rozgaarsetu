@@ -263,15 +263,15 @@ export default function WorkerJobsPage() {
     <Card className="p-6 animate-pulse">
       <div className="flex items-start justify-between mb-4">
         <div className="space-y-2">
-          <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+          <div className="h-5 bg-muted dark:bg-muted rounded w-40"></div>
+          <div className="h-4 bg-muted dark:bg-muted rounded w-24"></div>
         </div>
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+        <div className="h-6 bg-muted dark:bg-muted rounded-full w-20"></div>
       </div>
       <div className="space-y-3">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+        <div className="h-4 bg-muted dark:bg-muted rounded w-32"></div>
+        <div className="h-4 bg-muted dark:bg-muted rounded w-28"></div>
+        <div className="h-4 bg-muted dark:bg-muted rounded w-24"></div>
       </div>
     </Card>
   );
@@ -283,13 +283,13 @@ export default function WorkerJobsPage() {
       animate={{ opacity: 1, y: 0 }}
       className="text-center py-16"
     >
-      <div className="h-32 w-32 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
-        <FiBriefcase className="h-16 w-16 text-gray-400" />
+      <div className="h-32 w-32 mx-auto bg-muted dark:bg-muted rounded-full flex items-center justify-center mb-6">
+        <FiBriefcase className="h-16 w-16 text-muted-foreground" />
       </div>
-      <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+      <h3 className="text-xl font-medium text-foreground dark:text-foreground mb-2">
         No {type} jobs
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+      <p className="text-muted-foreground dark:text-muted-foreground mb-6 max-w-md mx-auto">
         {type === "new"
           ? "You don't have any active job requests at the moment. New opportunities will appear here."
           : "Your completed and cancelled jobs will appear here."}
@@ -309,10 +309,10 @@ export default function WorkerJobsPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6"
+          className="bg-card dark:bg-card rounded-2xl shadow-2xl max-w-lg w-full p-6"
         >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-xl font-semibold text-foreground dark:text-foreground">
               Start Work - Proof Required
             </h3>
             <button
@@ -322,7 +322,7 @@ export default function WorkerJobsPage() {
                 setPhotoPreview(null);
                 setGpsCoords(null);
               }}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              className="text-muted-foreground hover:text-foreground dark:hover:text-foreground"
             >
               <FiX className="h-6 w-6" />
             </button>
@@ -331,10 +331,10 @@ export default function WorkerJobsPage() {
           <div className="space-y-6">
             {/* Photo Upload Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
                 Upload Work Start Photo *
               </label>
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+              <div className="border-2 border-dashed border-border dark:border-border rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
                 {photoPreview ? (
                   <div className="space-y-3">
                     <img
@@ -357,8 +357,8 @@ export default function WorkerJobsPage() {
                   </div>
                 ) : (
                   <>
-                    <FiCamera className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <FiCamera className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
                       Take a photo at the work location
                     </p>
                     <input
@@ -379,17 +379,17 @@ export default function WorkerJobsPage() {
                   </>
                 )}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
                 Max size: 5MB. This proves you are at the work location.
               </p>
             </div>
 
             {/* GPS Location Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
                 GPS Location *
               </label>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+              <div className="bg-muted dark:bg-muted rounded-lg p-4">
                 {gpsCoords ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
@@ -398,7 +398,7 @@ export default function WorkerJobsPage() {
                         Location Captured
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                       Lat: {gpsCoords.lat.toFixed(6)}, Lng:{" "}
                       {gpsCoords.lng.toFixed(6)}
                     </p>
@@ -421,7 +421,7 @@ export default function WorkerJobsPage() {
                   </Button>
                 )}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
                 Your exact location will be recorded for verification.
               </p>
             </div>
@@ -443,7 +443,7 @@ export default function WorkerJobsPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+            <div className="flex gap-3 pt-4 border-t border-border dark:border-border">
               <Button
                 onClick={() => {
                   setStartWorkJobId(null);
@@ -482,14 +482,14 @@ export default function WorkerJobsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-black">
+    <main className="min-h-screen bg-background dark:bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-semibold text-foreground dark:text-foreground mb-2">
             My Jobs
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground dark:text-muted-foreground">
             Manage and track your job requests
           </p>
         </div>
@@ -497,19 +497,19 @@ export default function WorkerJobsPage() {
         {/* Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           {/* Segmented Control Tabs */}
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1 flex">
+          <div className="bg-muted dark:bg-muted rounded-xl p-1 flex">
             {(["NEW", "PREVIOUS"] as Tab[]).map((tabOption) => (
               <button
                 key={tabOption}
                 onClick={() => setTab(tabOption)}
                 className={`px-6 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   tab === tabOption
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    ? "bg-card dark:bg-card text-foreground dark:text-foreground shadow-sm"
+                    : "text-muted-foreground dark:text-muted-foreground hover:text-foreground dark:hover:text-foreground"
                 }`}
               >
                 {tabOption === "NEW" ? "New" : "Previous"}
-                <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">
+                <span className="ml-2 text-xs bg-border dark:bg-border px-2 py-1 rounded-full">
                   {tabOption === "NEW" ? newJobs.length : previousJobs.length}
                 </span>
               </button>
@@ -518,25 +518,25 @@ export default function WorkerJobsPage() {
 
           {/* Search */}
           <div className="relative w-full sm:w-80">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search jobs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+              className="pl-10 bg-card dark:bg-card border-border dark:border-border"
             />
           </div>
         </div>
 
         {/* View Mode Toggle */}
         <div className="flex justify-end mb-6">
-          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-muted dark:bg-muted rounded-lg p-1">
             <button
               onClick={() => setViewMode("grid")}
               className={`p-2 rounded-md transition-colors ${
                 viewMode === "grid"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-card dark:bg-card shadow-sm"
+                  : "hover:bg-border dark:hover:bg-border"
               }`}
               title="Grid View"
             >
@@ -546,8 +546,8 @@ export default function WorkerJobsPage() {
               onClick={() => setViewMode("list")}
               className={`p-2 rounded-md transition-colors ${
                 viewMode === "list"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-card dark:bg-card shadow-sm"
+                  : "hover:bg-border dark:hover:bg-border"
               }`}
               title="List View"
             >
@@ -557,8 +557,8 @@ export default function WorkerJobsPage() {
               onClick={() => setViewMode("scroll")}
               className={`p-2 rounded-md transition-colors ${
                 viewMode === "scroll"
-                  ? "bg-white dark:bg-gray-700 shadow-sm"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-card dark:bg-card shadow-sm"
+                  : "hover:bg-border dark:hover:bg-border"
               }`}
               title="Scroll View"
             >
@@ -590,11 +590,11 @@ export default function WorkerJobsPage() {
             >
               {searchQuery ? (
                 <div className="text-center py-16">
-                  <FiSearch className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  <FiSearch className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground dark:text-foreground mb-2">
                     No results found
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-muted-foreground dark:text-muted-foreground">
                     Try adjusting your search terms
                   </p>
                 </div>
@@ -609,15 +609,15 @@ export default function WorkerJobsPage() {
               renderItem={(j, index) => (
                 <Card
                   key={j.id}
-                  className="p-4 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 w-full max-w-4xl mx-auto flex flex-col overflow-hidden"
+                  className="p-4 hover:shadow-lg transition-all duration-200 bg-card dark:bg-card border-border dark:border-border w-full max-w-4xl mx-auto flex flex-col overflow-hidden"
                 >
                   {/* Header Section */}
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+                      <h3 className="text-lg font-semibold text-foreground dark:text-foreground line-clamp-2">
                         {j.description}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                         Customer: {j.customer?.name || "Customer"}
                       </p>
                     </div>
@@ -644,7 +644,7 @@ export default function WorkerJobsPage() {
                   <div className="flex-1 space-y-2">
                     {/* Time and Location Row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
                         <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
                           <svg
                             className="w-4 h-4 text-blue-600 dark:text-blue-400"
@@ -670,7 +670,7 @@ export default function WorkerJobsPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
                         <div className="w-7 h-7 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
                           <svg
                             className="w-4 h-4 text-green-600 dark:text-green-400"
@@ -702,7 +702,7 @@ export default function WorkerJobsPage() {
                     </div>
 
                     {/* Charge Section */}
-                    <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center gap-2 p-2 bg-muted dark:bg-muted rounded-lg">
                       <div className="w-7 h-7 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center flex-shrink-0">
                         <svg
                           className="w-4 h-4 text-yellow-600 dark:text-yellow-400"
@@ -719,10 +719,10 @@ export default function WorkerJobsPage() {
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                        <p className="text-xs font-medium text-muted-foreground dark:text-muted-foreground">
                           Charge
                         </p>
-                        <p className="text-base font-bold text-gray-900 dark:text-white">
+                        <p className="text-base font-bold text-foreground dark:text-foreground">
                           ₹{j.charge.toFixed(2)}
                         </p>
                       </div>
@@ -734,7 +734,7 @@ export default function WorkerJobsPage() {
                         <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
                           Additional Details
                         </p>
-                        <p className="text-xs text-gray-700 dark:text-gray-200 line-clamp-2">
+                        <p className="text-xs text-foreground dark:text-foreground line-clamp-2">
                           {j.details}
                         </p>
                       </div>
@@ -774,7 +774,7 @@ export default function WorkerJobsPage() {
 
                   {/* Action Buttons Section */}
                   {tab === "NEW" && j.status === "PENDING" && (
-                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 flex gap-2">
+                    <div className="mt-3 pt-3 border-t border-border dark:border-border flex gap-2">
                       <ClickSpark
                         sparkColor="#22c55e"
                         sparkCount={10}
@@ -798,7 +798,7 @@ export default function WorkerJobsPage() {
                     </div>
                   )}
                   {tab === "NEW" && j.status === "ACCEPTED" && (
-                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                    <div className="mt-3 pt-3 border-t border-border dark:border-border">
                       <Button
                         onClick={() => setStartWorkJobId(j.id)}
                         className="w-full bg-purple-600 hover:bg-purple-500 text-white"
@@ -809,7 +809,7 @@ export default function WorkerJobsPage() {
                     </div>
                   )}
                   {tab === "NEW" && j.status === "IN_PROGRESS" && (
-                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                    <div className="mt-3 pt-3 border-t border-border dark:border-border">
                       <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
                         <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
                           <FiPlay className="h-5 w-5 animate-pulse" />
@@ -837,15 +837,15 @@ export default function WorkerJobsPage() {
               {list.map((j) => (
                 <Card
                   key={j.id}
-                  className="p-5 hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex flex-col h-full min-h-[300px]"
+                  className="p-5 hover:shadow-lg transition-all duration-200 bg-card dark:bg-card border-border dark:border-border flex flex-col h-full min-h-[300px]"
                 >
                   {/* Header Section */}
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+                      <h3 className="text-lg font-semibold text-foreground dark:text-foreground line-clamp-2">
                         {j.description}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                         Customer: {j.customer?.name || "Customer"}
                       </p>
                     </div>
@@ -872,7 +872,7 @@ export default function WorkerJobsPage() {
                   <div className="flex-1 space-y-3">
                     {/* Time and Location Row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
                         <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
                           <svg
                             className="w-4 h-4 text-blue-600 dark:text-blue-400"
@@ -889,7 +889,7 @@ export default function WorkerJobsPage() {
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">
+                          <p className="font-medium text-foreground dark:text-foreground text-xs">
                             Date & Time
                           </p>
                           <p className="text-xs">
@@ -898,7 +898,7 @@ export default function WorkerJobsPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
                         <div className="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
                           <svg
                             className="w-4 h-4 text-green-600 dark:text-green-400"
@@ -921,7 +921,7 @@ export default function WorkerJobsPage() {
                           </svg>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white text-xs">
+                          <p className="font-medium text-foreground dark:text-foreground text-xs">
                             Location
                           </p>
                           <p className="text-xs">{j.location}</p>
@@ -930,7 +930,7 @@ export default function WorkerJobsPage() {
                     </div>
 
                     {/* Charge Section */}
-                    <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center gap-2 p-3 bg-muted dark:bg-muted rounded-lg">
                       <div className="w-8 h-8 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center">
                         <svg
                           className="w-4 h-4 text-yellow-600 dark:text-yellow-400"
@@ -947,10 +947,10 @@ export default function WorkerJobsPage() {
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                        <p className="text-xs font-medium text-muted-foreground dark:text-muted-foreground">
                           Charge
                         </p>
-                        <p className="text-lg font-bold text-gray-900 dark:text-white">
+                        <p className="text-lg font-bold text-foreground dark:text-foreground">
                           ₹{j.charge.toFixed(2)}
                         </p>
                       </div>
@@ -962,7 +962,7 @@ export default function WorkerJobsPage() {
                         <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
                           Additional Details
                         </p>
-                        <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2">
+                        <p className="text-sm text-foreground dark:text-foreground line-clamp-2">
                           {j.details}
                         </p>
                       </div>
@@ -1002,7 +1002,7 @@ export default function WorkerJobsPage() {
 
                   {/* Action Buttons Section */}
                   {tab === "NEW" && j.status === "PENDING" && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 flex gap-2">
+                    <div className="mt-4 pt-4 border-t border-border dark:border-border flex gap-2">
                       <Button
                         disabled={acting === j.id}
                         onClick={() => act(j.id, "accept")}
@@ -1020,7 +1020,7 @@ export default function WorkerJobsPage() {
                     </div>
                   )}
                   {tab === "NEW" && j.status === "ACCEPTED" && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <div className="mt-4 pt-4 border-t border-border dark:border-border">
                       <Button
                         onClick={() => setStartWorkJobId(j.id)}
                         className="w-full bg-purple-600 hover:bg-purple-500 text-white"
@@ -1031,7 +1031,7 @@ export default function WorkerJobsPage() {
                     </div>
                   )}
                   {tab === "NEW" && j.status === "IN_PROGRESS" && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <div className="mt-4 pt-4 border-t border-border dark:border-border">
                       <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
                         <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
                           <FiPlay className="h-5 w-5 animate-pulse" />
